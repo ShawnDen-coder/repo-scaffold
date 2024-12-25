@@ -1,0 +1,60 @@
+[tool.poetry]
+name = "repo-template"
+version = "0.1.0"
+description = "shawn deng repo temple project"
+authors = ["colyerdeng <colyerdeng@tencent.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+cookiecutter = "^2.6.0"
+click = "^8.1.8"
+githubkit = "^0.12.2"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.8.4"
+pre-commit = "^4.0.1"
+commitizen = "^4.1.0"
+
+[tool.poetry.scripts]
+repo-template = "repo_template.cli:cli"
+
+[tool.ruff]
+line-length = 120
+include = ["pyproject.toml", "{{template-python}}/{{cookiecutter.project_slug}}/*.py"]
+
+[tool.ruff.lint]
+select = [
+    "E", # pycodestyle errors
+    "W", # pycodestyle warnings
+    "F", # pyflakes
+    "I", # isort
+    "B", # flake8-bugbear
+    "C4", # flake8-comprehensions
+    "D"  # pydocstyle
+]
+
+ignore = [
+    "W191", # indentation contains tabs
+    "D401"  # imperative mood
+]
+
+[tool.ruff.lint.isort]
+force-single-line = true
+lines-after-imports = 2
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+tag_format = "$version"
+version_scheme = "semver2"
+version_provider = "poetry"
+update_changelog_on_bump = true
+major_version_zero = true
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
