@@ -17,13 +17,14 @@ jobs:
         with:
           poetry-version: "latest"
 
-      - name: install-poetry-plugins
+      - name: setup-pypi
         run: |
+          poetry config pypi-token.pypi ${{ secrets.PYPI_TOKEN }}
           poetry self add poetry-pyinstaller-plugin
           poetry self add poetry-plugin-taskipy
 
       - name: build
-        run: poetry build
+        run: poetry publish --build
 
       - name: Release
         uses: softprops/action-gh-release@v2
@@ -34,4 +35,4 @@ jobs:
             dist/*.whl
           generate_release_notes: true
         env:
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
