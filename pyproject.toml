@@ -1,16 +1,18 @@
 [tool.poetry]
 name = "repo-scaffold"
-version = "0.2.0"
+version = "0.1.0"
 description = "shawn deng repo temple project"
 authors = ["colyerdeng <colyerdeng@tencent.com>"]
 license = "MIT"
-readme = {file = "README.md", content-type = "text/markdown"}
+readme = "README.md"
+include = [
+    "template-python/**/*"
+]
 
 [tool.poetry.dependencies]
 python = "^3.12"
 cookiecutter = "^2.6.0"
 click = "^8.1.8"
-githubkit = "^0.12.2"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.8.4"
