@@ -11,7 +11,7 @@ def cli():
 
 
 @cli.command()
-@click.option('--template', '-t', default='https://github.com/your-template-repo.git',
+@click.option('--template', '-t', default='https://github.com/ShawnDen-coder/repo-template.git',
               help='Cookiecutter template URL or path')
 @click.option('--output-dir', '-o', default='.', help='Where to output the generated project dir')
 @click.option('--local', '-l', is_flag=True, help='Use local template in ./template-python')
