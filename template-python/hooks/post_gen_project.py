@@ -1,6 +1,5 @@
 import os
 import subprocess
-from githubkit import GitHub
 
 
 def remove_cli():
