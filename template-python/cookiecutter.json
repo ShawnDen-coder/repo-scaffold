@@ -2,7 +2,7 @@
   "repo_name": "My-Package",
   "full_name": "Shawn Deng",
   "email": "shawndeng1109@qq.com",
-  "project_slug": "{{ cookiecutter.repo_name.strip().lower().replace(' ', '_') }}",
+  "project_slug": "{{ cookiecutter.repo_name.strip().lower().replace('-', '_') }}",
   "description": "A short description of the project.",
   "include_cli": {
     "__prompt__": "Include CLI interface? (y/n)",
