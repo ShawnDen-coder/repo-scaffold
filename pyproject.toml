@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "repo-template"
+name = "repo-scaffold"
 version = "0.1.0"
 description = "shawn deng repo temple project"
 authors = ["colyerdeng <colyerdeng@tencent.com>"]
@@ -18,11 +18,11 @@ pre-commit = "^4.0.1"
 commitizen = "^4.1.0"
 
 [tool.poetry.scripts]
-repo-template = "repo_template.cli:cli"
+repo-scaffold = "repo_scaffold.cli:cli"
 
 [tool.ruff]
 line-length = 120
-include = ["pyproject.toml", "{{template-python}}/{{cookiecutter.project_slug}}/*.py"]
+include = ["pyproject.toml", "repo_scaffold/*.py"]
 
 [tool.ruff.lint]
 select = [
