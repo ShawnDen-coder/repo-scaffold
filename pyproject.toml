@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "repo-scaffold"
-version = "0.2.0"
+version = "0.3.0"
 description = "shawn deng repo temple project"
 authors = ["shawndeng <shawndeng1109@qq.com>"]
 license = "MIT"
