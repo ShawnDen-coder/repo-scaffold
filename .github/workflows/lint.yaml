@@ -1,0 +1,40 @@
+name: lint_and_unittest
+
+on: [ push, pull_request ]
+
+jobs:
+  lint_and_unittest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Load secret
+        uses: 1password/load-secrets-action@v2
+        with:
+          export-env: true
+        env:
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+          PERSONAL_ACCESS_TOKEN: op://shawndengdev/github_access_token/credential
+
+      - name: Check out
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: '${{ env.PERSONAL_ACCESS_TOKEN }}'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: abatilo/actions-poetry@v2
+        with:
+          poetry-version: "latest"
+
+      - name: install depends
+        run: |
+          pip install nox
+          poetry install
+
+      - name: Run lint checks
+        run: poetry run nox -s lint
+
+      - name: Run tests
+        run: poetry run nox -s test

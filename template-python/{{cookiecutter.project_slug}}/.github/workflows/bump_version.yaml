@@ -1,7 +1,7 @@
 name: Bump version
 
 on:
-  pull_request:
+  push:
     branches:
       - master
   workflow_dispatch:
@@ -12,13 +12,22 @@ jobs:
     runs-on: ubuntu-latest
     name: "Bump version and create changelog with commitizen"
     steps:
+      - name: Load secret
+        uses: 1password/load-secrets-action@v2
+        with:
+          export-env: true
+        env:
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+          PERSONAL_ACCESS_TOKEN: op://shawndengdev/github_access_token/credential
+
       - name: Check out
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          token: '${{ secrets.GITHUB_TOKEN }}'
+          token: '${{ env.PERSONAL_ACCESS_TOKEN }}'
+
       - name: Create bump and changelog
         uses: commitizen-tools/commitizen-action@master
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ env.PERSONAL_ACCESS_TOKEN }}
           branch: master
