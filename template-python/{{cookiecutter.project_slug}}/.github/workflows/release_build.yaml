@@ -16,7 +16,7 @@ jobs:
         with:
           export-env: true
         env:
-          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+          OP_SERVICE_ACCOUNT_TOKEN: {% raw %}${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}{% endraw %}
           PERSONAL_ACCESS_TOKEN: op://shawndengdev/github_access_token/credential
           PYPI_TOKEN: op://shawndengdev/pypi_token/credential
 
@@ -33,7 +33,7 @@ jobs:
 
       - name: build and publish
         run: |
-          poetry config pypi-token.pypi ${{ env.PYPI_TOKEN }}
+          poetry config pypi-token.pypi {% raw %}${{ env.PYPI_TOKEN }}{% endraw %}
           poetry install
           poetry run nox -s lint
           poetry run nox -s test
@@ -51,4 +51,4 @@ jobs:
             dist/*.whl
           generate_release_notes: true
         env:
-          GITHUB_TOKEN: ${{ env.PERSONAL_ACCESS_TOKEN }}
+          GITHUB_TOKEN: {% raw %}${{ env.PERSONAL_ACCESS_TOKEN }}{% endraw %}

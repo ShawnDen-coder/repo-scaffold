@@ -3,7 +3,7 @@
     "template-python": {
       "path": "./template-python",
       "title": "python",
-      "description": "A cookiecutter template for python project"
+      "description": "template for python project"
     }
   }
 }

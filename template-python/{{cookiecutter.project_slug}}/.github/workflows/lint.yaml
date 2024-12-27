@@ -11,14 +11,14 @@ jobs:
         with:
           export-env: true
         env:
-          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+          OP_SERVICE_ACCOUNT_TOKEN: {% raw %}${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}{% endraw %}
           PERSONAL_ACCESS_TOKEN: op://shawndengdev/github_access_token/credential
 
       - name: Check out
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          token: '${{ env.PERSONAL_ACCESS_TOKEN }}'
+          token: '{% raw %}${{ env.PERSONAL_ACCESS_TOKEN }}{% endraw %}'
 
       - uses: actions/setup-python@v5
         with:
