@@ -57,7 +57,7 @@ def test(session: nox.Session) -> None:
     session.run("poetry", "install")
     session.run(
         "pytest",
-        "--cov={{{{cookiecutter.project_slug}}}}",
+        "--cov={{cookiecutter.project_slug}}",
         "--cov-report=term-missing",
         "--cov-report=xml",
         "-v",

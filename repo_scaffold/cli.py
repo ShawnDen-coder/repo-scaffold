@@ -25,8 +25,7 @@ from cookiecutter.main import cookiecutter
 def cli():
     """Repository scaffolding CLI tool.
 
-    Commands:
-        create: Generate a new project from template
+    A tool for creating new projects from templates.
     """
     ...
 
@@ -41,13 +40,13 @@ def cli():
 @click.option("--output-dir", "-o", default=".", help="Where to output the generated project dir")
 @click.option("--local", "-l", is_flag=True, help="Use local template in ./template-python")
 def create(template, output_dir, local):
-    """Create a new project from template.
+    r"""Create a new project from template.
 
-    Args:
-        template: Template source URL or path
-        output_dir: Target directory for new project
-        local: Use local template instead of remote
+    \b
+    Usage:
+        repo-scaffold create [OPTIONS]
 
+    \b
     Examples:
         $ repo-scaffold create
         $ repo-scaffold create --local
