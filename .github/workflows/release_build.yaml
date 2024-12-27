@@ -1,0 +1,52 @@
+name: release-build
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - '*.*.*'
+
+jobs:
+  release-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Load secret
+        uses: 1password/load-secrets-action@v2
+        with:
+          export-env: true
+        env:
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+          PERSONAL_ACCESS_TOKEN: op://shawndengdev/github_access_token/credential
+          PYPI_TOKEN: op://shawndengdev/pypi_token/credential
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: abatilo/actions-poetry@v2
+        with:
+          poetry-version: "latest"
+
+      - name: Install nox
+        run: pip install nox
+
+      - name: build and publish
+        run: |
+          poetry config pypi-token.pypi ${{ env.PYPI_TOKEN }}
+          poetry install
+          poetry run nox -s lint
+          poetry run nox -s test
+          poetry run nox -s build
+          poetry publish
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/**/*.exe
+            dist/*.tar.gz
+            dist/*.whl
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ env.PERSONAL_ACCESS_TOKEN }}

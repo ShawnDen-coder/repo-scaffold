@@ -23,10 +23,10 @@ from cookiecutter.main import cookiecutter
 
 @click.group()
 def cli():
-    """CLI tool for project creation.
+    """Repository scaffolding CLI tool.
 
-    This function serves as the main command group for the CLI application.
-    It groups all subcommands and provides the base entry point for the tool.
+    Commands:
+        create: Generate a new project from template
     """
     ...
 
@@ -35,25 +35,26 @@ def cli():
 @click.option(
     "--template",
     "-t",
-    default="https://github.com/ShawnDen-coder/repo-template.git",
+    default="https://github.com/ShawnDen-coder/repo-scaffold.git",
     help="Cookiecutter template URL or path",
 )
 @click.option("--output-dir", "-o", default=".", help="Where to output the generated project dir")
 @click.option("--local", "-l", is_flag=True, help="Use local template in ./template-python")
 def create(template, output_dir, local):
-    """Create a new project from a Cookiecutter template.
+    """Create a new project from template.
 
     Args:
-        template (str): URL or path to the cookiecutter template.
-        output_dir (str): Directory where the generated project will be created.
-        local (bool): Flag to use local template instead of remote.
+        template: Template source URL or path
+        output_dir: Target directory for new project
+        local: Use local template instead of remote
 
-    Returns:
-        None
-
-    Example:
-        $ repo_scaffold create --template https://github.com/user/template.git
-        $ repo_scaffold create --local --output-dir ./projects
+    Examples:
+        $ repo-scaffold create
+        $ repo-scaffold create --local
+        $ repo-scaffold create -o ./my-projects
+        $ repo-scaffold create -t https://github.com/user/custom-template.git
+        $ repo-scaffold create -t ../path/to/local/template
+        $ repo-scaffold create -t gh:user/template-name
     """
     if local:
         template = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
