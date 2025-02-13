@@ -5,14 +5,12 @@ description = "shawn deng repo temple project"
 authors = ["shawndeng <shawndeng1109@qq.com>"]
 license = "MIT"
 readme = "README.md"
-include = [
-    "template-python/**/*"
-]
 
 [tool.poetry.dependencies]
 python = "^3.12"
 cookiecutter = "^2.6.0"
 click = "^8.1.8"
+ruff = "^0.9.6"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.8.4"
@@ -25,6 +23,10 @@ commitizen = "^4.1.0"
 [tool.poetry.scripts]
 repo-scaffold = "repo_scaffold.cli:cli"
 
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
 [tool.ruff]
 line-length = 120
 include = ["pyproject.toml", "repo_scaffold/*.py"]
@@ -32,13 +34,13 @@ exclude = ["template-python/**/*"]
 
 [tool.ruff.lint]
 select = [
-    "E", # pycodestyle errors
-    "W", # pycodestyle warnings
-    "F", # pyflakes
-    "I", # isort
-    "B", # flake8-bugbear
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "B",  # flake8-bugbear
     "C4", # flake8-comprehensions
-    "D"  # pydocstyle
+    "D"   # pydocstyle
 ]
 
 ignore = [
@@ -60,7 +62,3 @@ version_scheme = "semver2"
 version_provider = "poetry"
 update_changelog_on_bump = true
 major_version_zero = true
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"

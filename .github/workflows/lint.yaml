@@ -24,17 +24,16 @@ jobs:
         with:
           python-version: "3.12"
 
-      - uses: abatilo/actions-poetry@v2
-        with:
-          poetry-version: "latest"
-
-      - name: install depends
+      - name: Install uv
         run: |
-          pip install nox
-          poetry install
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          uv --version
+
+      - name: Install dependencies
+        run: uv sync --extras dev
 
       - name: Run lint checks
-        run: poetry run nox -s lint
+        run: uvx nox -s lint
 
       - name: Run tests
-        run: poetry run nox -s test
+        run: uvx nox -s test
