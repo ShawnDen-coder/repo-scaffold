@@ -4,15 +4,31 @@ This module contains nox sessions for automating development tasks including:
 - Code linting and formatting
 - Unit testing with coverage reporting
 - Package building
-- Executable creation
+- Project cleaning
 
 Typical usage example:
-    nox -s lint  # Run linting
-    nox -s test  # Run tests
-    nox -s build # Build package
-    nox -s build_exe # Build package with standalone executable
+    nox -s lint   # Run linting
+    nox -s test   # Run tests
+    nox -s build  # Build package
+    nox -s clean  # Clean project
 """
 import nox
+import shutil
+from pathlib import Path
+
+
+def install_with_uv(session: nox.Session, editable: bool = False) -> None:
+    """Helper function to install packages using uv.
+    
+    Args:
+        session: Nox session object for running commands
+        editable: Whether to install in editable mode
+    """
+    session.install("uv")
+    if editable:
+        session.run("uv", "pip", "install", "-e", ".[dev]")
+    else:
+        session.run("uv", "pip", "install", ".")
 
 
 @nox.session(reuse_venv=True)
@@ -25,9 +41,11 @@ def lint(session: nox.Session) -> None:
     Args:
         session: Nox session object for running commands
     """
-    session.install("poetry")
+    # Install dependencies
     session.install("ruff")
-    session.run("poetry", "install", "--only", "dev")
+    install_with_uv(session, editable=True)
+    
+    # Run linting checks
     session.run(
         "ruff",
         "check",
@@ -42,18 +60,22 @@ def lint(session: nox.Session) -> None:
         "--diff"
     )
 
+
 @nox.session(reuse_venv=True)
 def test(session: nox.Session) -> None:
     """Run the test suite with coverage reporting.
 
-    Executes pytest with coverage reporting for the github_action_test package.
+    Executes pytest with coverage reporting for the repo_scaffold package.
     Generates both terminal and XML coverage reports.
 
     Args:
         session: Nox session object for running commands
     """
-    session.install("poetry")
-    session.run("poetry", "install")
+    # Install dependencies
+    install_with_uv(session, editable=True)
+    session.install("pytest", "pytest-cov", "pytest-mock")
+    
+    # Run tests
     session.run(
         "pytest",
         "--cov=repo_scaffold",
@@ -68,28 +90,53 @@ def test(session: nox.Session) -> None:
 def build(session: nox.Session) -> None:
     """Build the Python package.
 
-    Creates a distributable package using poetry build command
-    with verbose output and excluding dev dependencies.
+    Creates a distributable package using uv build command.
 
     Args:
         session: Nox session object for running commands
     """
-    session.install("poetry")
-    session.run("poetry", "install", "--without", "dev")
-    session.run("poetry", "build", "-vvv")
+    session.install("uv")
+    session.run("uv", "build", "--wheel", "--sdist")
 
 
 @nox.session(reuse_venv=True)
-def build_exe(session: nox.Session) -> None:
-    """Build the Python package with standalone executable.
+def clean(session: nox.Session) -> None:  # pylint: disable=unused-argument
+    """Clean the project directory.
 
-    Creates an executable using poetry-pyinstaller-plugin.
-    Installs required plugin and builds without dev dependencies.
+    Removes build artifacts, cache directories, and other temporary files:
+    - build/: Build artifacts
+    - dist/: Distribution packages
+    - .nox/: Nox virtual environments
+    - .pytest_cache/: Pytest cache
+    - .ruff_cache/: Ruff cache
+    - .coverage: Coverage data
+    - coverage.xml: Coverage report
+    - **/*.pyc: Python bytecode
+    - **/__pycache__/: Python cache directories
+    - **/*.egg-info: Package metadata
 
     Args:
-        session: Nox session object for running commands
+        session: Nox session object (unused)
     """
-    session.install("poetry")
-    session.install("poetry", "self", "add", "poetry-pyinstaller-plugin")
-    session.run("poetry", "install", "--without", "dev")
-    session.run("poetry", "build", "-vvv")
+    root = Path(".")
+    patterns = [
+        "build",
+        "dist",
+        ".nox",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".coverage",
+        "coverage.xml",
+        "**/*.pyc",
+        "**/__pycache__",
+        "**/*.egg-info",
+    ]
+    
+    for pattern in patterns:
+        for path in root.glob(pattern):
+            if path.is_file():
+                path.unlink()
+                print(f"Removed file: {path}")
+            elif path.is_dir():
+                shutil.rmtree(path)
+                print(f"Removed directory: {path}")

@@ -24,21 +24,27 @@ jobs:
         with:
           python-version: "3.12"
 
-      - uses: abatilo/actions-poetry@v2
-        with:
-          poetry-version: "latest"
-
-      - name: Install nox
-        run: pip install nox
-
-      - name: build and publish
+      - name: Install uv
         run: |
-          poetry config pypi-token.pypi ${{ env.PYPI_TOKEN }}
-          poetry install
-          poetry run nox -s lint
-          poetry run nox -s test
-          poetry run nox -s build
-          poetry publish
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          uv --version
+
+      - name: Install dependencies
+        run: uv sync --extras dev
+
+      - name: Build and test
+        run: |
+          uvx nox -s lint
+          uvx nox -s test
+          uvx nox -s build
+
+      - name: Publish to PyPI
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ env.PYPI_TOKEN }}
+        run: |
+          pip install twine
+          twine upload dist/*
 
       - name: Release
         uses: softprops/action-gh-release@v2
