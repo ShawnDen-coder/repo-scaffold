@@ -1,29 +1,37 @@
-[tool.poetry]
+[project]
 name = "{{cookiecutter.project_slug}}"
 version = "0.1.0"
-description = "shawn deng repo temple project"
-authors = ["{{cookiecutter.full_name}} <{{cookiecutter.email}}>"]
+description = "{{cookiecutter.description}}"
+authors = [
+    {name = "{{cookiecutter.full_name}}", email = "{{cookiecutter.email}}"}
+]
 license = "MIT"
 readme = "README.md"
-
-[tool.poetry.dependencies]
-python = "^3.12"
+requires-python = ">=3.12"
+dependencies = [
 {% if cookiecutter.include_cli == 'y' %}
-click = "^8.1.7"
+    "click>=8.1.8",
 {% endif %}
+]
 
-[tool.poetry.group.dev.dependencies]
-ruff = "^0.8.4"
-nox = "^2024.10.9"
-pytest = "^8.3.4"
-pytest-mock = "^3.14.0"
-pytest-cov = "^6.0.0"
-commitizen = "^4.1.0"
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.9.6",
+    "nox>=2024.10.9",
+    "pytest>=8.3.4",
+    "pytest-mock>=3.14.0",
+    "pytest-cov>=6.0.0",
+    "commitizen>=4.1.0",
+]
 
 {% if cookiecutter.include_cli == 'y' %}
-[tool.poetry.scripts]
+[project.scripts]
 {{cookiecutter.project_slug}} = "{{cookiecutter.project_slug}}.cli:cli"
 {% endif %}
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [tool.ruff]
 line-length = 120
@@ -36,13 +44,18 @@ select = [
     "F",  # pyflakes
     "I",  # isort
     "B",  # flake8-bugbear
-    "C4",  # flake8-comprehensions
-    "D"  # pydocstyle
+    "C4", # flake8-comprehensions
+    "D"   # pydocstyle
 ]
 
 ignore = [
-    "W191",  # indentation contains tabs
+    "W191", # indentation contains tabs
     "D401"  # imperative mood
+]
+
+extend-ignore = [
+    "D100",  # Missing docstring in public module
+    "D104",  # Missing docstring in public package
 ]
 
 [tool.ruff.lint.isort]
@@ -56,10 +69,6 @@ convention = "google"
 name = "cz_conventional_commits"
 tag_format = "$version"
 version_scheme = "semver2"
-version_provider = "poetry"
+version_provider = "pep621"
 update_changelog_on_bump = true
 major_version_zero = true
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"

@@ -1,31 +1,35 @@
-[tool.poetry]
+[project]
 name = "repo-scaffold"
 version = "0.3.0"
 description = "shawn deng repo temple project"
-authors = ["shawndeng <shawndeng1109@qq.com>"]
+authors = [
+    {name = "shawndeng", email = "shawndeng1109@qq.com"}
+]
 license = "MIT"
 readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "cookiecutter>=2.6.0",
+    "click>=8.1.8",
+    "ruff>=0.9.6",
+]
 
-[tool.poetry.dependencies]
-python = "^3.12"
-cookiecutter = "^2.6.0"
-click = "^8.1.8"
-ruff = "^0.9.6"
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.8.4",
+    "nox>=2024.10.9",
+    "pytest>=8.3.4",
+    "pytest-mock>=3.14.0",
+    "pytest-cov>=6.0.0",
+    "commitizen>=4.1.0",
+]
 
-[tool.poetry.group.dev.dependencies]
-ruff = "^0.8.4"
-nox = "^2024.10.9"
-pytest = "^8.3.4"
-pytest-mock = "^3.14.0"
-pytest-cov = "^6.0.0"
-commitizen = "^4.1.0"
-
-[tool.poetry.scripts]
+[project.scripts]
 repo-scaffold = "repo_scaffold.cli:cli"
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [tool.ruff]
 line-length = 120
@@ -48,6 +52,11 @@ ignore = [
     "D401"  # imperative mood
 ]
 
+extend-ignore = [
+    "D100",  # Missing docstring in public module
+    "D104",  # Missing docstring in public package
+]
+
 [tool.ruff.lint.isort]
 force-single-line = true
 lines-after-imports = 2
@@ -59,6 +68,6 @@ convention = "google"
 name = "cz_conventional_commits"
 tag_format = "$version"
 version_scheme = "semver2"
-version_provider = "poetry"
+version_provider = "pep621"
 update_changelog_on_bump = true
 major_version_zero = true
