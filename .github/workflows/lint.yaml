@@ -30,7 +30,7 @@ jobs:
           version: ">=0.4.0"
 
       - name: Install dependencies
-        run: uv sync --extras dev
+        run: uv sync --extra dev
 
       - name: Run lint checks
         run: uvx nox -s lint
