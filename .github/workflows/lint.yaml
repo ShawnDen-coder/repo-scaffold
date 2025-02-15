@@ -25,9 +25,9 @@ jobs:
           python-version: "3.12"
 
       - name: Install uv
-        run: |
-          curl -LsSf https://astral.sh/uv/install.sh | sh
-          uv --version
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: ">=0.4.0"
 
       - name: Install dependencies
         run: uv sync --extras dev

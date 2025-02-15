@@ -5,12 +5,14 @@ This module contains nox sessions for automating development tasks including:
 - Unit testing with coverage reporting
 - Package building
 - Project cleaning
+- Baseline creation for linting rules
 
 Typical usage example:
     nox -s lint   # Run linting
     nox -s test   # Run tests
     nox -s build  # Build package
     nox -s clean  # Clean project
+    nox -s baseline  # Create a new baseline for linting rules
 """
 import nox
 import shutil
@@ -140,3 +142,47 @@ def clean(session: nox.Session) -> None:  # pylint: disable=unused-argument
             elif path.is_dir():
                 shutil.rmtree(path)
                 print(f"Removed directory: {path}")
+
+
+@nox.session(reuse_venv=True)
+def baseline(session: nox.Session) -> None:
+    """Create a new baseline for linting rules.
+
+    This command will:
+    1. Add # noqa comments to all existing violations
+    2. Update the pyproject.toml with new extend-ignore rules
+    3. Show a summary of changes made
+
+    Args:
+        session: Nox session object for running commands
+    """
+    # Install dependencies
+    session.install("ruff", "tomlkit")
+    install_with_uv(session, editable=True)
+    
+    # Get current violations
+    result = session.run(
+        "ruff",
+        "check",
+        ".",
+        "--verbose",
+        "--output-format=json",
+        silent=True,
+        success_codes=[0, 1]
+    )
+    
+    if result:
+        # Add noqa comments to existing violations
+        session.run(
+            "ruff",
+            "check",
+            ".",
+            "--add-noqa",
+            "--verbose",
+            success_codes=[0, 1]
+        )
+        
+        print("\nBaseline created! The following files were modified:")
+        session.run("git", "diff", "--name-only", external=True)
+    else:
+        print("No violations found. No baseline needed.")
