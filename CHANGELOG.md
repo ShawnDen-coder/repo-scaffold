@@ -1,3 +1,9 @@
+## 0.4.1 (2025-02-16)
+
+### Fix
+
+- github action publish package
+
 ## 0.4.0 (2025-02-16)
 
 ### Feat
