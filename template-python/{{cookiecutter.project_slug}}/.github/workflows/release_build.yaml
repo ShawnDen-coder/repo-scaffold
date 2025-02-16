@@ -43,7 +43,7 @@ jobs:
       - name: Publish to PyPI
         env:
           UV_PUBLISH_TOKEN: {% raw %}${{ env.PYPI_TOKEN }}{% endraw %}
-        run: uv publish --retry 3
+        run: uv publish
 
       - name: Release
         uses: softprops/action-gh-release@v2
