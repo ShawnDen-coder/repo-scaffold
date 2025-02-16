@@ -7,3 +7,4 @@
 /.zip/
 /venv/
 /dist/
+/__pycache__/
