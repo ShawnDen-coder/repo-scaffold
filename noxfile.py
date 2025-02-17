@@ -41,9 +41,6 @@ def install_with_uv(session: nox.Session, extras: list[str] | None = None) -> No
     session.install("ruff")  # Explicitly install ruff
     if extras:
         session.run("uv", "sync", *(f"--extra={extra}" for extra in extras))
-        # Install pytest and related packages for test sessions
-        if any(extra == "dev" for extra in extras):
-            session.install("pytest", "pytest-cov", "pytest-mock")
     else:
         session.run("uv", "sync")
 
@@ -62,8 +59,8 @@ def lint(session: nox.Session) -> None:
     install_with_uv(session, extras=["dev"])
 
     # Run ruff checks
-    session.run("ruff", "check", ".")
-    session.run("ruff", "format", "--check", ".")
+    session.run("uvx", "ruff", "check", ".")
+    session.run("uvx", "ruff", "format", "--check", ".")
 
 
 @nox.session(python=PYTHON_VERSIONS[-1], reuse_venv=True)
@@ -81,6 +78,7 @@ def test(session: nox.Session) -> None:
 
     # Run pytest with coverage
     session.run(
+        "uvx",
         "pytest",
         "--cov=repo_scaffold",
         "--cov-report=term-missing",
@@ -117,7 +115,7 @@ def test_all(session: nox.Session) -> None:
         ] + test_args
 
     # 运行测试
-    session.run("pytest", *test_args)
+    session.run("uvx","pytest", *test_args)
 
 
 @nox.session(reuse_venv=True)
@@ -130,7 +128,7 @@ def build(session: nox.Session) -> None:
         session: Nox session object for running commands
     """
     install_with_uv(session, extras=["dev"])
-    session.run("python", "-m", "build")
+    session.run("uv","build")
 
 
 @nox.session(reuse_venv=True)
@@ -198,8 +196,8 @@ def baseline(session: nox.Session) -> None:
     install_with_uv(session, extras=["dev"])
 
     # 运行 ruff 并自动修复所有问题
-    session.run("ruff", "check", ".", "--add-noqa")
-    session.run("ruff", "format", ".")
+    session.run("uvx","ruff", "check", ".", "--add-noqa")
+    session.run("uvx","ruff", "format", ".")
 
 
 @nox.session(reuse_venv=True)
@@ -212,7 +210,7 @@ def docs(session: nox.Session) -> None:
         session: Nox session object for running commands
     """
     install_with_uv(session, extras=["docs"])
-    session.run("mkdocs", "build")
+    session.run("uvx","mkdocs", "build")
 
 
 @nox.session(reuse_venv=True)
@@ -225,4 +223,4 @@ def docs_serve(session: nox.Session) -> None:
         session: Nox session object for running commands
     """
     install_with_uv(session, extras=["docs"])
-    session.run("mkdocs", "serve")
+    session.run("uvx","mkdocs", "serve")
