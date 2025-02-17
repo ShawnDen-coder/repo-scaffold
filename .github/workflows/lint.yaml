@@ -34,9 +34,12 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
       - name: Run lint checks
         id: lint
-        run: uvx nox -s lint
+        run: uv tool run nox -s lint
         continue-on-error: true
 
       - name: Comment on PR
@@ -71,9 +74,12 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
       - name: Run tests on all Python versions
         id: test
-        run: uvx nox -s test_all
+        run: uv tool run nox -s test_all
         continue-on-error: true
 
       - name: Upload coverage reports

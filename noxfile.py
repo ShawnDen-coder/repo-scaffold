@@ -23,14 +23,11 @@ import shutil
 from pathlib import Path
 
 # 支持的 Python 版本范围
-MIN_PYTHON = "3.10"
+MIN_PYTHON = "3.12"
 MAX_PYTHON = "3.12"
 
 # 生成版本列表
-PYTHON_VERSIONS = [
-    f"3.{minor}"
-    for minor in range(int(MIN_PYTHON.split(".")[-1]), int(MAX_PYTHON.split(".")[-1]) + 1)
-]
+PYTHON_VERSIONS = [MIN_PYTHON]
 
 
 def install_with_uv(session: nox.Session, extras: list[str] | None = None) -> None:

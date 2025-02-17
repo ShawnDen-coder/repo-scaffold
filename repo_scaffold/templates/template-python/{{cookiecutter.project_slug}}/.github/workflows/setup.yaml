@@ -6,7 +6,7 @@ on:
       python-version:
         required: false
         type: string
-        default: "{{cookiecutter.max_python_version}}"
+        default: "{{cookiecutter.max_python_version}}"  # 使用用户选择的最高 Python 版本
       install-deps:
         required: false
         type: string
