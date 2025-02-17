@@ -7,7 +7,7 @@ authors = [
 ]
 license = "MIT"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">={{cookiecutter.min_python_version}},<{{cookiecutter.max_python_version}}.99"
 dependencies = [
 {% if cookiecutter.include_cli == 'y' %}
     "click>=8.1.8",
@@ -23,6 +23,11 @@ dev = [
     "pytest-cov>=6.0.0",
     "commitizen>=4.1.0",
 ]
+docs = [
+    "mkdocs>=1.5.0",
+    "mkdocs-material>=9.4.0",
+    "mkdocstrings[python]>=0.24.0",
+]
 
 {% if cookiecutter.include_cli == 'y' %}
 [project.scripts]
@@ -36,6 +41,7 @@ build-backend = "hatchling.build"
 [tool.ruff]
 line-length = 120
 include = ["pyproject.toml", "{{cookiecutter.project_slug}}/**/*.py"]
+target-version = "{{cookiecutter.min_python_version}}"
 
 [tool.ruff.lint]
 select = [

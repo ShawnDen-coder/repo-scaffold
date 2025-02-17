@@ -5,11 +5,12 @@ on:
     tags:
       - '*.*.*'
 
+permissions:
+  contents: write  # 用于创建 GitHub Release
+
 jobs:
   release-build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write  # 用于创建 GitHub Release
     steps:
       - uses: actions/checkout@v4
 
@@ -32,7 +33,11 @@ jobs:
           version: ">=0.4.0"
 
       - name: Install dependencies
-        run: uv sync --extra dev
+        run: |
+          uv sync --extra dev
+          {% if cookiecutter.use_mkdocs == "yes" %}
+          uv sync --extra docs
+          {% endif %}
 
       - name: Build and test
         run: |
@@ -45,12 +50,18 @@ jobs:
           UV_PUBLISH_TOKEN: {% raw %}${{ env.PYPI_TOKEN }}{% endraw %}
         run: uv publish
 
+      {% if cookiecutter.use_mkdocs == "yes" %}
+      - name: Deploy documentation
+        run: uv run mkdocs gh-deploy --force
+        env:
+          GITHUB_TOKEN: {% raw %}${{ env.PERSONAL_ACCESS_TOKEN }}{% endraw %}
+      {% endif %}
+
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            dist/*.tar.gz
-            dist/*.whl
+            dist/*
           generate_release_notes: true
         env:
           GITHUB_TOKEN: {% raw %}${{ env.PERSONAL_ACCESS_TOKEN }}{% endraw %}

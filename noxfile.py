@@ -58,8 +58,7 @@ def lint(session: nox.Session) -> None:
     session.run(
         "ruff",
         "format",
-        "--verbose",
-        "--diff"
+        "--verbose"
     )
 
 

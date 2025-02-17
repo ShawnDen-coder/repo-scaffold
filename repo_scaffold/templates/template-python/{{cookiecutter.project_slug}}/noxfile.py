@@ -6,17 +6,31 @@ This module contains nox sessions for automating development tasks including:
 - Package building
 - Project cleaning
 - Baseline creation for linting rules
+- Documentation building
 
 Typical usage example:
     nox -s lint   # Run linting
-    nox -s test   # Run tests
+    nox -s test   # Run tests with current Python version
+    nox -s test-all  # Run tests with all supported Python versions
     nox -s build  # Build package
     nox -s clean  # Clean project
     nox -s baseline  # Create a new baseline for linting rules
+    nox -s docs    # Build documentation
+    nox -s docs_serve  # Serve documentation locally
 """
 import nox
 import shutil
 from pathlib import Path
+
+# 支持的 Python 版本范围
+MIN_PYTHON = "{{cookiecutter.min_python_version}}"
+MAX_PYTHON = "{{cookiecutter.max_python_version}}"
+
+# 生成版本列表
+PYTHON_VERSIONS = [
+    f"3.{minor}"
+    for minor in range(int(MIN_PYTHON.split(".")[-1]), int(MAX_PYTHON.split(".")[-1]) + 1)
+]
 
 
 def install_with_uv(session: nox.Session, editable: bool = False) -> None:
@@ -46,24 +60,13 @@ def lint(session: nox.Session) -> None:
     # Install dependencies
     session.install("ruff")
     install_with_uv(session, editable=True)
-    
-    # Run linting checks
-    session.run(
-        "ruff",
-        "check",
-        ".",
-        "--fix",
-        "--verbose"
-    )
-    session.run(
-        "ruff",
-        "format",
-        "--verbose",
-        "--diff"
-    )
+
+    # Run ruff checks
+    session.run("ruff", "check", ".")
+    session.run("ruff", "format", "--check", ".")
 
 
-@nox.session(reuse_venv=True)
+@nox.session(python=PYTHON_VERSIONS[-1], reuse_venv=True)
 def test(session: nox.Session) -> None:
     """Run the test suite with coverage reporting.
 
@@ -75,20 +78,37 @@ def test(session: nox.Session) -> None:
     """
     # Install dependencies
     install_with_uv(session, editable=True)
-    session.install("pytest", "pytest-cov", "pytest-mock")
-    
-    # Run tests
+    session.install("pytest", "pytest-cov")
+
+    # Run pytest with coverage
     session.run(
         "pytest",
         "--cov={{cookiecutter.project_slug}}",
         "--cov-report=term-missing",
         "--cov-report=xml",
-        "-v",
-        "tests"
+        "tests",
     )
 
 
-@nox.session(reuse_venv=True)
+@nox.session(python=PYTHON_VERSIONS)
+def test_all(session: nox.Session) -> None:
+    """Run tests on all supported Python versions.
+
+    This session runs the test suite against all supported Python versions.
+    It's useful for ensuring compatibility across different Python versions.
+
+    Args:
+        session: Nox session object for running commands
+    """
+    # Install dependencies
+    install_with_uv(session, editable=True)
+    session.install("pytest")
+
+    # Run pytest
+    session.run("pytest", "tests")
+
+
+@nox.session(python=PYTHON_VERSIONS[-1], reuse_venv=True)
 def build(session: nox.Session) -> None:
     """Build the Python package.
 
@@ -97,12 +117,18 @@ def build(session: nox.Session) -> None:
     Args:
         session: Nox session object for running commands
     """
-    session.install("uv")
-    session.run("uv", "build", "--wheel", "--sdist")
+    # Install build dependencies
+    session.install("build")
+
+    # Clean build artifacts
+    session.run("rm", "-rf", "dist", "build", external=True)
+
+    # Build package
+    session.run("python", "-m", "build")
 
 
-@nox.session(reuse_venv=True)
-def clean(session: nox.Session) -> None:  # pylint: disable=unused-argument
+@nox.session(python=False)
+def clean(session: nox.Session) -> None:
     """Clean the project directory.
 
     Removes build artifacts, cache directories, and other temporary files:
@@ -120,8 +146,8 @@ def clean(session: nox.Session) -> None:  # pylint: disable=unused-argument
     Args:
         session: Nox session object (unused)
     """
-    root = Path(".")
-    patterns = [
+    # Directories to remove
+    dirs_to_remove = [
         "build",
         "dist",
         ".nox",
@@ -129,19 +155,26 @@ def clean(session: nox.Session) -> None:  # pylint: disable=unused-argument
         ".ruff_cache",
         ".coverage",
         "coverage.xml",
-        "**/*.pyc",
-        "**/__pycache__",
-        "**/*.egg-info",
     ]
-    
-    for pattern in patterns:
-        for path in root.glob(pattern):
+
+    # Remove directories
+    for dir_name in dirs_to_remove:
+        path = Path(dir_name)
+        if path.exists():
             if path.is_file():
                 path.unlink()
-                print(f"Removed file: {path}")
-            elif path.is_dir():
+            else:
                 shutil.rmtree(path)
-                print(f"Removed directory: {path}")
+            print(f"Removed {dir_name}")
+
+    # Clean Python cache files
+    for pattern in ["**/*.pyc", "**/__pycache__", "**/*.egg-info"]:
+        for path in Path().glob(pattern):
+            if path.is_file():
+                path.unlink()
+            else:
+                shutil.rmtree(path)
+            print(f"Removed {path}")
 
 
 @nox.session(reuse_venv=True)
@@ -157,32 +190,46 @@ def baseline(session: nox.Session) -> None:
         session: Nox session object for running commands
     """
     # Install dependencies
-    session.install("ruff", "tomlkit")
+    session.install("ruff")
     install_with_uv(session, editable=True)
+
+    # Create baseline
+    session.run("ruff", "check", ".", "--add-noqa")
+    session.run("ruff", "format", ".")
+
+
+{% if cookiecutter.use_mkdocs == "y" %}
+@nox.session(reuse_venv=True)
+def docs(session: nox.Session) -> None:
+    """Build the documentation.
     
-    # Get current violations
-    result = session.run(
-        "ruff",
-        "check",
-        ".",
-        "--verbose",
-        "--output-format=json",
-        silent=True,
-        success_codes=[0, 1]
-    )
+    Builds the project documentation using MkDocs. The documentation will be 
+    generated in the site/ directory.
+
+    Args:
+        session: Nox session object for running commands
+    """
+    # Install dependencies
+    install_with_uv(session, editable=True)
+    session.install("mkdocs")
+
+    # Build documentation
+    session.run("mkdocs", "build")
+
+
+@nox.session(reuse_venv=True)
+def docs_serve(session: nox.Session) -> None:
+    """Serve the documentation locally.
     
-    if result:
-        # Add noqa comments to existing violations
-        session.run(
-            "ruff",
-            "check",
-            ".",
-            "--add-noqa",
-            "--verbose",
-            success_codes=[0, 1]
-        )
-        
-        print("\nBaseline created! The following files were modified:")
-        session.run("git", "diff", "--name-only", external=True)
-    else:
-        print("No violations found. No baseline needed.")
+    Starts a local server to preview the documentation with live reloading.
+
+    Args:
+        session: Nox session object for running commands
+    """
+    # Install dependencies
+    install_with_uv(session, editable=True)
+    session.install("mkdocs")
+
+    # Serve documentation
+    session.run("mkdocs", "serve")
+{% endif %}

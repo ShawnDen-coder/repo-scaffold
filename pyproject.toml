@@ -27,6 +27,9 @@ dev = [
 [project.scripts]
 repo-scaffold = "repo_scaffold.cli:cli"
 
+[tool.setuptools.package-data]
+repo_scaffold = ["templates/**/*", "cookiecutter.json"]
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
@@ -34,7 +37,7 @@ build-backend = "hatchling.build"
 [tool.ruff]
 line-length = 120
 include = ["pyproject.toml", "repo_scaffold/*.py"]
-exclude = ["template-python/**/*"]
+exclude = ["repo_scaffold/templates/**/*"]
 
 [tool.ruff.lint]
 select = [
