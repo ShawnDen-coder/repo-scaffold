@@ -41,6 +41,7 @@ def install_with_uv(session: nox.Session, extras: list[str] | None = None) -> No
         extras: Optional list of extra dependency groups to install (e.g. ["dev", "docs"])
     """
     session.install("uv")
+    session.install("ruff")  # Explicitly install ruff
     if extras:
         session.run("uv", "sync", *(f"--extra={extra}" for extra in extras))
     else:
