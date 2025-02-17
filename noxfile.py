@@ -38,7 +38,6 @@ def install_with_uv(session: nox.Session, extras: list[str] | None = None) -> No
         extras: Optional list of extra dependency groups to install (e.g. ["dev", "docs"])
     """
     session.install("uv")
-    session.install("ruff")  # Explicitly install ruff
     if extras:
         session.run("uv", "sync", *(f"--extra={extra}" for extra in extras))
     else:
@@ -80,9 +79,6 @@ def test(session: nox.Session) -> None:
     session.run(
         "uvx",
         "pytest",
-        "--cov=repo_scaffold",
-        "--cov-report=term-missing",
-        "--cov-report=xml",
         "-v",
         "tests",
     )
@@ -115,7 +111,7 @@ def test_all(session: nox.Session) -> None:
         ] + test_args
 
     # 运行测试
-    session.run("uvx","pytest", *test_args)
+    session.run("uvx", "pytest", "-v", *test_args)
 
 
 @nox.session(reuse_venv=True)

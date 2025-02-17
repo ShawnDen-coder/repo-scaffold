@@ -31,6 +31,7 @@ docs = [
     "mkdocstrings-python>=1.7.5",
     "mkdocs-gen-files>=0.5.0",
     "mkdocs-literate-nav>=0.6.1",
+    "pymdown-extensions>=10.7",
 ]
 
 [project.scripts]
@@ -42,11 +43,6 @@ repo_scaffold = ["templates/**/*", "cookiecutter.json"]
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
-
-[dependency-groups]
-dev = [
-    "ruff>=0.9.6",
-]
 
 [tool.ruff]
 line-length = 120
@@ -80,6 +76,10 @@ lines-after-imports = 2
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
+
+[tool.pytest.ini_options]
+addopts = "--cov=repo_scaffold --cov-report=term-missing --cov-report=xml"
+testpaths = ["tests"]
 
 [tool.commitizen]
 name = "cz_conventional_commits"
