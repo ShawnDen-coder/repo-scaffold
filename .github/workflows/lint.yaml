@@ -1,39 +1,92 @@
 name: lint_and_unittest
 
-on: [ push, pull_request ]
+on: 
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write  # 用于在 PR 中添加评论
 
 jobs:
-  lint_and_unittest:
+  setup:
+    uses: ./.github/workflows/setup.yaml
+    with:
+      install-deps: dev
+      python-version: "3.12"  # 使用最新版本
+    secrets:
+      OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+      PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+
+  lint:
+    needs: setup
     runs-on: ubuntu-latest
     steps:
-      - name: Load secret
-        uses: 1password/load-secrets-action@v2
-        with:
-          export-env: true
-        env:
-          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
-          PERSONAL_ACCESS_TOKEN: op://shawndengdev/github_access_token/credential
-
-      - name: Check out
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          token: '${{ env.PERSONAL_ACCESS_TOKEN }}'
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5
-        with:
-          version: ">=0.4.0"
-
-      - name: Install dependencies
-        run: uv sync --extra dev
+      - name: Check Python version
+        run: python --version
 
       - name: Run lint checks
+        id: lint
         run: uvx nox -s lint
+        continue-on-error: true
 
-      - name: Run tests
-        run: uvx nox -s test
+      - name: Comment on PR
+        if: github.event_name == 'pull_request' && steps.lint.outcome == 'failure'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const output = `#### 🔍 Lint Check Failed
+            Please fix the linting issues before merging.
+            You can run \`nox -s lint\` locally to check and fix issues.`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
+
+      - name: Check lint result
+        if: steps.lint.outcome == 'failure'
+        run: exit 1
+
+  test-all:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run tests on all Python versions
+        id: test
+        run: uvx nox -s test_all
+        continue-on-error: true
+
+      - name: Upload coverage reports
+        if: success()
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage.xml
+          flags: unittests
+
+      - name: Comment on PR
+        if: github.event_name == 'pull_request' && steps.test.outcome == 'failure'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const output = `#### ❌ Tests Failed
+            Please fix the test failures before merging.
+            You can run \`nox -s test_all\` locally to debug the failures.`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
+
+      - name: Check test result
+        if: steps.test.outcome == 'failure'
+        run: exit 1
