@@ -41,6 +41,9 @@ def install_with_uv(session: nox.Session, extras: list[str] | None = None) -> No
     session.install("ruff")  # Explicitly install ruff
     if extras:
         session.run("uv", "sync", *(f"--extra={extra}" for extra in extras))
+        # Install pytest and related packages for test sessions
+        if any(extra == "dev" for extra in extras):
+            session.install("pytest", "pytest-cov", "pytest-mock")
     else:
         session.run("uv", "sync")
 
