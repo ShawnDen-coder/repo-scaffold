@@ -6,3 +6,8 @@
 /coverage.xml
 /.zip/
 /venv/
+/dist/
+**/__pycache__/
+*.pyc
+# MkDocs build output
+/site/

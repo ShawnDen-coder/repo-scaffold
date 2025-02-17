@@ -17,6 +17,21 @@ def remove_github_actions():
         shutil.rmtree(github_dir)
 
 
+def remove_mkdocs():
+    """Remove MkDocs related files if not needed."""
+    files_to_remove = [
+        "mkdocs.yml",
+        os.path.join("docs"),
+    ]
+    for file in files_to_remove:
+        path = os.path.join("{{cookiecutter.project_slug}}", file)
+        if os.path.exists(path):
+            if os.path.isdir(path):
+                shutil.rmtree(path)
+            else:
+                os.remove(path)
+
+
 def init_project_depends():
     """Initialize project dependencies using uv."""
     project_dir = os.path.abspath("{{cookiecutter.project_slug}}")
@@ -36,5 +51,8 @@ if __name__ == "__main__":
         
     if "{{cookiecutter.use_github_actions}}" == "no":
         remove_github_actions()
+        
+    if "{{cookiecutter.use_mkdocs}}" == "no":
+        remove_mkdocs()
         
     init_project_depends()

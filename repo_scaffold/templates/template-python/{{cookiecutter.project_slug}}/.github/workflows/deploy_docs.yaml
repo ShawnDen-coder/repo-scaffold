@@ -1,0 +1,31 @@
+{% if cookiecutter.use_mkdocs == "yes" %}
+name: Deploy Docs
+
+on:
+  push:
+    tags:
+      - '*'  # 匹配所有标签
+  workflow_dispatch:  # 保留手动触发选项
+
+permissions:
+  contents: write  # 用于部署到 GitHub Pages
+
+jobs:
+  setup:
+    uses: ./.github/workflows/setup.yaml
+    with:
+      install-deps: docs
+      python-version: "{{ cookiecutter.max_python_version }}"
+    secrets:
+      OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+      PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+
+  deploy:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build and deploy documentation
+        run: uvx mkdocs gh-deploy --force
+        env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+{% endif %}

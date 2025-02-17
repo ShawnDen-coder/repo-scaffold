@@ -1,11 +1,11 @@
-site_name: {{cookiecutter.project_slug}}
-repo_url: https://github.com/{{cookiecutter.github_username}}/{{cookiecutter.project_slug}}
-site_url: https://{{cookiecutter.github_username}}.github.io/{{cookiecutter.project_slug}}
-site_description: {{cookiecutter.description}}
-site_author: {{cookiecutter.full_name}}
+site_name: repo-scaffold
+repo_url: https://github.com/ShawnDen-coder/repo-scaffold
+site_url: https://ShawnDen-coder.github.io/repo-scaffold
+site_description: A Python project template generator
+site_author: ShawnDen-coder
 edit_uri: edit/main/docs/
-repo_name: {{cookiecutter.github_username}}/{{cookiecutter.project_slug}}
-copyright: Maintained by <a href="https://github.com/{{cookiecutter.github_username}}">{{cookiecutter.github_username}}</a>.
+repo_name: ShawnDen-coder/repo-scaffold
+copyright: Maintained by <a href="https://github.com/ShawnDen-coder">ShawnDen-coder</a>.
 
 nav:
   - Home: index.md
@@ -21,7 +21,7 @@ plugins:
   - mkdocstrings:
       handlers:
         python:
-          paths: ["{{cookiecutter.project_slug}}"]
+          paths: ["repo_scaffold"]
           options:
             docstring_style: "google"
             show_source: true
@@ -79,6 +79,6 @@ markdown_extensions:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/{{cookiecutter.github_username}}/{{cookiecutter.project_slug}}
+      link: https://github.com/ShawnDen-coder/repo-scaffold
     - icon: fontawesome/brands/python
-      link: https://pypi.org/project/{{cookiecutter.project_slug}}
+      link: https://pypi.org/project/repo-scaffold
