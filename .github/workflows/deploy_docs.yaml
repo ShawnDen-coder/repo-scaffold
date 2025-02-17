@@ -17,6 +17,8 @@ jobs:
     secrets:
       OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
       PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+    outputs:
+      PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
   deploy:
     needs: setup
@@ -25,4 +27,4 @@ jobs:
       - name: Build and deploy documentation
         run: uvx mkdocs gh-deploy --force
         env:
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          GITHUB_TOKEN: ${{ needs.setup.outputs.PERSONAL_ACCESS_TOKEN || github.token }}
