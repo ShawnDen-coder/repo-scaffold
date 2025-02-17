@@ -1,5 +1,4 @@
 version = 1
-revision = 1
 requires-python = ">=3.12"
 
 [[package]]
@@ -804,6 +803,11 @@ docs = [
     { name = "mkdocstrings-python" },
 ]
 
+[package.dev-dependencies]
+dev = [
+    { name = "ruff" },
+]
+
 [package.metadata]
 requires-dist = [
     { name = "click", specifier = ">=8.1.8" },
@@ -820,9 +824,11 @@ requires-dist = [
     { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=6.0.0" },
     { name = "pytest-mock", marker = "extra == 'dev'", specifier = ">=3.14.0" },
     { name = "ruff", specifier = ">=0.9.6" },
-    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.8.4" },
+    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.9.6" },
 ]
-provides-extras = ["dev", "docs"]
+
+[package.metadata.requires-dev]
+dev = [{ name = "ruff", specifier = ">=0.9.6" }]
 
 [[package]]
 name = "requests"
