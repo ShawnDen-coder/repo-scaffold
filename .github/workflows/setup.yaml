@@ -19,12 +19,16 @@ on:
       python-version:
         description: "The Python version that was set up"
         value: ${{ jobs.setup.outputs.python-version }}
+      PERSONAL_ACCESS_TOKEN:
+        description: "The personal access token"
+        value: ${{ jobs.setup.outputs.PERSONAL_ACCESS_TOKEN }}
 
 jobs:
   setup:
     runs-on: ubuntu-latest
     outputs:
       python-version: ${{ steps.setup-python.outputs.python-version }}
+      PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
     steps:
       - name: Load secret
         if: ${{ inputs.install-deps != 'none' }}
