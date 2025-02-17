@@ -1,0 +1,73 @@
+site_name: {{cookiecutter.project_slug}}
+repo_url: https://github.com/{{cookiecutter.github_username}}/{{cookiecutter.project_slug}}
+site_url: https://{{cookiecutter.github_username}}.github.io/{{cookiecutter.project_slug}}
+site_description: {{cookiecutter.description}}
+site_author: {{cookiecutter.full_name}}
+edit_uri: edit/main/docs/
+repo_name: {{cookiecutter.github_username}}/{{cookiecutter.project_slug}}
+copyright: Maintained by <a href="https://github.com/{{cookiecutter.github_username}}">{{cookiecutter.github_username}}</a>.
+
+nav:
+  - Home: index.md
+  - API Reference: api.md
+  - Contributing: contributing.md
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: ["{{cookiecutter.project_slug}}"]
+          options:
+            show_source: true
+            show_root_heading: true
+
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.sections
+    - navigation.expand
+    - navigation.indexes
+    - navigation.top
+    - search.highlight
+    - search.share
+    - search.suggest
+    - content.code.copy
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - tables
+  - toc:
+      permalink: true
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/{{cookiecutter.github_username}}/{{cookiecutter.project_slug}}
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/{{cookiecutter.project_slug}}
