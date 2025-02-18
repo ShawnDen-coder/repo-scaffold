@@ -3,25 +3,34 @@ name: Deploy Docs
 
 on:
   release:
-    types: [published]  # 当 release 发布时触发，而不是创建时
+    types: [published]
+    branches: [main]
   workflow_dispatch:  # 保留手动触发选项
 
 permissions:
   contents: write  # 用于部署到 GitHub Pages
 
 jobs:
-  setup:
-    uses: ./.github/workflows/setup.yaml
-    with:
-      install-deps: docs
-    secrets: inherit
-
   deploy:
-    needs: setup
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "{{cookiecutter.max_python_version}}"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Install dependencies
+        run: uv sync --extra=docs
+
       - name: Build and deploy documentation
-        run: uvx mkdocs gh-deploy --force
+        run: uv run mkdocs gh-deploy --force
         env:
-          {% raw %}GITHUB_TOKEN: ${{ needs.setup.outputs.PERSONAL_ACCESS_TOKEN || github.token }}{% endraw %}
+          GITHUB_TOKEN: ${{ github.token }}
+
 {% endif %}
