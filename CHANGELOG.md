@@ -1,3 +1,10 @@
+## 0.5.3 (2025-02-18)
+
+### Fix
+
+- **ci**: update workflow triggers to use release events
+- **template**: improve GitHub Actions workflow templates
+
 ## 0.5.2 (2025-02-18)
 
 ### Fix
