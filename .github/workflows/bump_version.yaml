@@ -1,55 +1,79 @@
-name: Bump version
-
+name: Reusable Setup
 on:
-  push:
-    branches:
-      - master
-      - main
-  workflow_dispatch:
+  workflow_call:
     inputs:
-      increment:
-        description: 'Version increment (major, minor, patch)'
+      python-version:
         required: false
-        type: choice
-        options:
-          - major
-          - minor
-          - patch
-        default: patch
-
-permissions:
-  contents: write  # 用于创建和推送标签
-  pull-requests: write  # 用于创建 PR
+        type: string
+        default: "3.12"
+      install-deps:
+        required: false
+        type: string
+        default: "dev"  # dev, docs, or none
+    secrets:
+      OP_SERVICE_ACCOUNT_TOKEN:
+        required: false
+      PERSONAL_ACCESS_TOKEN:
+        required: false
+    outputs:
+      python-version:
+        description: "The Python version that was set up"
+        value: ${{ jobs.setup.outputs.python-version }}
+      PERSONAL_ACCESS_TOKEN:
+        description: "The personal access token"
+        value: ${{ jobs.setup.outputs.PERSONAL_ACCESS_TOKEN }}
 
 jobs:
   setup:
-    uses: ./.github/workflows/setup.yaml
-    secrets: inherit
-
-  bump-version:
-    if: "!startsWith(github.event.head_commit.message, 'bump:')"
-    needs: setup
     runs-on: ubuntu-latest
-    name: "Bump version and create changelog with commitizen"
+    outputs:
+      python-version: ${{ steps.setup-python.outputs.python-version }}
+      PERSONAL_ACCESS_TOKEN: ${{ steps.set-token.outputs.PERSONAL_ACCESS_TOKEN }}
     steps:
+      - name: Load secret
+        id: load-secret
+        if: ${{ inputs.install-deps != 'none' }}
+        uses: 1password/load-secrets-action@v2
+        with:
+          export-env: true
+        env:
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+          PERSONAL_ACCESS_TOKEN: op://shawndengdev/github_access_token/credential
+
+      - name: Set token output
+        id: set-token
+        if: ${{ inputs.install-deps != 'none' }}
+        run: echo "PERSONAL_ACCESS_TOKEN=${PERSONAL_ACCESS_TOKEN}" >> $GITHUB_OUTPUT
+
       - name: Check out
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          token: ${{ needs.setup.outputs.PERSONAL_ACCESS_TOKEN }}
+          token: ${{ env.PERSONAL_ACCESS_TOKEN || github.token }}
 
-      - id: cz
-        name: Create bump and changelog
-        uses: commitizen-tools/commitizen-action@master
+      - name: Setup Python
+        id: setup-python
+        uses: actions/setup-python@v5
         with:
-          github_token: ${{ needs.setup.outputs.PERSONAL_ACCESS_TOKEN }}
-          changelog_increment_filename: body.md
-          increment: ${{ github.event.inputs.increment }}
+          python-version: ${{ inputs.python-version }}
 
-      - name: Create Release
-        uses: softprops/action-gh-release@v2
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
         with:
-          body_path: body.md
-          tag_name: ${{ env.REVISION }}
-        env:
-          GITHUB_TOKEN: ${{ needs.setup.outputs.PERSONAL_ACCESS_TOKEN }}
+          version: ">=0.4.0"
+
+      - name: Get uv cache dir
+        id: get-uv-cache
+        run: echo "UV_CACHE_DIR=$(uv cache dir)" >> $GITHUB_OUTPUT
+
+      - name: Install dependencies
+        if: ${{ inputs.install-deps != 'none' }}
+        run: uv sync --extra ${{ inputs.install-deps }}
+
+      - name: Cache uv packages
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.get-uv-cache.outputs.UV_CACHE_DIR }}
+          key: ${{ runner.os }}-uv-${{ hashFiles('**/pyproject.toml', '**/requirements*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-uv-
