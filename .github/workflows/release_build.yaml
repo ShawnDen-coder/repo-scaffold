@@ -2,7 +2,8 @@ name: release-build
 
 on:
   release:
-    types: [published]  # 当 release 发布时触发，而不是创建时
+    types: [published]
+    branches: [main]
   workflow_dispatch:
     inputs:
       version:
