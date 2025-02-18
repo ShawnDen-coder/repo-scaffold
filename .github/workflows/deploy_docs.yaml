@@ -21,6 +21,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Build and deploy documentation
-        run: uvx mkdocs gh-deploy --force
+        run: uv run mkdocs gh-deploy --force
         env:
           GITHUB_TOKEN: ${{ github.token }}
