@@ -3,7 +3,7 @@ name: Deploy Docs
 on:
   release:
     types: [published]
-    branches: [main]
+    branches: [master, main]
   workflow_dispatch:  # 保留手动触发选项
 
 permissions:
