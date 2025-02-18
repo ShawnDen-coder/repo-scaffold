@@ -1,9 +1,14 @@
 name: release_build
 
 on:
+<<<<<<< HEAD
   push:
     tags:
       - '[0-9]*.[0-9]*.[0-9]*'  # 匹配语义化版本号标签 (e.g., 1.0.0, 1.0.0-beta)
+=======
+  release:
+    types: [published]  # 当 release 发布时触发，而不是创建时
+>>>>>>> Ci/update-github-action
   workflow_dispatch:
     inputs:
       version:
