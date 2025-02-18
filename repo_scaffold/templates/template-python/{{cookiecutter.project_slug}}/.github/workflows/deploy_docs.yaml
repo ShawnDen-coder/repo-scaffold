@@ -4,7 +4,9 @@ name: Deploy Docs
 on:
   release:
     types: [published]
-    branches: [main]
+    branches:
+      - main
+      - master
   workflow_dispatch:  # 保留手动触发选项
 
 permissions:
