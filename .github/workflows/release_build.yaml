@@ -21,11 +21,7 @@ jobs:
     with:
       install-deps: dev
       python-version: "3.12"
-    secrets:
-      OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
-      PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-    outputs:
-      personal-access-token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+    secrets: inherit
 
   build:
     needs: setup
@@ -41,7 +37,7 @@ jobs:
         id: create_release
         uses: softprops/action-gh-release@v2
         with:
-          token: ${{ needs.setup.outputs.PERSONAL_ACCESS_TOKEN || github.token }}
+          token: ${{ github.token }}
           tag_name: ${{ github.event.inputs.version || github.ref_name }}
           draft: false
           prerelease: false
