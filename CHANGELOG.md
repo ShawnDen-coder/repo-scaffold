@@ -1,3 +1,9 @@
+## 0.8.0 (2025-02-18)
+
+### Feat
+
+- update github bump version
+
 ## 0.7.0 (2025-02-18)
 
 ### Feat
