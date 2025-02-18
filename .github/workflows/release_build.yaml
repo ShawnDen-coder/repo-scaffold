@@ -1,4 +1,4 @@
-name: release_build
+name: release-build
 
 on:
   push:
@@ -16,40 +16,51 @@ permissions:
   id-token: write  # 用于发布到 PyPI
 
 jobs:
-  setup:
-    uses: ./.github/workflows/setup.yaml
-    with:
-      install-deps: dev
-      python-version: "3.12"
-    secrets:
-      OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
-      PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-    outputs:
-      personal-access-token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-
-  build:
-    needs: setup
+  release-build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # 用于创建 GitHub Release
     steps:
-      - name: Run tests
-        run: uvx nox -s test_all
+      - uses: actions/checkout@v4
 
-      - name: Build package
-        run: uvx nox -s build
-
-      - name: Create Release
-        id: create_release
-        uses: softprops/action-gh-release@v2
+      - name: Load secret
+        uses: 1password/load-secrets-action@v2
         with:
-          token: ${{ needs.setup.outputs.PERSONAL_ACCESS_TOKEN || github.token }}
-          tag_name: ${{ github.event.inputs.version || github.ref_name }}
-          draft: false
-          prerelease: false
-          files: |
-            dist/*
+          export-env: true
+        env:
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+          PERSONAL_ACCESS_TOKEN: op://shawndengdev/github_access_token/credential
+          PYPI_TOKEN: op://shawndengdev/pypi_token/credential
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: ">=0.4.0"
+
+      - name: Install dependencies
+        run: uv sync --extra dev
+
+      - name: Build and test
+        run: |
+          uvx nox -s lint
+          uvx nox -s test
+          uvx nox -s build
 
       - name: Publish to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
+        env:
+          UV_PUBLISH_TOKEN: ${{ env.PYPI_TOKEN }}
+        run: uv publish
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
         with:
-          packages-dir: dist/
-          repository-url: https://upload.pypi.org/legacy/
+          files: |
+            dist/*.tar.gz
+            dist/*.whl
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ env.PERSONAL_ACCESS_TOKEN }}
