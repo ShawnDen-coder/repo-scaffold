@@ -32,6 +32,7 @@ docs = [
     "mkdocs-gen-files>=0.5.0",
     "mkdocs-literate-nav>=0.6.1",
     "pymdown-extensions>=10.7",
+    "pymdown-extensions>=10.7",
 ]
 
 [project.scripts]
@@ -77,9 +78,6 @@ lines-after-imports = 2
 [tool.ruff.lint.pydocstyle]
 convention = "google"
 
-[tool.pytest.ini_options]
-addopts = "--cov=repo_scaffold --cov-report=term-missing --cov-report=xml"
-testpaths = ["tests"]
 
 [tool.commitizen]
 name = "cz_conventional_commits"

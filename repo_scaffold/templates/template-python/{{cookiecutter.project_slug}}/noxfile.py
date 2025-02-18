@@ -61,8 +61,8 @@ def lint(session: nox.Session) -> None:
     install_with_uv(session, extras=["dev"])
 
     # Run ruff checks
-    session.run("uvx", "ruff", "check", ".")
-    session.run("uvx", "ruff", "format", "--check", ".")
+    session.run("uv", "run", "ruff", "check", ".")
+    session.run("uv", "run", "ruff", "format", "--check", ".")
 
 
 @nox.session(python=PYTHON_VERSIONS[-1], reuse_venv=True)
@@ -80,7 +80,8 @@ def test(session: nox.Session) -> None:
 
     # Run pytest with coverage
     session.run(
-        "uvx",
+        "uv",
+        "run",
         "pytest",
         "--cov={{cookiecutter.project_slug}}",
         "--cov-report=term-missing",
@@ -117,7 +118,7 @@ def test_all(session: nox.Session) -> None:
         ] + test_args
 
     # 运行测试
-    session.run("uvx", "pytest", *test_args)
+    session.run("uv", "run", "pytest", *test_args)
 
 
 @nox.session(reuse_venv=True)
@@ -198,8 +199,8 @@ def baseline(session: nox.Session) -> None:
     install_with_uv(session, extras=["dev"])
 
     # 运行 ruff 并自动修复所有问题
-    session.run("uvx", "ruff", "check", ".", "--add-noqa")
-    session.run("uvx", "ruff", "format", ".")
+    session.run("uv", "run", "ruff", "check", ".", "--add-noqa")
+    session.run("uv", "run", "ruff", "format", ".")
 
 
 {% if cookiecutter.use_mkdocs == "yes" %}
@@ -213,7 +214,7 @@ def docs(session: nox.Session) -> None:
         session: Nox session object for running commands
     """
     install_with_uv(session, extras=["docs"])
-    session.run("uvx", "mkdocs", "build")
+    session.run("uv", "run", "mkdocs", "build")
 
 
 @nox.session(reuse_venv=True)
@@ -226,5 +227,5 @@ def docs_serve(session: nox.Session) -> None:
         session: Nox session object for running commands
     """
     install_with_uv(session, extras=["docs"])
-    session.run("uvx", "mkdocs", "serve")
+    session.run("uv", "run", "mkdocs", "serve")
 {% endif %}
