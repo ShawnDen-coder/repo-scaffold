@@ -1,3 +1,9 @@
+## 0.5.2 (2025-02-18)
+
+### Fix
+
+- **template**: improve GitHub Actions workflow templates
+
 ## 0.5.1 (2025-02-18)
 
 ### Refactor
