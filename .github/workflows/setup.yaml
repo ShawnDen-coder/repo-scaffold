@@ -31,8 +31,6 @@ jobs:
       PERSONAL_ACCESS_TOKEN: ${{ steps.set-token.outputs.PERSONAL_ACCESS_TOKEN }}
     steps:
       - name: Load secret
-        id: load-secret
-        if: ${{ inputs.install-deps != 'none' }}
         uses: 1password/load-secrets-action@v2
         with:
           export-env: true
@@ -42,7 +40,6 @@ jobs:
 
       - name: Set token output
         id: set-token
-        if: ${{ inputs.install-deps != 'none' }}
         run: echo "PERSONAL_ACCESS_TOKEN=${PERSONAL_ACCESS_TOKEN}" >> $GITHUB_OUTPUT
 
       - name: Check out
