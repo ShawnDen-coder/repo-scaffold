@@ -1,3 +1,9 @@
+## 0.5.4 (2025-02-18)
+
+### Fix
+
+- fix template github action
+
 ## 0.5.3 (2025-02-18)
 
 ### Fix
