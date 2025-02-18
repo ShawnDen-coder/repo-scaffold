@@ -3,7 +3,7 @@ name: release-build
 on:
   push:
     tags:
-      - '*'  # 匹配所有标签
+      - '[0-9]*.[0-9]*.[0-9]*'  # 匹配语义化版本号标签 (e.g., 1.0.0, 1.0.0-beta)
   workflow_dispatch:
     inputs:
       version:
