@@ -1,9 +1,9 @@
 name: release-build
 
 on:
-  release:
-    types: [published]
-    branches: [master, main]
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'  # 匹配类似 1.0.0, 2.1.3 等格式的标签
   workflow_dispatch:
     inputs:
       version:
