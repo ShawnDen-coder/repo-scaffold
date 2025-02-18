@@ -13,8 +13,6 @@ on:
     secrets:
       OP_SERVICE_ACCOUNT_TOKEN:
         required: false
-      PERSONAL_ACCESS_TOKEN:
-        required: false
     outputs:
       python-version:
         description: "The Python version that was set up"
@@ -40,7 +38,17 @@ jobs:
 
       - name: Set token output
         id: set-token
-        run: echo "PERSONAL_ACCESS_TOKEN=${PERSONAL_ACCESS_TOKEN}" >> $GITHUB_OUTPUT
+        run: |
+          if [ -z "${PERSONAL_ACCESS_TOKEN}" ]; then
+            echo "Error: PERSONAL_ACCESS_TOKEN is not set"
+            exit 1
+          fi
+          echo "PERSONAL_ACCESS_TOKEN=${PERSONAL_ACCESS_TOKEN}" >> $GITHUB_OUTPUT
+
+      - name: Debug token (setup job)
+        run: |
+          echo "Token is set: ${{ steps.set-token.outputs.PERSONAL_ACCESS_TOKEN != '' }}"
+          echo "Token first char: ${PERSONAL_ACCESS_TOKEN:0:1}"
 
       - name: Check out
         uses: actions/checkout@v4
