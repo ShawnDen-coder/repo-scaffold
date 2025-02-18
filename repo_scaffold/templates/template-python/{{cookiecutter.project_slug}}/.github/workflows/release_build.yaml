@@ -3,7 +3,9 @@ name: release-build
 on:
   release:
     types: [published]
-    branches: [main]
+    branches:
+      - main
+      - master
   workflow_dispatch:
     inputs:
       version:
