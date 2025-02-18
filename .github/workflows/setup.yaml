@@ -17,12 +17,16 @@ on:
       python-version:
         description: "The Python version that was set up"
         value: ${{ jobs.setup.outputs.python-version }}
+      PERSONAL_ACCESS_TOKEN:
+        description: "The personal access token"
+        value: ${{ jobs.setup.outputs.PERSONAL_ACCESS_TOKEN }}
 
 jobs:
   setup:
     runs-on: ubuntu-latest
     outputs:
       python-version: ${{ steps.setup-python.outputs.python-version }}
+      PERSONAL_ACCESS_TOKEN: ${{ steps.set-token.outputs.PERSONAL_ACCESS_TOKEN }}
     steps:
       - name: Load secret
         uses: 1password/load-secrets-action@v2
@@ -31,6 +35,20 @@ jobs:
         env:
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
           PERSONAL_ACCESS_TOKEN: op://shawndengdev/github_access_token/credential
+
+      - name: Set token output
+        id: set-token
+        run: |
+          if [ -z "${PERSONAL_ACCESS_TOKEN}" ]; then
+            echo "Error: PERSONAL_ACCESS_TOKEN is not set"
+            exit 1
+          fi
+          echo "PERSONAL_ACCESS_TOKEN=${PERSONAL_ACCESS_TOKEN}" >> $GITHUB_OUTPUT
+
+      - name: Debug token (setup job)
+        run: |
+          echo "Token is set: ${{ steps.set-token.outputs.PERSONAL_ACCESS_TOKEN != '' }}"
+          echo "Token first char: ${PERSONAL_ACCESS_TOKEN:0:1}"
 
       - name: Check out
         uses: actions/checkout@v4

@@ -31,6 +31,10 @@ jobs:
     runs-on: ubuntu-latest
     name: "Bump version and create changelog with commitizen"
     steps:
+      - name: Debug token (bump-version job)
+        run: |
+          echo "Token from setup job is set: ${{ needs.setup.outputs.PERSONAL_ACCESS_TOKEN != '' }}"
+
       - name: Check out
         uses: actions/checkout@v4
         with:
