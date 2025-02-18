@@ -4,7 +4,7 @@ name: Deploy Docs
 on:
   push:
     tags:
-      - '*'  # 匹配所有标签
+      - '[0-9]*.[0-9]*.[0-9]*'  # 匹配语义化版本号标签 (e.g., 1.0.0, 1.0.0-beta)
   workflow_dispatch:  # 保留手动触发选项
 
 permissions:
@@ -24,5 +24,5 @@ jobs:
       - name: Build and deploy documentation
         run: uvx mkdocs gh-deploy --force
         env:
-          GITHUB_TOKEN: ${{ needs.setup.outputs.PERSONAL_ACCESS_TOKEN || github.token }}
+          {% raw %}GITHUB_TOKEN: ${{ needs.setup.outputs.PERSONAL_ACCESS_TOKEN || github.token }}{% endraw %}
 {% endif %}
