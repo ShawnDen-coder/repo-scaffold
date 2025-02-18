@@ -1,3 +1,9 @@
+## 0.5.1 (2025-02-18)
+
+### Refactor
+
+- optimize GitHub Actions workflows
+
 ## 0.5.0 (2025-02-18)
 
 ### Feat
