@@ -19,8 +19,8 @@ jobs:
       install-deps: dev
       python-version: "{{cookiecutter.max_python_version}}"  # 使用最新版本
     secrets:
-      OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
-      PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+      OP_SERVICE_ACCOUNT_TOKEN: {% raw %}${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}{% endraw %}
+      PERSONAL_ACCESS_TOKEN: {% raw %}${{ secrets.PERSONAL_ACCESS_TOKEN }}{% endraw %}
 
   lint:
     needs: setup
@@ -81,14 +81,6 @@ jobs:
         id: test
         run: uv tool run nox -s test_all
         continue-on-error: true
-
-      - name: Upload coverage reports
-        if: success()
-        uses: codecov/codecov-action@v4
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./coverage.xml
-          flags: unittests
 
       - name: Comment on PR
         if: github.event_name == 'pull_request' && steps.test.outcome == 'failure'
