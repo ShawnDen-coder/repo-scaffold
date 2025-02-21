@@ -1,4 +1,3 @@
-{% if cookiecutter.use_mkdocs == "yes" %}
 name: Deploy Docs
 
 on:
@@ -31,6 +30,4 @@ jobs:
       - name: Build and deploy documentation
         run: uv run mkdocs gh-deploy --force
         env:
-          GITHUB_TOKEN: ${{ github.token }}
-
-{% endif %}
+          GITHUB_TOKEN: {% raw %}${{ github.token }}{% endraw %}
