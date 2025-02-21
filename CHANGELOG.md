@@ -1,3 +1,9 @@
+## 0.8.3 (2025-02-21)
+
+### Fix
+
+- fix template cli and use raw jinja2
+
 ## 0.8.2 (2025-02-18)
 
 ### Fix
