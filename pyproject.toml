@@ -1,6 +1,6 @@
 [project]
 name = "repo-scaffold"
-version = "0.8.3"
+version = "0.9.0"
 description = "shawn deng repo temple project"
 authors = [
     {name = "shawndeng", email = "shawndeng1109@qq.com"}
