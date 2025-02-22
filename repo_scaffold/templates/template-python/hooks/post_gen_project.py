@@ -18,6 +18,18 @@ def remove_github_actions():
             shutil.rmtree(github_dir)
 
 
+def remove_docs():
+    """Remove documentation related files if GitHub Actions is not used."""
+    if "{{cookiecutter.use_github_actions}}" == "no":
+        # 删除 mkdocs.yml
+        if os.path.exists("mkdocs.yml"):
+            os.remove("mkdocs.yml")
+        # 删除 docs 目录
+        docs_dir = "docs"
+        if os.path.exists(docs_dir):
+            shutil.rmtree(docs_dir)
+
+
 def init_project_depends():
     """Initialize project dependencies using uv."""
     project_dir = os.path.abspath("{{cookiecutter.project_slug}}")
@@ -33,5 +45,6 @@ if __name__ == "__main__":
         
     if "{{cookiecutter.use_github_actions}}" == "no":
         remove_github_actions()
+        remove_docs()
         
     init_project_depends()

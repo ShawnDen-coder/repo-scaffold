@@ -1,5 +1,4 @@
 version = 1
-revision = 1
 requires-python = ">=3.12"
 
 [[package]]
@@ -778,7 +777,7 @@ wheels = [
 
 [[package]]
 name = "repo-scaffold"
-version = "0.6.0"
+version = "0.8.3"
 source = { editable = "." }
 dependencies = [
     { name = "click" },
@@ -824,7 +823,6 @@ requires-dist = [
     { name = "ruff", specifier = ">=0.9.6" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.9.6" },
 ]
-provides-extras = ["dev", "docs"]
 
 [[package]]
 name = "requests"

@@ -203,7 +203,7 @@ def baseline(session: nox.Session) -> None:
     session.run("uv", "run", "ruff", "format", ".")
 
 
-{% if cookiecutter.use_mkdocs == "yes" %}
+{% if cookiecutter.use_github_actions == "yes" %}
 @nox.session(reuse_venv=True)
 def docs(session: nox.Session) -> None:
     """Build the documentation.

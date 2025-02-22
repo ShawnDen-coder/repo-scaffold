@@ -29,7 +29,7 @@ jobs:
         with:
           export-env: true
         env:
-          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+          OP_SERVICE_ACCOUNT_TOKEN: {% raw %}${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}{% endraw %}
           PERSONAL_ACCESS_TOKEN: op://shawndengdev/github_access_token/credential
           PYPI_TOKEN: op://shawndengdev/pypi_token/credential
 
