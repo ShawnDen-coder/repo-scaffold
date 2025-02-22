@@ -9,7 +9,7 @@ license = "MIT"
 readme = "README.md"
 requires-python = ">={{cookiecutter.min_python_version}},<{{cookiecutter.max_python_version}}.99"
 dependencies = [
-{% if cookiecutter.include_cli == 'y' %}
+{% if cookiecutter.include_cli == 'yes' %}
     "click>=8.1.8",
 {% endif %}
 ]
@@ -21,8 +21,9 @@ dev = [
     "pytest>=8.3.4",
     "pytest-mock>=3.14.0",
     "pytest-cov>=6.0.0",
-    "commitizen>=4.1.0",
+    "commitizen>=3.12.0",  # 使用支持 Python 3.8 的版本
 ]
+{% if cookiecutter.use_github_actions == 'yes' %}
 docs = [
     "mkdocs>=1.5.3",
     "mkdocs-material>=9.5.3",
@@ -31,8 +32,9 @@ docs = [
     "mkdocs-gen-files>=0.5.0",
     "mkdocs-literate-nav>=0.6.1",
 ]
+{% endif %}
 
-{% if cookiecutter.include_cli == 'y' %}
+{% if cookiecutter.include_cli == 'yes' %}
 [project.scripts]
 {{cookiecutter.project_slug}} = "{{cookiecutter.project_slug}}.cli:cli"
 {% endif %}
