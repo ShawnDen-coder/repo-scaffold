@@ -30,6 +30,7 @@ docs = [
     "mkdocstrings>=0.24.0",
     "mkdocstrings-python>=1.7.5",
     "mkdocs-gen-files>=0.5.0",
+    "pymdown-extensions>=10.7",
     "mkdocs-literate-nav>=0.6.1",
 ]
 {% endif %}
@@ -46,7 +47,7 @@ build-backend = "hatchling.build"
 [tool.ruff]
 line-length = 120
 include = ["pyproject.toml", "{{cookiecutter.project_slug}}/**/*.py"]
-target-version = "{{cookiecutter.min_python_version}}"
+target-version = "py{{ cookiecutter.min_python_version | replace('.', '') }}"
 
 [tool.ruff.lint]
 select = [
