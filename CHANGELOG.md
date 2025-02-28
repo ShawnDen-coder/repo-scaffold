@@ -1,3 +1,9 @@
+## 0.10.0 (2025-02-28)
+
+### Feat
+
+- update docs build script and tempplate lint action
+
 ## 0.9.0 (2025-02-22)
 
 ### Feat
