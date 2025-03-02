@@ -64,7 +64,7 @@ jobs:
         if: success()
         uses: codecov/codecov-action@v4
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
+          token: {% raw %}${{ secrets.CODECOV_TOKEN }}{% endraw %}
           file: ./coverage.xml
           flags: unittests
 
