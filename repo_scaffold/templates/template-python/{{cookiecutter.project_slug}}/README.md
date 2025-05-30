@@ -8,5 +8,4 @@
 
 ```bash
 pip install {{cookiecutter.project_slug}}
-# or
-poetry add {{cookiecutter.project_slug}}
+```

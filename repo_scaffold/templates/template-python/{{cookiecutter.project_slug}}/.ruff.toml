@@ -1,0 +1,32 @@
+include = ["pyproject.toml", "{{ cookiecutter.project_slug }}/**/*.py", "tests/**/*.py"]
+line-length = 120
+target-version = {{ "py" ~ cookiecutter.min_python_version.replace(".", "") }}
+
+[lint]
+extend-ignore = [
+  "D100",  # Missing docstring in public module
+  "D104",  # Missing docstring in public package
+]
+ignore = [
+  "W191",  # indentation contains tabs
+  "D401"  # imperative mood
+]
+select = [
+  "E",  # pycodestyle errors
+  "W",  # pycodestyle warnings
+  "F",  # pyflakes
+  "I",  # isort
+  "B",  # flake8-bugbear
+  "C4",  # flake8-comprehensions
+  "D",  # pydocstyle
+  "UP",  # pyupgrade
+  "RUF",  # Ruff-specific rules
+  "SIM"  # flake8-simplify
+]
+
+[lint.isort]
+force-single-line = true
+lines-after-imports = 2
+
+[lint.pydocstyle]
+convention = "google"

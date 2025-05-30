@@ -2,28 +2,25 @@
 name = "{{cookiecutter.project_slug}}"
 version = "0.1.0"
 description = "{{cookiecutter.description}}"
-authors = [
-    {name = "{{cookiecutter.full_name}}", email = "{{cookiecutter.email}}"}
-]
+authors = [{name = "{{cookiecutter.full_name}}", email = "{{cookiecutter.email}}"}]
 license = "MIT"
 readme = "README.md"
 requires-python = ">={{cookiecutter.min_python_version}},<{{cookiecutter.max_python_version}}.99"
 dependencies = [
-{% if cookiecutter.include_cli == 'yes' %}
+{%- if cookiecutter.include_cli == 'yes' %}
     "click>=8.1.8",
-{% endif %}
+{%- endif %}
 ]
 
 [project.optional-dependencies]
 dev = [
-    "ruff>=0.9.7",  # Update ruff version
-    "nox>=2024.10.9",
+    "ruff>=0.9.7",
     "pytest>=8.3.4",
     "pytest-mock>=3.14.0",
     "pytest-cov>=6.0.0",
-    "commitizen>=3.12.0",  # 使用支持 Python 3.8 的版本
+    "commitizen>=3.12.0",
 ]
-{% if cookiecutter.use_github_actions == 'yes' %}
+{%- if cookiecutter.use_github_actions == 'yes' %}
 docs = [
     "mkdocs>=1.5.3",
     "mkdocs-material>=9.5.3",
@@ -33,54 +30,13 @@ docs = [
     "pymdown-extensions>=10.7",
     "mkdocs-literate-nav>=0.6.1",
 ]
-{% endif %}
+{%- endif %}
 
-{% if cookiecutter.include_cli == 'yes' %}
+{% if cookiecutter.include_cli == 'yes' -%}
 [project.scripts]
 {{cookiecutter.project_slug}} = "{{cookiecutter.project_slug}}.cli:cli"
-{% endif %}
+{%- endif %}
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
-
-[tool.ruff]
-line-length = 120
-include = ["pyproject.toml", "{{cookiecutter.project_slug}}/**/*.py"]
-target-version = "py{{ cookiecutter.min_python_version | replace('.', '') }}"
-
-[tool.ruff.lint]
-select = [
-    "E",  # pycodestyle errors
-    "W",  # pycodestyle warnings
-    "F",  # pyflakes
-    "I",  # isort
-    "B",  # flake8-bugbear
-    "C4", # flake8-comprehensions
-    "D"   # pydocstyle
-]
-
-ignore = [
-    "W191", # indentation contains tabs
-    "D401"  # imperative mood
-]
-
-extend-ignore = [
-    "D100",  # Missing docstring in public module
-    "D104",  # Missing docstring in public package
-]
-
-[tool.ruff.lint.isort]
-force-single-line = true
-lines-after-imports = 2
-
-[tool.ruff.lint.pydocstyle]
-convention = "google"
-
-[tool.commitizen]
-name = "cz_conventional_commits"
-tag_format = "$version"
-version_scheme = "semver2"
-version_provider = "pep621"
-update_changelog_on_bump = true
-major_version_zero = true

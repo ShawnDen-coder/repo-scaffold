@@ -1,0 +1,8 @@
+__pycache__
+*.pyc
+.git
+.pytest_cache
+docs/
+tests/
+mkdocs.yml
+.venv
