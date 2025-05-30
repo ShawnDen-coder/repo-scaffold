@@ -1,3 +1,11 @@
+## 0.11.0 (2025-05-30)
+
+### Feat
+
+- check template var to raw string
+- update task file
+- update template
+
 ## 0.10.1 (2025-03-02)
 
 ### Fix
