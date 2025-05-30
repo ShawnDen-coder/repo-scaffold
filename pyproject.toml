@@ -17,7 +17,6 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "ruff>=0.9.7",
-    "nox>=2024.10.9",
     "pytest>=8.3.4",
     "pytest-mock>=3.14.0",
     "pytest-cov>=6.0.0",
@@ -43,45 +42,3 @@ repo_scaffold = ["templates/**/*", "cookiecutter.json"]
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
-
-[tool.ruff]
-line-length = 120
-include = ["pyproject.toml", "repo_scaffold/*.py"]
-exclude = ["repo_scaffold/templates/**/*"]
-
-[tool.ruff.lint]
-select = [
-    "E",  # pycodestyle errors
-    "W",  # pycodestyle warnings
-    "F",  # pyflakes
-    "I",  # isort
-    "B",  # flake8-bugbear
-    "C4", # flake8-comprehensions
-    "D"   # pydocstyle
-]
-
-ignore = [
-    "W191", # indentation contains tabs
-    "D401"  # imperative mood
-]
-
-extend-ignore = [
-    "D100",  # Missing docstring in public module
-    "D104",  # Missing docstring in public package
-]
-
-[tool.ruff.lint.isort]
-force-single-line = true
-lines-after-imports = 2
-
-[tool.ruff.lint.pydocstyle]
-convention = "google"
-
-
-[tool.commitizen]
-name = "cz_conventional_commits"
-tag_format = "$version"
-version_scheme = "semver2"
-version_provider = "pep621"
-update_changelog_on_bump = true
-major_version_zero = true

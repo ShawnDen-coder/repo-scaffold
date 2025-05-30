@@ -29,7 +29,6 @@ import json
 import os
 from pathlib import Path
 from typing import Any
-from typing import Dict
 
 import click
 from cookiecutter.main import cookiecutter
@@ -43,7 +42,7 @@ def get_package_path(relative_path: str) -> str:
 
     Returns:
         str: Absolute path to the resource
-    """  # noqa: W293
+    """
     # 使用 files() 获取包资源
     package_files = importlib.resources.files("repo_scaffold")
     resource_path = package_files.joinpath(relative_path)
@@ -52,7 +51,7 @@ def get_package_path(relative_path: str) -> str:
     return str(resource_path)
 
 
-def load_templates() -> Dict[str, Any]:
+def load_templates() -> dict[str, Any]:
     """Load available project templates configuration.
 
     Reads template configurations from the cookiecutter.json file in the templates directory.
@@ -74,7 +73,7 @@ def load_templates() -> Dict[str, Any]:
         json.JSONDecodeError: If the configuration file is not valid JSON
     """
     config_path = get_package_path("templates/cookiecutter.json")
-    with open(config_path, "r", encoding="utf-8") as f:
+    with open(config_path, encoding="utf-8") as f:
         config = json.load(f)
     return config["templates"]
 
@@ -104,7 +103,7 @@ def list():
         python - template-python
           Description: template for python project
         ```
-    """  # noqa: W293
+    """
     templates = load_templates()
     click.echo("\nAvailable templates:")
     for name, info in templates.items():
@@ -147,10 +146,10 @@ def create(template: str, output_dir: Path):
             ```bash
             $ repo-scaffold list
             ```
-    """  # noqa: W293
+    """
     templates = load_templates()
 
-    # 如果没有指定模板，让 cookiecutter 处理模板选择
+    # 如果没有指定模板,让 cookiecutter 处理模板选择
     if not template:
         click.echo("Please select a template to use:")
         for name, info in templates.items():
@@ -177,7 +176,7 @@ def create(template: str, output_dir: Path):
     cookiecutter(
         template=template_path,
         output_dir=str(output_dir),
-        no_input=False,  # 启用交互式输入，让 cookiecutter 处理所有选项
+        no_input=False,  # 启用交互式输入,让 cookiecutter 处理所有选项
     )
 
 

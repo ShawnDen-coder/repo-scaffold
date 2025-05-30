@@ -19,4 +19,4 @@ jobs:
       - name: Build and deploy documentation
         run: task deploy:gh-pages
         env:
-          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: {% raw %}${{ github.token }}{% endraw %}

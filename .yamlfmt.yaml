@@ -4,6 +4,9 @@ yaml_files:
   - ".yamlfmt"
   - "!**/vendor/**"
   - "!**/node_modules/**"
+regex_exclude:
+  - ".*\\Taskfile\\.yml$"
+  - ".*\\mkdocs\\.yml$"
 yaml_options:
   # 文档末尾是否需要一个空行
   end_of_document: true
