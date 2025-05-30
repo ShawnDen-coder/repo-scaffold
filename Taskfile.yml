@@ -1,0 +1,79 @@
+# https://taskfile.dev
+version: '3'
+vars:
+  package_name: repo_scaffold
+  python_min_version: '3.12'
+  python_max_version: &dev_version '3.14'
+  # 默认的开发版本
+
+  python_dev_version: "3.12"
+tasks:
+  init:
+    desc: Initialize the project
+    cmds:
+      - uv sync
+      - uvx pre-commit install
+  lint:
+    desc: Run linters
+    cmds:
+      - uvx ruff check --fix . # 先修复可以自动修复的问题
+      - uvx ruff format . # 然后格式化
+      - uvx ruff check . # 最后再检查一次确保没有遗留问题
+  lint:add-noqa:
+    desc: Add noqa comments to files
+    cmds:
+      - uvx ruff check --fix --add-noqa . # 添加 noqa 注释以忽略特定行的检查
+      - task: lint:pre-commit # 运行 pre-commit 钩子以确保代码风格一致
+      - task: lint # 重新运行 ruff 检查以确保没有遗漏的错误
+  lint:pre-commit:
+    desc: Run pre-commit hooks
+    cmds:
+      - uvx pre-commit run --all-files
+  lint:watch:
+    desc: Watch files and run linters
+    cmds:
+      - uvx ruff check --watch . # 监视文件变化并运行检查
+  test:
+    desc: Run tests with dev version
+    cmds:
+      - task: test:version
+        vars:
+          version: '{{.python_dev_version}}'
+  test:all:
+    desc: Run tests with all Python versions
+    vars:
+      python_versions:
+        sh: |
+          python3 -c "
+          min_ver = '{{.python_min_version}}'.split('.')
+          max_ver = '{{.python_max_version}}'.split('.')
+          for minor in range(int(min_ver[1]), int(max_ver[1]) + 1):
+              print(f'{min_ver[0]}.{minor}')
+          "
+    cmds:
+      - for: {var: python_versions, split: "\n", as: version}
+        task: test:version
+        vars:
+          version: '{{.version}}'
+  test:version:
+    desc: Run tests with specific Python version
+    cmds:
+      - echo "Testing with Python {{.version}}..."
+      - uvx --python {{.version}} --with ".[dev]" pytest --cov={{.package_name}} --cov-report=xml --cov-report=term-missing -v tests/
+  docs:
+    desc: Build and view documentation
+    cmds:
+      - uvx --with ".[docs]" mkdocs serve
+  export:deps:
+    cmds:
+      - uv pip compile pyproject.toml --no-deps --output-file requirements.txt
+  deploy:gh-pages:
+    desc: Deploy documentation to GitHub Pages
+    cmds:
+      - uvx --with ".[docs]" mkdocs gh-deploy --force
+  deploy:pypi:
+    desc: Deploy package to PyPI
+    cmds:
+      - uv build
+      - uv publish
+

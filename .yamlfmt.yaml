@@ -1,0 +1,46 @@
+yaml_files:
+  - "**/*.yaml"
+  - "**/*.yml"
+  - ".yamlfmt"
+  - "!**/vendor/**"
+  - "!**/node_modules/**"
+yaml_options:
+  # 文档末尾是否需要一个空行
+  end_of_document: true
+  # 配置文档分隔符
+
+  document_start: false
+  # 行长度限制
+
+  line_length: 100
+  # 缩进大小
+
+  indentation: 2
+  # 是否保留引号
+
+  preserve_quotes: true
+  # 对齐方式
+
+  alignment:
+    # 是否启用键值对齐
+    enable: true
+    # 键和冒号之间的最小间隔
+
+    key_value: 1
+    # 对齐后冒号和值之间的空格数
+
+    colon_value: 1
+  # 数组格式化
+
+  array:
+    # 嵌套数组是否应该与父级对齐
+    indent_nested: true
+    # 数组项与前导符号 - 之间的空格数
+
+    item_spacing: 1
+  # 是否移除文档注释
+
+  strip_comments: false
+  # 是否保留文件开头的注释
+
+  preserve_header: true
