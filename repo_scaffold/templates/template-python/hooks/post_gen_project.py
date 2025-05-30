@@ -9,6 +9,17 @@ def remove_cli():
     if os.path.exists(cli_file):
         os.remove(cli_file)
 
+def remove_docker():
+    """Remove GitHub Actions configuration if not needed."""
+    file_name = [".dockerignore", "docker", ".github/workflows/docker_release.yaml"]
+    if "{{cookiecutter.use_github_actions}}" == "no":
+        for item in file_name:
+            if os.path.exists(item):
+                if os.path.isfile(item):
+                    os.remove(item)
+                elif os.path.isdir(item):
+                    shutil.rmtree(item)
+
 
 def remove_github_actions():
     """Remove GitHub Actions configuration if not needed."""
@@ -36,7 +47,7 @@ def init_project_depends():
     os.chdir(project_dir)
     
     # 安装基础开发依赖
-    subprocess.run(["uv", "sync", "--extra", "dev"], check=True)
+    subprocess.run(["uv", "sync"], check=True)
 
 
 if __name__ == "__main__":
@@ -46,5 +57,8 @@ if __name__ == "__main__":
     if "{{cookiecutter.use_github_actions}}" == "no":
         remove_github_actions()
         remove_docs()
+
+    if "{{cookiecutter.use_docker}}" == "no":
+        remove_docker()
         
     init_project_depends()
