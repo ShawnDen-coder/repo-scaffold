@@ -6,11 +6,9 @@ site_author: ShawnDen-coder
 edit_uri: edit/main/docs/
 repo_name: ShawnDen-coder/repo-scaffold
 copyright: Maintained by <a href="https://github.com/ShawnDen-coder">ShawnDen-coder</a>.
-
 nav:
   - Home: index.md
   - API Reference: reference/
-
 plugins:
   - search
   - gen-files:
@@ -33,7 +31,6 @@ plugins:
             merge_init_into_class: true
             docstring_section_style: "spacy"
             show_if_no_docstring: false
-
 theme:
   name: material
   palette:
@@ -60,7 +57,6 @@ theme:
     - search.share
     - search.suggest
     - content.code.copy
-
 markdown_extensions:
   - admonition
   - pymdownx.details
@@ -76,7 +72,6 @@ markdown_extensions:
   - tables
   - toc:
       permalink: true
-
 extra:
   social:
     - icon: fontawesome/brands/github
