@@ -1,0 +1,30 @@
+# Component configuration for python_core
+# 
+# Used by tests:
+# - test_component_manager.py::test_discover_components
+# - test_component_manager.py::test_resolve_dependencies_simple
+# - test_component_manager.py::test_resolve_dependencies_complex
+# - test_component_manager.py::test_validate_selection_no_conflicts
+# - test_component_manager.py::test_component_from_file
+# - test_template_composer.py::test_build_cookiecutter_config
+# - test_template_composer.py::test_merge_component_files
+# - test_integration.py::test_component_manager_integration
+# - test_integration.py::test_template_composer_integration
+
+name: python_core
+display_name: Python Core
+description: Core Python project structure
+category: core
+dependencies: []
+conflicts: []
+cookiecutter_vars:
+  use_python: true
+  python_version: "3.12"
+files:
+  - src: pyproject.toml.j2
+    dest: pyproject.toml
+  - src: src/__init__.py.j2
+    dest: src/{{cookiecutter.package_name}}/__init__.py
+hooks:
+  post_gen:
+    - setup_python_env

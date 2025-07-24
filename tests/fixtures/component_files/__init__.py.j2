@@ -1,0 +1,21 @@
+# Cookiecutter template for package __init__.py
+#
+# Used by tests:
+# - test_integration.py::test_component_file_merging_integration
+# - test_integration.py::test_full_workflow_integration
+# - Any test that creates Python core component files
+
+"""
+{{cookiecutter.description}}
+"""
+
+__version__ = "{{cookiecutter.version}}"
+__author__ = "{{cookiecutter.author_name}}"
+__email__ = "{{cookiecutter.author_email}}"
+
+# Package metadata
+__all__ = [
+    "__version__",
+    "__author__", 
+    "__email__",
+]

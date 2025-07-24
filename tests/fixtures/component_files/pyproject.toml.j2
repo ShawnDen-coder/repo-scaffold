@@ -1,0 +1,51 @@
+# Cookiecutter template for pyproject.toml
+#
+# Used by tests:
+# - test_integration.py::test_component_file_merging_integration
+# - test_integration.py::test_full_workflow_integration
+# - Any test that creates real component files for integration testing
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "{{cookiecutter.package_name}}"
+version = "{{cookiecutter.version}}"
+description = "{{cookiecutter.description}}"
+authors = [
+    {name = "{{cookiecutter.author_name}}", email = "{{cookiecutter.author_email}}"}
+]
+readme = "README.md"
+license = {text = "{{cookiecutter.license}}"}
+requires-python = ">={{cookiecutter.python_version}}"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: {{cookiecutter.license}} License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: {{cookiecutter.python_version}}",
+]
+
+# Optional CLI entry point (included if use_cli is true)
+{% if cookiecutter.use_cli == "true" -%}
+[project.scripts]
+{{cookiecutter.package_name}} = "{{cookiecutter.package_name}}.cli:main"
+{% endif -%}
+
+[project.urls]
+Homepage = "https://github.com/{{cookiecutter.author_name}}/{{cookiecutter.package_name}}"
+Repository = "https://github.com/{{cookiecutter.author_name}}/{{cookiecutter.package_name}}.git"
+Issues = "https://github.com/{{cookiecutter.author_name}}/{{cookiecutter.package_name}}/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/{{cookiecutter.package_name}}"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/src",
+    "/tests",
+    "/README.md",
+    "/LICENSE",
+]

@@ -1,0 +1,50 @@
+# Template configuration for python-library
+#
+# Used by tests:
+# - test_template_composer.py::test_compose_template_basic
+# - test_template_composer.py::test_build_cookiecutter_config
+# - test_template_composer.py::test_compose_template_with_empty_components
+# - test_cli.py::test_show_template_command
+# - test_cli.py::test_create_command_with_template
+# - test_integration.py::test_template_composer_integration
+# - test_integration.py::test_cookiecutter_config_building
+
+name: python-library
+display_name: Python Library
+description: Create a Python library project
+
+# Required components that are always included
+required_components:
+  - python_core
+
+# Optional components that users can choose
+optional_components:
+  cli_support:
+    prompt: "Add CLI support?"
+    help: "Adds Click-based command line interface"
+    default: false
+  
+  docker:
+    prompt: "Add Docker support?"
+    help: "Includes Dockerfile and docker-compose.yml"
+    default: false
+  
+  github_actions:
+    prompt: "Add GitHub Actions CI/CD?"
+    help: "Automated testing and release workflows"
+    default: true
+
+# Base Cookiecutter configuration that gets merged with component variables
+base_cookiecutter_config:
+  project_name: "My Python Library"
+  package_name: "{{ cookiecutter.project_name.lower().replace(' ', '_').replace('-', '_') }}"
+  author_name: "Your Name"
+  author_email: "your.email@example.com"
+  version: "0.1.0"
+  description: "A short description of the project"
+  license:
+    - "MIT"
+    - "Apache-2.0"
+    - "GPL-3.0"
+    - "BSD-3-Clause"
+  python_version: "3.12"

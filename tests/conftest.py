@@ -1,5 +1,8 @@
 """
 Pytest configuration and shared fixtures for repo-scaffold tests.
+
+This module provides shared fixtures and configuration for all tests.
+The fixtures load test data from YAML files in tests/fixtures/ directory.
 """
 
 import pytest
@@ -11,149 +14,53 @@ from unittest.mock import Mock
 from repo_scaffold.core.component_manager import Component
 
 
+# Path to test fixtures directory
+FIXTURES_DIR = Path(__file__).parent / "fixtures"
+
+
+def load_fixture_yaml(fixture_path: str) -> dict:
+    """
+    Load a YAML fixture file.
+
+    Args:
+        fixture_path: Path relative to fixtures directory (e.g., "components/python_core.yaml")
+
+    Returns:
+        Parsed YAML content as dictionary
+    """
+    full_path = FIXTURES_DIR / fixture_path
+    with open(full_path, 'r', encoding='utf-8') as f:
+        return yaml.safe_load(f)
+
+
 @pytest.fixture(scope="session")
 def sample_component_configs():
-    """Sample component configurations for testing."""
+    """
+    Sample component configurations for testing.
+
+    Loads component configurations from YAML files in tests/fixtures/components/
+    Each YAML file contains comments indicating which tests use that component.
+    """
     return {
-        "python_core": {
-            "name": "python_core",
-            "display_name": "Python Core",
-            "description": "Core Python project structure",
-            "category": "core",
-            "dependencies": [],
-            "conflicts": [],
-            "cookiecutter_vars": {
-                "use_python": True,
-                "python_version": "3.12"
-            },
-            "files": [
-                {"src": "pyproject.toml.j2", "dest": "pyproject.toml"},
-                {"src": "src/__init__.py.j2", "dest": "src/{{cookiecutter.package_name}}/__init__.py"}
-            ],
-            "hooks": {
-                "post_gen": ["setup_python_env"]
-            }
-        },
-        "cli_support": {
-            "name": "cli_support",
-            "display_name": "CLI Support",
-            "description": "Command line interface support",
-            "category": "feature",
-            "dependencies": ["python_core"],
-            "conflicts": [],
-            "cookiecutter_vars": {
-                "use_cli": True,
-                "cli_framework": "click"
-            },
-            "files": [
-                {"src": "cli.py.j2", "dest": "src/{{cookiecutter.package_name}}/cli.py"}
-            ],
-            "hooks": {
-                "post_gen": ["setup_cli_entry_point"]
-            }
-        },
-        "docker": {
-            "name": "docker",
-            "display_name": "Docker Support",
-            "description": "Docker containerization support",
-            "category": "containerization",
-            "dependencies": [],
-            "conflicts": ["podman"],
-            "cookiecutter_vars": {
-                "use_docker": True
-            },
-            "files": [
-                {"src": "Dockerfile.j2", "dest": "Dockerfile"},
-                {"src": "docker-compose.yml.j2", "dest": "docker-compose.yml"}
-            ],
-            "hooks": {}
-        },
-        "github_actions": {
-            "name": "github_actions",
-            "display_name": "GitHub Actions",
-            "description": "GitHub Actions CI/CD workflows",
-            "category": "ci_cd",
-            "dependencies": [],
-            "conflicts": [],
-            "cookiecutter_vars": {
-                "use_github_actions": True
-            },
-            "files": [
-                {"src": "test.yml.j2", "dest": ".github/workflows/test.yml"},
-                {"src": "release.yml.j2", "dest": ".github/workflows/release.yml"}
-            ],
-            "hooks": {
-                "post_gen": ["validate_workflows"]
-            }
-        }
+        "python_core": load_fixture_yaml("components/python_core.yaml"),
+        "cli_support": load_fixture_yaml("components/cli_support.yaml"),
+        "docker": load_fixture_yaml("components/docker.yaml"),
+        "podman": load_fixture_yaml("components/podman.yaml"),
+        "github_actions": load_fixture_yaml("components/github_actions.yaml"),
     }
 
 
 @pytest.fixture(scope="session")
 def sample_template_configs():
-    """Sample template configurations for testing."""
+    """
+    Sample template configurations for testing.
+
+    Loads template configurations from YAML files in tests/fixtures/templates/
+    Each YAML file contains comments indicating which tests use that template.
+    """
     return {
-        "python-library": {
-            "name": "python-library",
-            "display_name": "Python Library",
-            "description": "Create a Python library project",
-            "required_components": ["python_core"],
-            "optional_components": {
-                "cli_support": {
-                    "prompt": "Add CLI support?",
-                    "help": "Adds Click-based command line interface",
-                    "default": False
-                },
-                "docker": {
-                    "prompt": "Add Docker support?",
-                    "help": "Includes Dockerfile and docker-compose.yml",
-                    "default": False
-                },
-                "github_actions": {
-                    "prompt": "Add GitHub Actions CI/CD?",
-                    "help": "Automated testing and release workflows",
-                    "default": True
-                }
-            },
-            "base_cookiecutter_config": {
-                "project_name": "My Python Library",
-                "package_name": "{{ cookiecutter.project_name.lower().replace(' ', '_').replace('-', '_') }}",
-                "author_name": "Your Name",
-                "author_email": "your.email@example.com",
-                "version": "0.1.0",
-                "description": "A short description of the project",
-                "license": ["MIT", "Apache-2.0", "GPL-3.0", "BSD-3-Clause"],
-                "python_version": "3.12"
-            }
-        },
-        "python-cli": {
-            "name": "python-cli",
-            "display_name": "Python CLI Application",
-            "description": "Create a Python CLI application",
-            "required_components": ["python_core", "cli_support"],
-            "optional_components": {
-                "docker": {
-                    "prompt": "Add Docker support?",
-                    "help": "Includes Dockerfile",
-                    "default": False
-                },
-                "github_actions": {
-                    "prompt": "Add GitHub Actions CI/CD?",
-                    "help": "Automated testing and release workflows",
-                    "default": True
-                }
-            },
-            "base_cookiecutter_config": {
-                "project_name": "My CLI App",
-                "package_name": "{{ cookiecutter.project_name.lower().replace(' ', '_').replace('-', '_') }}",
-                "author_name": "Your Name",
-                "author_email": "your.email@example.com",
-                "version": "0.1.0",
-                "description": "A command line application",
-                "license": ["MIT", "Apache-2.0", "GPL-3.0", "BSD-3-Clause"],
-                "python_version": "3.12"
-            }
-        }
+        "python-library": load_fixture_yaml("templates/python-library.yaml"),
+        "python-cli": load_fixture_yaml("templates/python-cli.yaml"),
     }
 
 
@@ -188,25 +95,75 @@ def temp_workspace():
 
 
 def create_component_files(component_dir: Path, config: dict, files_content: dict = None):
-    """Helper function to create component files for testing."""
+    """
+    Helper function to create component files for testing.
+
+    Used by:
+    - test_integration.py::integration_test_setup fixture
+    - Any test that needs real component files on disk
+    """
     component_dir.mkdir(exist_ok=True)
-    
+
     # Create component.yaml
     with open(component_dir / "component.yaml", "w") as f:
         yaml.dump(config, f)
-    
+
     # Create files directory
     files_dir = component_dir / "files"
     files_dir.mkdir(exist_ok=True)
-    
+
     # Create component files if content provided
     if files_content:
         for filename, content in files_content.items():
             with open(files_dir / filename, "w") as f:
                 f.write(content)
-    
+
     # Create hooks directory
     hooks_dir = component_dir / "hooks"
+    hooks_dir.mkdir(exist_ok=True)
+
+
+def create_component_from_fixture(component_dir: Path, component_name: str):
+    """
+    Create a component directory structure from a fixture YAML file.
+
+    Args:
+        component_dir: Directory where component should be created
+        component_name: Name of component (matches YAML filename)
+
+    Used by:
+    - Integration tests that need real component files
+    - Tests that verify file merging functionality
+    """
+    config = load_fixture_yaml(f"components/{component_name}.yaml")
+
+    # Create component directory
+    comp_dir = component_dir / component_name
+    comp_dir.mkdir(parents=True, exist_ok=True)
+
+    # Create component.yaml
+    with open(comp_dir / "component.yaml", "w") as f:
+        yaml.dump(config, f)
+
+    # Create files directory
+    files_dir = comp_dir / "files"
+    files_dir.mkdir(exist_ok=True)
+
+    # Copy template files from fixtures
+    for file_info in config.get("files", []):
+        src_filename = file_info["src"]
+        try:
+            # Try to load the template file from fixtures
+            template_content = (FIXTURES_DIR / "component_files" / src_filename).read_text()
+            with open(files_dir / src_filename, "w") as f:
+                f.write(template_content)
+        except FileNotFoundError:
+            # Create a placeholder file if template doesn't exist
+            with open(files_dir / src_filename, "w") as f:
+                f.write(f"# Template file for {src_filename}\n# Component: {component_name}\n")
+
+    # Create hooks directory
+    hooks_dir = comp_dir / "hooks"
     hooks_dir.mkdir(exist_ok=True)
 
 

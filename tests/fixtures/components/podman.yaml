@@ -1,0 +1,19 @@
+# Component configuration for podman
+#
+# Used by tests:
+# - test_component_manager.py::test_discover_components
+# - test_component_manager.py::test_validate_selection_with_conflicts
+
+name: podman
+display_name: Podman Support
+description: Podman containerization support
+category: containerization
+dependencies: []
+conflicts:
+  - docker
+cookiecutter_vars:
+  use_podman: true
+files:
+  - src: Containerfile.j2
+    dest: Containerfile
+hooks: {}

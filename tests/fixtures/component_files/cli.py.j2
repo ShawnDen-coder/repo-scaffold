@@ -1,0 +1,33 @@
+# Cookiecutter template for CLI module
+#
+# Used by tests:
+# - test_integration.py::test_component_file_merging_integration
+# - test_integration.py::test_full_workflow_integration
+# - Any test that creates CLI component files
+
+"""
+Command line interface for {{cookiecutter.project_name}}.
+"""
+
+import click
+
+
+@click.command()
+@click.version_option(version="{{cookiecutter.version}}")
+@click.option(
+    "--verbose", "-v", 
+    is_flag=True, 
+    help="Enable verbose output"
+)
+def main(verbose: bool):
+    """{{cookiecutter.description}}"""
+    if verbose:
+        click.echo("Verbose mode enabled")
+    
+    click.echo("Hello from {{cookiecutter.project_name}}!")
+    click.echo(f"Package: {{cookiecutter.package_name}}")
+    click.echo(f"Version: {{cookiecutter.version}}")
+
+
+if __name__ == "__main__":
+    main()

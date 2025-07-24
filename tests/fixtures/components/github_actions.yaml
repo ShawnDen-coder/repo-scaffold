@@ -1,0 +1,22 @@
+# Component configuration for github_actions
+#
+# Used by tests:
+# - test_conftest.py::sample_component_configs fixture
+# - test_integration.py::test_hooks_integration
+
+name: github_actions
+display_name: GitHub Actions
+description: GitHub Actions CI/CD workflows
+category: ci_cd
+dependencies: []
+conflicts: []
+cookiecutter_vars:
+  use_github_actions: true
+files:
+  - src: test.yml.j2
+    dest: .github/workflows/test.yml
+  - src: release.yml.j2
+    dest: .github/workflows/release.yml
+hooks:
+  post_gen:
+    - validate_workflows

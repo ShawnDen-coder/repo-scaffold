@@ -1,0 +1,42 @@
+# Template configuration for python-cli
+#
+# Used by tests:
+# - test_cli.py::test_list_templates_command
+# - test_cli.py::test_create_command_interactive
+# - test_conftest.py::sample_template_configs fixture
+
+name: python-cli
+display_name: Python CLI Application
+description: Create a Python CLI application
+
+# Required components - CLI apps always need core Python and CLI support
+required_components:
+  - python_core
+  - cli_support
+
+# Optional components
+optional_components:
+  docker:
+    prompt: "Add Docker support?"
+    help: "Includes Dockerfile"
+    default: false
+  
+  github_actions:
+    prompt: "Add GitHub Actions CI/CD?"
+    help: "Automated testing and release workflows"
+    default: true
+
+# Base Cookiecutter configuration
+base_cookiecutter_config:
+  project_name: "My CLI App"
+  package_name: "{{ cookiecutter.project_name.lower().replace(' ', '_').replace('-', '_') }}"
+  author_name: "Your Name"
+  author_email: "your.email@example.com"
+  version: "0.1.0"
+  description: "A command line application"
+  license:
+    - "MIT"
+    - "Apache-2.0"
+    - "GPL-3.0"
+    - "BSD-3-Clause"
+  python_version: "3.12"
