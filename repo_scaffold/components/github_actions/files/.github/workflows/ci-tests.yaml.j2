@@ -1,0 +1,70 @@
+name: ✅ Code Quality & Tests
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+env:
+  {% if cookiecutter.use_private_pypi == "true" -%}
+  UV_INDEX_{{cookiecutter.private_pypi_name | upper}}_USERNAME: ${{ secrets.PYPI_SERVER_USERNAME }}
+  UV_INDEX_{{cookiecutter.private_pypi_name | upper}}_PASSWORD: ${{ secrets.PYPI_SERVER_PASSWORD }}
+  PYPI_SERVER_USERNAME: ${{ secrets.PYPI_SERVER_USERNAME }}
+  PYPI_SERVER_PASSWORD: ${{ secrets.PYPI_SERVER_PASSWORD }}
+  {% endif -%}
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      {% if cookiecutter.use_task == "true" -%}
+      - name: Install Task
+        uses: arduino/setup-task@v2
+      {% endif -%}
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+      {% if cookiecutter.use_task == "true" -%}
+      - name: Install dependencies
+        run: task init
+      - name: Run lint checks
+        id: lint
+        run: task lint
+      - name: Run test all versions
+        run: task test:all
+      {% else -%}
+      - name: Install dependencies
+        run: uv sync --extra dev
+      - name: Run lint checks
+        run: |
+          uv run ruff check .
+          uv run ruff format --check .
+      - name: Run tests
+        run: uv run pytest --cov={{cookiecutter.package_name}} --cov-report=xml --cov-report=term-missing
+      {% endif -%}
+  {% if cookiecutter.use_airflow_docker == "true" -%}
+  docker-build-test:
+    name: 🐳 Multi-platform Docker Build Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Test Build Image (no push)
+        id: build-image
+        uses: redhat-actions/buildah-build@v2
+        with:
+          image: ${{ github.repository }}-test
+          tags: test-${{ github.sha }}
+          containerfiles: ./docker/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          {% if cookiecutter.use_private_pypi == "true" -%}
+          build-args: |-
+            PYPI_SERVER_USERNAME=${{ env.PYPI_SERVER_USERNAME }}
+            PYPI_SERVER_PASSWORD=${{ env.PYPI_SERVER_PASSWORD }}
+          {% endif -%}
+  {% endif -%}

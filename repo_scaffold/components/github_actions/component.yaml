@@ -1,0 +1,20 @@
+name: github_actions
+display_name: GitHub Actions
+description: GitHub Actions CI/CD workflows for testing and deployment
+category: ci_cd
+dependencies: []
+conflicts: []
+cookiecutter_vars:
+  use_github_actions: true
+files:
+  - src: .github/workflows/ci-tests.yaml.j2
+    dest: .github/workflows/ci-tests.yaml
+  - src: .github/workflows/package-release.yaml.j2
+    dest: .github/workflows/package-release.yaml
+  - src: .github/workflows/docs-deploy.yaml.j2
+    dest: .github/workflows/docs-deploy.yaml
+  - src: .github/workflows/docker-release.yaml.j2
+    dest: .github/workflows/docker-release.yaml
+  - src: .github/workflows/version-bump.yaml.j2
+    dest: .github/workflows/version-bump.yaml
+hooks: {}

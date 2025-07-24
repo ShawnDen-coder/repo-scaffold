@@ -1,0 +1,13 @@
+name: task_automation
+display_name: Task Automation
+description: Task automation with Taskfile.yml for development workflow
+category: automation
+dependencies: []
+conflicts: []
+cookiecutter_vars:
+  use_task: true
+  use_uv: true
+files:
+  - src: Taskfile.yml.j2
+    dest: Taskfile.yml
+hooks: {}

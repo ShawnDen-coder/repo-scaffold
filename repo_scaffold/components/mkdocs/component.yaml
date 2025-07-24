@@ -1,0 +1,19 @@
+name: mkdocs
+display_name: MkDocs Documentation
+description: MkDocs documentation with Material theme and API reference
+category: documentation
+dependencies: []
+conflicts: []
+cookiecutter_vars:
+  use_docs: true
+  use_mkdocs: true
+files:
+  - src: mkdocs.yml.j2
+    dest: mkdocs.yml
+  - src: docs/index.md.j2
+    dest: docs/index.md
+  - src: docs/gen_ref_pages.py.j2
+    dest: docs/gen_ref_pages.py
+  - src: docs/gen_home_pages.py.j2
+    dest: docs/gen_home_pages.py
+hooks: {}
