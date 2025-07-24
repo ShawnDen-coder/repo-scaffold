@@ -1,183 +1,282 @@
-"""Repository scaffolding CLI tool.
+"""
+Command line interface for repo-scaffold.
 
-This module provides a command-line interface for creating new projects from templates.
-It serves as the main entry point for the repo-scaffold tool.
-
-Example:
-    To use this module as a CLI tool:
-
-    ```bash
-    # List available templates
-    $ repo-scaffold list
-
-    # Create a new project
-    $ repo-scaffold create python
-    ```
-
-    To use this module in your code:
-
-    ```python
-    from repo_scaffold.cli import cli
-
-    if __name__ == '__main__':
-        cli()
-    ```
+This module provides the main CLI commands for creating projects from templates.
 """
 
-import importlib.resources
-import json
-import os
-from pathlib import Path
-from typing import Any
-
 import click
-from cookiecutter.main import cookiecutter
+import yaml
+from pathlib import Path
+from typing import Dict, Any, Tuple, List, Optional
+
+from .core.component_manager import ComponentManager
+from .core.template_composer import TemplateComposer
+from .core.cookiecutter_runner import CookiecutterRunner
 
 
-def get_package_path(relative_path: str) -> str:
-    """Get absolute path to a resource in the package.
-
-    Args:
-        relative_path: Path relative to the package root
-
-    Returns:
-        str: Absolute path to the resource
-    """
-    # 使用 files() 获取包资源
-    package_files = importlib.resources.files("repo_scaffold")
-    resource_path = package_files.joinpath(relative_path)
-    if not (resource_path.is_file() or resource_path.is_dir()):
-        raise FileNotFoundError(f"Resource not found: {relative_path}")
-    return str(resource_path)
-
-
-def load_templates() -> dict[str, Any]:
-    """Load available project templates configuration.
-
-    Reads template configurations from the cookiecutter.json file in the templates directory.
-    Each template contains information about its name, path, title, and description.
-
-    Returns:
-        Dict[str, Any]: Template configuration dictionary where keys are template names
-            and values are template information:
-            {
-                "template-name": {
-                    "path": "relative/path",
-                    "title": "Template Title",
-                    "description": "Template description"
-                }
-            }
-
-    Raises:
-        FileNotFoundError: If the configuration file doesn't exist
-        json.JSONDecodeError: If the configuration file is not valid JSON
-    """
-    config_path = get_package_path("templates/cookiecutter.json")
-    with open(config_path, encoding="utf-8") as f:
-        config = json.load(f)
-    return config["templates"]
+# Default paths - can be overridden by environment variables or config
+DEFAULT_COMPONENTS_DIR = Path(__file__).parent / "components"
+DEFAULT_TEMPLATES_DIR = Path(__file__).parent / "templates"
 
 
 @click.group()
+@click.version_option()
 def cli():
-    """Modern project scaffolding tool.
-
-    Provides multiple project templates for quick project initialization.
-    Use `repo-scaffold list` to view available templates,
-    or `repo-scaffold create <template>` to create a new project.
-    """
+    """repo-scaffold: A modern project scaffolding tool with component-based architecture."""
+    pass
 
 
 @cli.command()
-def list():
-    """List all available project templates.
-
-    Displays the title and description of each template to help users
-    choose the appropriate template for their needs.
-
-    Example:
-        ```bash
-        $ repo-scaffold list
-        Available templates:
-
-        python - template-python
-          Description: template for python project
-        ```
-    """
-    templates = load_templates()
-    click.echo("\nAvailable templates:")
-    for name, info in templates.items():
-        click.echo(f"\n{info['title']} - {name}")
-        click.echo(f"  Description: {info['description']}")
-
-
-@cli.command()
-@click.argument("template", required=False)
 @click.option(
-    "--output-dir",
-    "-o",
-    default=".",
-    type=click.Path(file_okay=False, dir_okay=True, path_type=Path),
-    help="Directory where the project will be created",
+    "--template", "-t", 
+    help="Template name to use for project creation"
 )
-def create(template: str, output_dir: Path):
-    """Create a new project from a template.
+@click.option(
+    "--output", "-o", 
+    type=click.Path(exists=True, file_okay=False, dir_okay=True, path_type=Path),
+    default=Path.cwd(),
+    help="Output directory for the generated project"
+)
+def create(template: Optional[str], output: Path):
+    """Create a new project from a template."""
+    try:
+        if template:
+            # Use specified template
+            template_config = load_template_config(template)
+            template_name = template
+        else:
+            # Interactive template selection
+            template_name, template_config = interactive_template_selection()
+        
+        # Interactive component selection
+        selected_components = interactive_component_selection(template_config)
+        
+        # Initialize core components
+        component_manager = ComponentManager(DEFAULT_COMPONENTS_DIR)
+        composer = TemplateComposer(component_manager)
+        runner = CookiecutterRunner()
+        
+        # Validate component selection
+        conflicts = component_manager.validate_selection(selected_components)
+        if conflicts:
+            click.echo("❌ Component conflicts detected:")
+            for conflict in conflicts:
+                click.echo(f"  - {conflict}")
+            raise click.Abort()
+        
+        # Compose template
+        click.echo("🔧 Composing template...")
+        temp_template_dir = composer.compose_template(template_config, selected_components)
+        
+        try:
+            # Run cookiecutter
+            click.echo("🚀 Generating project...")
+            project_path = runner.run_cookiecutter(temp_template_dir, output)
+            
+            click.echo(f"✅ Project created successfully at: {project_path}")
+            
+        finally:
+            # Clean up temporary template
+            runner.cleanup_temp_template(temp_template_dir)
+            
+    except FileNotFoundError as e:
+        click.echo(f"❌ Template not found: {e}")
+        raise click.Abort()
+    except Exception as e:
+        click.echo(f"❌ Error creating project: {e}")
+        raise click.Abort()
 
-    Creates a new project based on the specified template. If no template is specified,
-    displays a list of available templates. The project generation process is interactive
-    and will prompt for necessary configuration values.
 
-    Args:
-        template: Template name or title (e.g., 'template-python' or 'python')
-        output_dir: Target directory where the project will be created
+@cli.command("list")
+def list_templates():
+    """List available templates."""
+    try:
+        templates = load_template_configs()
+        
+        if not templates:
+            click.echo("No templates found.")
+            return
+        
+        click.echo("Available templates:")
+        click.echo()
+        
+        for template_name, config in templates.items():
+            display_name = config.get("display_name", template_name)
+            description = config.get("description", "No description available")
+            click.echo(f"  {template_name}")
+            click.echo(f"    {display_name}")
+            click.echo(f"    {description}")
+            click.echo()
+            
+    except Exception as e:
+        click.echo(f"❌ Error listing templates: {e}")
+        raise click.Abort()
 
-    Example:
-        Create a Python project:
-            ```bash
-            $ repo-scaffold create python
-            ```
 
-        Specify output directory:
-            ```bash
-            $ repo-scaffold create python -o ./projects
-            ```
+@cli.command()
+def components():
+    """List available components."""
+    try:
+        component_manager = ComponentManager(DEFAULT_COMPONENTS_DIR)
+        components_list = component_manager.list_components()
+        
+        if not components_list:
+            click.echo("No components found.")
+            return
+        
+        click.echo("Available components:")
+        click.echo()
+        
+        # Group by category
+        by_category = {}
+        for component in components_list:
+            category = component.category
+            if category not in by_category:
+                by_category[category] = []
+            by_category[category].append(component)
+        
+        for category, comps in by_category.items():
+            click.echo(f"📁 {category.title()}:")
+            for component in comps:
+                click.echo(f"  {component.name}")
+                click.echo(f"    {component.display_name}")
+                click.echo(f"    {component.description}")
+                if component.dependencies:
+                    click.echo(f"    Dependencies: {', '.join(component.dependencies)}")
+                click.echo()
+            
+    except Exception as e:
+        click.echo(f"❌ Error listing components: {e}")
+        raise click.Abort()
 
-        View available templates:
-            ```bash
-            $ repo-scaffold list
-            ```
-    """
-    templates = load_templates()
 
-    # 如果没有指定模板,让 cookiecutter 处理模板选择
-    if not template:
-        click.echo("Please select a template to use:")
-        for name, info in templates.items():
-            click.echo(f"  {info['title']} - {name}")
-            click.echo(f"    {info['description']}")
-        return
+@cli.command("show")
+@click.argument("template_name")
+def show_template(template_name: str):
+    """Show detailed information about a template."""
+    try:
+        template_config = load_template_config(template_name)
+        
+        click.echo(f"Template: {template_name}")
+        click.echo(f"Display Name: {template_config.get('display_name', 'N/A')}")
+        click.echo(f"Description: {template_config.get('description', 'N/A')}")
+        click.echo()
+        
+        # Required components
+        required = template_config.get("required_components", [])
+        if required:
+            click.echo("Required components:")
+            for comp in required:
+                click.echo(f"  - {comp}")
+            click.echo()
+        
+        # Optional components
+        optional = template_config.get("optional_components", {})
+        if optional:
+            click.echo("Optional components:")
+            for comp_name, comp_config in optional.items():
+                click.echo(f"  - {comp_name}")
+                click.echo(f"    {comp_config.get('help', 'No description')}")
+                click.echo(f"    Default: {comp_config.get('default', False)}")
+            click.echo()
+            
+    except FileNotFoundError:
+        click.echo(f"❌ Template '{template_name}' not found.")
+        raise click.Abort()
+    except Exception as e:
+        click.echo(f"❌ Error showing template: {e}")
+        raise click.Abort()
 
-    # 查找模板配置
-    template_info = None
-    for name, info in templates.items():
-        if name == template or info["title"] == template:
-            template_info = info
-            break
 
-    if not template_info:
-        click.echo(f"Error: Template '{template}' not found")
-        click.echo("\nAvailable templates:")
-        for name, info in templates.items():
-            click.echo(f"  {info['title']} - {name}")
-        return
+def load_template_configs() -> Dict[str, Dict[str, Any]]:
+    """Load all available template configurations."""
+    templates = {}
+    
+    if not DEFAULT_TEMPLATES_DIR.exists():
+        return templates
+    
+    for template_file in DEFAULT_TEMPLATES_DIR.glob("*.yaml"):
+        try:
+            with open(template_file, 'r', encoding='utf-8') as f:
+                config = yaml.safe_load(f)
+            
+            template_name = template_file.stem
+            templates[template_name] = config
+            
+        except (yaml.YAMLError, IOError):
+            # Skip invalid template files
+            continue
+    
+    return templates
 
-    # 使用模板创建项目
-    template_path = get_package_path(os.path.join("templates", template_info["path"]))
-    cookiecutter(
-        template=template_path,
-        output_dir=str(output_dir),
-        no_input=False,  # 启用交互式输入,让 cookiecutter 处理所有选项
-    )
+
+def load_template_config(template_name: str) -> Dict[str, Any]:
+    """Load a specific template configuration."""
+    template_file = DEFAULT_TEMPLATES_DIR / f"{template_name}.yaml"
+    
+    if not template_file.exists():
+        raise FileNotFoundError(f"Template '{template_name}' not found")
+    
+    with open(template_file, 'r', encoding='utf-8') as f:
+        return yaml.safe_load(f)
+
+
+def interactive_template_selection() -> Tuple[str, Dict[str, Any]]:
+    """Interactive template selection."""
+    templates = load_template_configs()
+    
+    if not templates:
+        raise click.ClickException("No templates available")
+    
+    click.echo("Available templates:")
+    template_list = list(templates.items())
+    
+    for i, (name, config) in enumerate(template_list, 1):
+        display_name = config.get("display_name", name)
+        description = config.get("description", "No description")
+        click.echo(f"  {i}. {display_name}")
+        click.echo(f"     {description}")
+    
+    while True:
+        try:
+            choice = click.prompt("Select a template", type=int)
+            if 1 <= choice <= len(template_list):
+                template_name, template_config = template_list[choice - 1]
+                return template_name, template_config
+            else:
+                click.echo("Invalid choice. Please try again.")
+        except click.Abort:
+            raise
+        except Exception:
+            click.echo("Invalid input. Please enter a number.")
+
+
+def interactive_component_selection(template_config: Dict[str, Any]) -> List[str]:
+    """Interactive component selection based on template configuration."""
+    selected = []
+    
+    # Add required components
+    required = template_config.get("required_components", [])
+    selected.extend(required)
+    
+    # Interactive selection for optional components
+    optional = template_config.get("optional_components", {})
+    
+    if optional:
+        click.echo("\nOptional components:")
+        
+        for comp_name, comp_config in optional.items():
+            prompt = comp_config.get("prompt", f"Include {comp_name}?")
+            help_text = comp_config.get("help", "")
+            default = comp_config.get("default", False)
+            
+            if help_text:
+                click.echo(f"  {help_text}")
+            
+            if click.confirm(prompt, default=default):
+                selected.append(comp_name)
+    
+    return selected
 
 
 if __name__ == "__main__":

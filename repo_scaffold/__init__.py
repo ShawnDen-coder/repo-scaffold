@@ -1,18 +1,20 @@
-"""Repository scaffolding package for project initialization and setup.
+"""
+repo-scaffold: A modern project scaffolding tool with component-based architecture.
 
-This package provides tools and utilities for scaffolding new Python projects
-with standardized structure and best practices. It serves as the main entry point
-for the repo_scaffold package functionality.
-
-Typical usage example:
-
-    import repo_scaffold
-
-    scaffold = repo_scaffold.create_project()
-    scaffold.setup_structure()
-
-Attributes:
-    __author__: Package author information.
+This package provides a flexible, component-based approach to project scaffolding
+using Cookiecutter as the underlying template engine.
 """
 
-__author__ = "Shawn Deng"
+__version__ = "0.11.0"
+__author__ = "shawndeng"
+__email__ = "shawndeng1109@qq.com"
+
+from .core.component_manager import ComponentManager
+from .core.template_composer import TemplateComposer
+from .core.cookiecutter_runner import CookiecutterRunner
+
+__all__ = [
+    "ComponentManager",
+    "TemplateComposer", 
+    "CookiecutterRunner",
+]

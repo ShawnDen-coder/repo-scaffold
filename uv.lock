@@ -571,6 +571,19 @@ wheels = [
 ]
 
 [[package]]
+name = "pytest-click"
+version = "1.1.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "click" },
+    { name = "pytest" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/ec/ec/bca3cd29ba2b025ae41666b851f6ff05fb77cb4c13719baaeda6a757772a/pytest_click-1.1.0.tar.gz", hash = "sha256:fdd9f6721f877dda021e7c5dc73e70aecd37e5ed23ec6820f8a7b3fd7b4f8d30", size = 5054 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/72/1a/eb53371999b94b3c995c00117f3a232dbf6f56c7152a52cf3e3777e7d49d/pytest_click-1.1.0-py3-none-any.whl", hash = "sha256:eade4742c2f02c345e78a32534a43e8db04acf98d415090539dacc880b7cd0e9", size = 4110 },
+]
+
+[[package]]
 name = "pytest-cov"
 version = "6.0.0"
 source = { registry = "https://pypi.org/simple" }
@@ -714,13 +727,13 @@ source = { editable = "." }
 dependencies = [
     { name = "click" },
     { name = "cookiecutter" },
-    { name = "ruff" },
 ]
 
 [package.optional-dependencies]
 dev = [
     { name = "commitizen" },
     { name = "pytest" },
+    { name = "pytest-click" },
     { name = "pytest-cov" },
     { name = "pytest-mock" },
     { name = "ruff" },
@@ -733,6 +746,11 @@ docs = [
     { name = "mkdocstrings" },
     { name = "mkdocstrings-python" },
     { name = "pymdown-extensions" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "pytest-click" },
 ]
 
 [package.metadata]
@@ -748,11 +766,14 @@ requires-dist = [
     { name = "mkdocstrings-python", marker = "extra == 'docs'", specifier = ">=1.7.5" },
     { name = "pymdown-extensions", marker = "extra == 'docs'", specifier = ">=10.7" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.3.4" },
+    { name = "pytest-click", marker = "extra == 'dev'", specifier = ">=1.1.0" },
     { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=6.0.0" },
     { name = "pytest-mock", marker = "extra == 'dev'", specifier = ">=3.14.0" },
-    { name = "ruff", specifier = ">=0.9.6" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.9.7" },
 ]
+
+[package.metadata.requires-dev]
+dev = [{ name = "pytest-click", specifier = ">=1.1.0" }]
 
 [[package]]
 name = "requests"
@@ -771,15 +792,15 @@ wheels = [
 
 [[package]]
 name = "rich"
-version = "13.9.4"
+version = "14.0.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "markdown-it-py" },
     { name = "pygments" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/ab/3a/0316b28d0761c6734d6bc14e770d85506c986c85ffb239e688eeaab2c2bc/rich-13.9.4.tar.gz", hash = "sha256:439594978a49a09530cff7ebc4b5c7103ef57baf48d5ea3184f21d9a2befa098", size = 223149 }
+sdist = { url = "https://files.pythonhosted.org/packages/a1/53/830aa4c3066a8ab0ae9a9955976fb770fe9c6102117c8ec4ab3ea62d89e8/rich-14.0.0.tar.gz", hash = "sha256:82f1bc23a6a21ebca4ae0c45af9bdbc492ed20231dcb63f297d6d1021a9d5725", size = 224078 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/19/71/39c7c0d87f8d4e6c020a393182060eaefeeae6c01dab6a84ec346f2567df/rich-13.9.4-py3-none-any.whl", hash = "sha256:6049d5e6ec054bf2779ab3358186963bac2ea89175919d699e378b99738c2a90", size = 242424 },
+    { url = "https://files.pythonhosted.org/packages/0d/9b/63f4c7ebc259242c89b3acafdb37b41d1185c07ff0011164674e9076b491/rich-14.0.0-py3-none-any.whl", hash = "sha256:1c9491e1951aac09caffd42f448ee3d04e58923ffe14993f6e83068dc395d7e0", size = 243229 },
 ]
 
 [[package]]
@@ -845,11 +866,11 @@ wheels = [
 
 [[package]]
 name = "types-python-dateutil"
-version = "2.9.0.20241206"
+version = "2.9.0.20250708"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/a9/60/47d92293d9bc521cd2301e423a358abfac0ad409b3a1606d8fbae1321961/types_python_dateutil-2.9.0.20241206.tar.gz", hash = "sha256:18f493414c26ffba692a72369fea7a154c502646301ebfe3d56a04b3767284cb", size = 13802 }
+sdist = { url = "https://files.pythonhosted.org/packages/c9/95/6bdde7607da2e1e99ec1c1672a759d42f26644bbacf939916e086db34870/types_python_dateutil-2.9.0.20250708.tar.gz", hash = "sha256:ccdbd75dab2d6c9696c350579f34cffe2c281e4c5f27a585b2a2438dd1d5c8ab", size = 15834 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/0f/b3/ca41df24db5eb99b00d97f89d7674a90cb6b3134c52fb8121b6d8d30f15c/types_python_dateutil-2.9.0.20241206-py3-none-any.whl", hash = "sha256:e248a4bc70a486d3e3ec84d0dc30eec3a5f979d6e7ee4123ae043eedbb987f53", size = 14384 },
+    { url = "https://files.pythonhosted.org/packages/72/52/43e70a8e57fefb172c22a21000b03ebcc15e47e97f5cb8495b9c2832efb4/types_python_dateutil-2.9.0.20250708-py3-none-any.whl", hash = "sha256:4d6d0cc1cc4d24a2dc3816024e502564094497b713f7befda4d5bc7a8e3fd21f", size = 17724 },
 ]
 
 [[package]]
