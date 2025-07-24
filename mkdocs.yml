@@ -1,13 +1,17 @@
-site_name: repo-scaffold
+site_name: Homelab Airflow DAGs
 repo_url: https://github.com/ShawnDen-coder/repo-scaffold
 site_url: https://ShawnDen-coder.github.io/repo-scaffold
-site_description: A Python project template generator
-site_author: ShawnDen-coder
+site_description: Dynamic Apache Airflow DAGs for homelab cluster automation
+site_author: Shawn Deng
 edit_uri: edit/main/docs/
 repo_name: ShawnDen-coder/repo-scaffold
 copyright: Maintained by <a href="https://github.com/ShawnDen-coder">ShawnDen-coder</a>.
 nav:
   - Home: index.md
+  - Getting Started:
+      - Installation: getting-started/installation.md
+      - Quick Start: getting-started/quick-start.md
+      - Configuration: getting-started/configuration.md
   - API Reference: reference/
 plugins:
   - search
@@ -20,28 +24,56 @@ plugins:
   - mkdocstrings:
       handlers:
         python:
-          paths: ["repo_scaffold"]
+          paths: [repo-scaffold]
           options:
-            docstring_style: "google"
-            show_source: true
+            docstring_style: google
+            show_source: false
             show_root_heading: true
             show_signature_annotations: true
             separate_signature: true
-            show_bases: true
+            show_bases: false
             merge_init_into_class: true
-            docstring_section_style: "spacy"
+            docstring_section_style: table
             show_if_no_docstring: false
+            heading_level: 2
+            members_order: alphabetical
+            group_by_category: true
+            show_category_heading: true
+            # 改善代码示例显示
+
+            docstring_options:
+              ignore_init_summary: true
+              trim_doctest_flags: true
+              returns_multiple_items: false
+              # 过滤器配置
+
+            filters:
+              - "!^_.*"  # 排除所有私有变量和常量
+              - "!^__.*__$"  # 排除双下划线变量
+              - "!^[A-Z_]+$"  # 排除全大写常量
+              - "!.*DOC.*"  # 排除包含 DOC 的变量
+              - "!.*_MD$"  # 排除以 _MD 结尾的变量
+              - "^__init__$"  # 但保留 __init__ 方法
+            show_symbol_type_heading: true
+            show_symbol_type_toc: true
+            # 改善示例代码显示
+
+            show_docstring_examples: true
+            show_docstring_other_parameters: true
+            show_docstring_parameters: true
+            show_docstring_raises: true
+            show_docstring_returns: true
 theme:
   name: material
   palette:
-    - media: "(prefers-color-scheme: light)"
+    - media: '(prefers-color-scheme: light)'
       scheme: default
       primary: indigo
       accent: indigo
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
-    - media: "(prefers-color-scheme: dark)"
+    - media: '(prefers-color-scheme: dark)'
       scheme: slate
       primary: indigo
       accent: indigo
@@ -53,10 +85,21 @@ theme:
     - navigation.expand
     - navigation.indexes
     - navigation.top
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.tracking
     - search.highlight
     - search.share
     - search.suggest
     - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+    - toc.follow
+    - toc.integrate
+  icon:
+    repo: fontawesome/brands/github
+    edit: material/pencil
+    view: material/eye
 markdown_extensions:
   - admonition
   - pymdownx.details
@@ -67,14 +110,30 @@ markdown_extensions:
           format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.highlight:
       anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
   - pymdownx.inlinehilite
   - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - attr_list
+  - md_in_html
+  - def_list
+  - footnotes
   - tables
   - toc:
       permalink: true
+      title: On this page
 extra:
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/ShawnDen-coder/repo-scaffold
     - icon: fontawesome/brands/python
       link: https://pypi.org/project/repo-scaffold
+extra_css:
+  - stylesheets/extra.css

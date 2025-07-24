@@ -1,15 +1,14 @@
 include = ["pyproject.toml", "repo_scaffold/**/*.py", "tests/**/*.py"]
-exclude = ["repo_scaffold/templates/**/*"]
 line-length = 120
 target-version = "py312"
 
 [lint]
 extend-ignore = [
   "D100",  # Missing docstring in public module
+  "D101",  # Missing docstring in public module
+  "D102",  # Missing docstring in public docs
   "D104",  # Missing docstring in public package
-  # airflow dags are not required to have docstrings
-  "D203",  # 1 blank line required before class docstring
-  "D213"  # Multi-line docstring summary should start at the second line
+  "D107",  # Missing docstring in public package
 ]
 ignore = [
   "W191",  # indentation contains tabs

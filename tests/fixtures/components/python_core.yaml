@@ -1,5 +1,5 @@
 # Component configuration for python_core
-# 
+#
 # Used by tests:
 # - test_component_manager.py::test_discover_components
 # - test_component_manager.py::test_resolve_dependencies_simple

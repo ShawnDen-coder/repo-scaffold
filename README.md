@@ -4,70 +4,40 @@
 [![Python Version](https://img.shields.io/pypi/pyversions/repo-scaffold.svg)](https://pypi.org/project/repo-scaffold/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A modern project scaffolding tool that helps you quickly create standardized project structures with best practices.
+A modern project scaffolding tool with component-based architecture.
 
 ## Features
 
-- 🚀 Quick project initialization with modern best practices
-- 📦 Project templates with standardized structure
-- ⚙️ Interactive project configuration
-- 🔧 Pre-configured development tools (ruff, pytest, nox)
-- 📚 Documentation setup with MkDocs Material
-- 🔄 GitHub Actions workflows included
-
-## Installation
-
-```bash
-# Using uvx (recommended)
-uvx install repo-scaffold
-
-# Using pip
-pip install repo-scaffold
-
-# Using poetry
-poetry add repo-scaffold
-```
+- 🚀 Quick project creation
+- 📦 Component-based templates
+- ⚙️ Interactive configuration
+- 🔧 Best practices included
 
 ## Quick Start
 
 ```bash
-# List available templates
-repo-scaffold list
+# Install
+uvx install repo-scaffold
 
-# Create a new project
-repo-scaffold create python
+# Create project
+repo-scaffold create
 
-# Create a project in a specific directory
-repo-scaffold create python -o ./my-projects
+# Or run directly
+uvx run repo-scaffold create
 ```
 
-## Available Templates
-
-Currently supported project templates:
-
-- **Python Project Template**
-  - Modern Python project structure
-  - Testing setup with pytest and nox
-  - Documentation with MkDocs Material
-  - Code quality with ruff
-  - GitHub Actions CI/CD workflows
-  - Dependency management with your choice of tool
-  - Automated version management
-  - MIT License template
-
-## Development Setup
-
-To set up the development environment:
+## Commands
 
 ```bash
-# Clone the repository
-git clone https://github.com/ShawnDen-coder/repo-scaffold.git
-cd repo-scaffold
-
-# Create and activate virtual environment
-python -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-
-# Install development dependencies
-pip install -e ".[dev,docs]"
+repo-scaffold list        # List templates
+repo-scaffold components  # List components
+repo-scaffold create      # Create project
+repo-scaffold show <name> # Show template info
 ```
+
+## Documentation
+
+- [Getting Started](docs/getting-started/)
+- [Installation](docs/getting-started/installation.md)
+- [Quick Start](docs/getting-started/quick-start.md)
+- [Configuration](docs/getting-started/configuration.md)

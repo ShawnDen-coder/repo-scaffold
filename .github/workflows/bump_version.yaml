@@ -5,8 +5,8 @@ on:
       - master
       - main
 permissions:
-  contents: write # 用于创建和推送标签
-  pull-requests: write # 用于创建 PR
+  contents: write  # 用于创建和推送标签
+  pull-requests: write  # 用于创建 PR
 jobs:
   bump-version:
     if: ${{ !startsWith(github.event.head_commit.message, 'bump:') }}

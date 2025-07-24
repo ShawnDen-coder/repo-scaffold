@@ -23,12 +23,12 @@ optional_components:
     prompt: "Add CLI support?"
     help: "Adds Click-based command line interface"
     default: false
-  
+
   docker:
     prompt: "Add Docker support?"
     help: "Includes Dockerfile and docker-compose.yml"
     default: false
-  
+
   github_actions:
     prompt: "Add GitHub Actions CI/CD?"
     help: "Automated testing and release workflows"
