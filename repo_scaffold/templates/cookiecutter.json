@@ -1,9 +1,0 @@
-{
-  "templates": {
-    "template-python": {
-      "path": "template-python",
-      "title": "python",
-      "description": "template for python project"
-    }
-  }
-}

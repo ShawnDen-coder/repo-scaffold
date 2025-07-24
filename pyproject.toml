@@ -11,7 +11,6 @@ requires-python = ">=3.12"
 dependencies = [
     "cookiecutter>=2.6.0",
     "click>=8.1.8",
-    "ruff>=0.9.6",
 ]
 
 [project.optional-dependencies]
@@ -20,6 +19,7 @@ dev = [
     "pytest>=8.3.4",
     "pytest-mock>=3.14.0",
     "pytest-cov>=6.0.0",
+    "pytest-click>=1.1.0",
     "commitizen>=3.12.0",
 ]
 
@@ -37,8 +37,13 @@ docs = [
 repo-scaffold = "repo_scaffold.cli:cli"
 
 [tool.setuptools.package-data]
-repo_scaffold = ["templates/**/*", "cookiecutter.json"]
+repo_scaffold = ["templates/**/*", "components/**/*", "languages/**/*", "schemas/**/*"]
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "pytest-click>=1.1.0",
+]
