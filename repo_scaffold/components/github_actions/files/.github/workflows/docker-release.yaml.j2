@@ -1,0 +1,39 @@
+name: 🐳 Docker Release
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+jobs:
+  push_to_registry:
+    name: Push Container image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Login to GitHub Container Registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+      - name: Build Image
+        id: build-image
+        uses: redhat-actions/buildah-build@v2
+        with:
+          image: ${{ github.repository }}
+          tags: latest ${{ github.sha }} ${{ github.ref_name }}
+          containerfiles: ./docker/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          {% if cookiecutter.use_private_pypi == "true" -%}
+          build-args: |
+            PYPI_SERVER_USERNAME=${{ secrets.PYPI_SERVER_USERNAME }}
+            PYPI_SERVER_PASSWORD=${{ secrets.PYPI_SERVER_PASSWORD }}
+          {% endif -%}
+      - name: Push To Registry
+        uses: redhat-actions/push-to-registry@v2
+        with:
+          image: ${{ steps.build-image.outputs.image }}
+          tags: ${{ steps.build-image.outputs.tags }}
+          registry: ghcr.io

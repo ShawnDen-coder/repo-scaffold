@@ -1,0 +1,131 @@
+site_name: {{cookiecutter.project_name}}
+repo_url: https://github.com/{{cookiecutter.author_name}}/{{cookiecutter.package_name}}
+site_url: https://{{cookiecutter.author_name}}.github.io/{{cookiecutter.package_name}}
+site_description: {{cookiecutter.description}}
+site_author: {{cookiecutter.author_name}}
+edit_uri: edit/main/docs/
+repo_name: {{cookiecutter.author_name}}/{{cookiecutter.package_name}}
+copyright: Maintained by <a href="https://github.com/{{cookiecutter.author_name}}">{{cookiecutter.author_name}}</a>.
+nav:
+  - Home: index.md
+  - Getting Started:
+      - Installation: getting-started/installation.md
+      - Quick Start: getting-started/quick-start.md
+      - Configuration: getting-started/configuration.md
+  - API Reference: reference/
+plugins:
+  - search
+  - gen-files:
+      scripts:
+        - docs/gen_ref_pages.py
+        - docs/gen_home_pages.py
+  - literate-nav:
+      nav_file: SUMMARY.md
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [{{cookiecutter.package_name}}]
+          options:
+            docstring_style: google
+            show_source: false
+            show_root_heading: true
+            show_signature_annotations: true
+            separate_signature: true
+            show_bases: false
+            merge_init_into_class: true
+            docstring_section_style: table
+            show_if_no_docstring: false
+            heading_level: 2
+            members_order: alphabetical
+            group_by_category: true
+            show_category_heading: true
+            docstring_options:
+              ignore_init_summary: true
+              trim_doctest_flags: true
+              returns_multiple_items: false
+            filters:
+              - "!^_.*"
+              - "!^__.*__$"
+              - "!^[A-Z_]+$"
+              - "!.*DOC.*"
+              - "!.*_MD$"
+              - "^__init__$"
+            show_symbol_type_heading: true
+            show_symbol_type_toc: true
+            show_docstring_examples: true
+            show_docstring_other_parameters: true
+            show_docstring_parameters: true
+            show_docstring_raises: true
+            show_docstring_returns: true
+theme:
+  name: material
+  palette:
+    - media: '(prefers-color-scheme: light)'
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: '(prefers-color-scheme: dark)'
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.sections
+    - navigation.expand
+    - navigation.indexes
+    - navigation.top
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.tracking
+    - search.highlight
+    - search.share
+    - search.suggest
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+    - toc.follow
+    - toc.integrate
+  icon:
+    repo: fontawesome/brands/github
+    edit: material/pencil
+    view: material/eye
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - attr_list
+  - md_in_html
+  - def_list
+  - footnotes
+  - tables
+  - toc:
+      permalink: true
+      title: On this page
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/{{cookiecutter.author_name}}/{{cookiecutter.package_name}}
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/{{cookiecutter.package_name}}

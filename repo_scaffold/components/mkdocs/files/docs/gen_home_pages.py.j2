@@ -1,0 +1,63 @@
+"""Generate home pages for documentation."""
+
+import mkdocs_gen_files
+
+# Generate getting started pages
+getting_started_pages = {
+    "getting-started/installation.md": """# Installation
+
+## Requirements
+
+- Python {{cookiecutter.python_version}}+
+- uv package manager
+
+## Install
+
+```bash
+uv add {{cookiecutter.package_name}}
+```
+""",
+    "getting-started/quick-start.md": """# Quick Start
+
+## Basic Usage
+
+```python
+import {{cookiecutter.package_name}}
+
+# Your code here
+```
+
+## Development
+
+```bash
+# Clone repository
+git clone https://github.com/{{cookiecutter.author_name}}/{{cookiecutter.package_name}}.git
+cd {{cookiecutter.package_name}}
+
+# Initialize
+task init
+
+# Run tests
+task test
+```
+""",
+    "getting-started/configuration.md": """# Configuration
+
+## Environment Variables
+
+Configure the application using environment variables:
+
+```bash
+# Example configuration
+export CONFIG_VAR=value
+```
+
+## Configuration Files
+
+Create configuration files as needed for your specific use case.
+"""
+}
+
+for file_path, content in getting_started_pages.items():
+    with mkdocs_gen_files.open(file_path, "w") as f:
+        f.write(content)

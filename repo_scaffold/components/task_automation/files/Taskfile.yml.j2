@@ -1,0 +1,138 @@
+# https://taskfile.dev
+version: '3'
+vars:
+  package_name: {{cookiecutter.package_name}}
+  python_min_version: &dev_version '{{cookiecutter.python_version}}'
+  python_max_version: '{{cookiecutter.python_version}}'
+  python_dev_version: *dev_version
+  {% if cookiecutter.use_private_pypi == "true" -%}
+  pypi_server_url: '{{.PYPI_SERVER_URL | default "{{cookiecutter.private_pypi_url}}"}}'
+  {% endif -%}
+dotenv: ['.env']
+tasks:
+  init:
+    desc: Initialize the project
+    cmds:
+      - uv sync
+      {% if cookiecutter.use_pre_commit == "true" -%}
+      - uvx pre-commit install
+      {% endif -%}
+  lint:
+    desc: Run linters
+    cmds:
+      - uvx ruff check --fix .
+      - uvx ruff format .
+      - uvx ruff check .
+  {% if cookiecutter.use_pre_commit == "true" -%}
+  lint:add-noqa:
+    desc: Add noqa comments to files
+    cmds:
+      - uvx ruff check --add-noqa .
+      - task: lint:pre-commit
+      - task: lint
+  lint:pre-commit:
+    desc: Run pre-commit hooks
+    cmds:
+      - uvx pre-commit run --all-files
+  lint:watch:
+    desc: Watch files and run linters
+    cmds:
+      - uvx ruff check --watch .
+  {% endif -%}
+  test:
+    desc: Run tests with dev version
+    cmds:
+      - task: test:version
+        vars:
+          version: '{{.python_dev_version}}'
+  test:all:
+    desc: Run tests with all Python versions
+    vars:
+      python_versions:
+        sh: |
+          python3 -c "
+          min_ver = '{{.python_min_version}}'.split('.')
+          max_ver = '{{.python_max_version}}'.split('.')
+          for minor in range(int(min_ver[1]), int(max_ver[1]) + 1):
+              print(f'{min_ver[0]}.{minor}')
+          "
+    cmds:
+      - for: {var: python_versions, split: "\n", as: version}
+        task: test:version
+        vars:
+          version: '{{.version}}'
+  test:version:
+    desc: Run tests with specific Python version
+    cmds:
+      - echo "Testing with Python {{.version}}..."
+      - uv run --extra dev --python {{.version}} pytest --cov={{.package_name}} --cov-report=xml --cov-report=term-missing -v tests/
+  test:watch:
+    desc: Watch files and run tests
+    cmds:
+      - uv run --extra dev ptw --runner "pytest -vx"
+  {% if cookiecutter.use_docs == "true" -%}
+  docs:
+    desc: Build and view documentation
+    cmds:
+      - uv run --extra docs mkdocs serve
+  docs:build:
+    desc: Build documentation
+    cmds:
+      - uv run --extra docs mkdocs build
+  deploy:gh-pages:
+    desc: Deploy documentation to GitHub Pages
+    cmds:
+      - uv run --extra docs mkdocs gh-deploy --force
+  {% endif -%}
+  build:
+    desc: Build package distribution files
+    cmds:
+      - uv build
+  {% if cookiecutter.use_private_pypi == "true" -%}
+  publish:pypi:
+    desc: Publish existing package to PyPI
+    cmds:
+      - uv publish
+  publish:pypi-server:
+    desc: Publish existing package to PyPI Server
+    env:
+      UV_PUBLISH_USERNAME: '{{.PYPI_SERVER_USERNAME}}'
+      UV_PUBLISH_PASSWORD: '{{.PYPI_SERVER_PASSWORD}}'
+      UV_PUBLISH_URL: '{{.pypi_server_url}}'
+    cmds:
+      - uv publish dist/*.whl
+  publish:all:
+    desc: Publish existing package to both PyPI and PyPI Server
+    cmds:
+      - task: publish:pypi
+      - task: publish:pypi-server
+  deploy:pypi:
+    desc: Build and deploy to PyPI
+    cmds:
+      - task: build
+      - task: publish:pypi
+  deploy:pypi-server:
+    desc: Build and deploy to PyPI Server
+    cmds:
+      - task: build
+      - task: publish:pypi-server
+  deploy:all:
+    desc: Build and deploy to all repositories
+    cmds:
+      - task: build
+      - task: publish:all
+  {% endif -%}
+  export:deps:
+    desc: Export dependencies to requirements.txt
+    cmds:
+      - uv pip compile pyproject.toml --no-deps --output-file requirements.txt
+  {% if cookiecutter.use_podman == "true" -%}
+  podman-compose:up:
+    desc: preview docker Service using podman
+    cmds:
+      - podman compose -f docker/docker-compose.yaml up
+  podman-compose:down:
+    desc: stop docker Service using podman
+    cmds:
+      - podman compose -f docker/docker-compose.yaml down
+  {% endif -%}

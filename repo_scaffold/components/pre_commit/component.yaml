@@ -1,0 +1,12 @@
+name: pre_commit
+display_name: Pre-commit Hooks
+description: Pre-commit hooks for code quality and validation
+category: quality
+dependencies: []
+conflicts: []
+cookiecutter_vars:
+  use_pre_commit: true
+files:
+  - src: .pre-commit-config.yaml.j2
+    dest: .pre-commit-config.yaml
+hooks: {}
