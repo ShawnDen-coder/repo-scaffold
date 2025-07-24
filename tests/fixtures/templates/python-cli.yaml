@@ -20,7 +20,7 @@ optional_components:
     prompt: "Add Docker support?"
     help: "Includes Dockerfile"
     default: false
-  
+
   github_actions:
     prompt: "Add GitHub Actions CI/CD?"
     help: "Automated testing and release workflows"

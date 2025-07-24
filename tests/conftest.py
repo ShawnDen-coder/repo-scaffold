@@ -1,15 +1,15 @@
-"""
-Pytest configuration and shared fixtures for repo-scaffold tests.
+"""Pytest configuration and shared fixtures for repo-scaffold tests.
 
 This module provides shared fixtures and configuration for all tests.
 The fixtures load test data from YAML files in tests/fixtures/ directory.
 """
 
-import pytest
 import tempfile
-import yaml
 from pathlib import Path
 from unittest.mock import Mock
+
+import pytest
+import yaml
 
 from repo_scaffold.core.component_manager import Component
 
@@ -19,8 +19,7 @@ FIXTURES_DIR = Path(__file__).parent / "fixtures"
 
 
 def load_fixture_yaml(fixture_path: str) -> dict:
-    """
-    Load a YAML fixture file.
+    """Load a YAML fixture file.
 
     Args:
         fixture_path: Path relative to fixtures directory (e.g., "components/python_core.yaml")
@@ -29,14 +28,13 @@ def load_fixture_yaml(fixture_path: str) -> dict:
         Parsed YAML content as dictionary
     """
     full_path = FIXTURES_DIR / fixture_path
-    with open(full_path, 'r', encoding='utf-8') as f:
+    with open(full_path, encoding="utf-8") as f:
         return yaml.safe_load(f)
 
 
 @pytest.fixture(scope="session")
 def sample_component_configs():
-    """
-    Sample component configurations for testing.
+    """Sample component configurations for testing.
 
     Loads component configurations from YAML files in tests/fixtures/components/
     Each YAML file contains comments indicating which tests use that component.
@@ -52,8 +50,7 @@ def sample_component_configs():
 
 @pytest.fixture(scope="session")
 def sample_template_configs():
-    """
-    Sample template configurations for testing.
+    """Sample template configurations for testing.
 
     Loads template configurations from YAML files in tests/fixtures/templates/
     Each YAML file contains comments indicating which tests use that template.
@@ -85,18 +82,17 @@ def temp_workspace():
     """Create a temporary workspace for testing."""
     with tempfile.TemporaryDirectory() as temp_dir:
         workspace = Path(temp_dir)
-        
+
         # Create standard directories
         (workspace / "components").mkdir()
         (workspace / "templates").mkdir()
         (workspace / "output").mkdir()
-        
+
         yield workspace
 
 
-def create_component_files(component_dir: Path, config: dict, files_content: dict = None):
-    """
-    Helper function to create component files for testing.
+def create_component_files(component_dir: Path, config: dict, files_content: dict | None = None):
+    """Helper function to create component files for testing.
 
     Used by:
     - test_integration.py::integration_test_setup fixture
@@ -124,8 +120,7 @@ def create_component_files(component_dir: Path, config: dict, files_content: dic
 
 
 def create_component_from_fixture(component_dir: Path, component_name: str):
-    """
-    Create a component directory structure from a fixture YAML file.
+    """Create a component directory structure from a fixture YAML file.
 
     Args:
         component_dir: Directory where component should be created
@@ -170,7 +165,7 @@ def create_component_from_fixture(component_dir: Path, component_name: str):
 def create_template_file(template_path: Path, config: dict):
     """Helper function to create template configuration files."""
     template_path.parent.mkdir(parents=True, exist_ok=True)
-    
+
     with open(template_path, "w") as f:
         yaml.dump(config, f)
 
@@ -181,18 +176,10 @@ pytest_plugins = []
 
 def pytest_configure(config):
     """Configure pytest with custom markers."""
-    config.addinivalue_line(
-        "markers", "unit: mark test as a unit test"
-    )
-    config.addinivalue_line(
-        "markers", "integration: mark test as an integration test"
-    )
-    config.addinivalue_line(
-        "markers", "cli: mark test as a CLI test"
-    )
-    config.addinivalue_line(
-        "markers", "slow: mark test as slow running"
-    )
+    config.addinivalue_line("markers", "unit: mark test as a unit test")
+    config.addinivalue_line("markers", "integration: mark test as an integration test")
+    config.addinivalue_line("markers", "cli: mark test as a CLI test")
+    config.addinivalue_line("markers", "slow: mark test as slow running")
 
 
 # Custom pytest collection hooks
@@ -206,7 +193,7 @@ def pytest_collection_modifyitems(config, items):
             item.add_marker(pytest.mark.integration)
         elif "test_" in item.nodeid and "integration" not in item.nodeid:
             item.add_marker(pytest.mark.unit)
-        
+
         # Mark slow tests
         if "slow" in item.name.lower() or "integration" in item.nodeid:
             item.add_marker(pytest.mark.slow)

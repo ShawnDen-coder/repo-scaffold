@@ -733,7 +733,6 @@ dependencies = [
 dev = [
     { name = "commitizen" },
     { name = "pytest" },
-    { name = "pytest-click" },
     { name = "pytest-cov" },
     { name = "pytest-mock" },
     { name = "ruff" },
@@ -766,7 +765,6 @@ requires-dist = [
     { name = "mkdocstrings-python", marker = "extra == 'docs'", specifier = ">=1.7.5" },
     { name = "pymdown-extensions", marker = "extra == 'docs'", specifier = ">=10.7" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.3.4" },
-    { name = "pytest-click", marker = "extra == 'dev'", specifier = ">=1.1.0" },
     { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=6.0.0" },
     { name = "pytest-mock", marker = "extra == 'dev'", specifier = ">=3.14.0" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.9.7" },

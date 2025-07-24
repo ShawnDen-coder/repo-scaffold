@@ -12,3 +12,4 @@
 # MkDocs build output
 /site/
 htmlcov/
+.env/
