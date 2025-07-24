@@ -1,0 +1,39 @@
+# Cookiecutter template for Dockerfile
+#
+# Used by tests:
+# - test_template_composer.py::test_merge_component_files
+# - Any test that includes Docker component
+
+FROM python:{{cookiecutter.python_version}}-slim
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements and install Python dependencies
+COPY pyproject.toml ./
+RUN pip install --no-cache-dir -e .
+
+# Copy application code
+COPY src/ ./src/
+COPY tests/ ./tests/
+
+# Create non-root user
+RUN useradd --create-home --shell /bin/bash app
+USER app
+
+# Set environment variables
+ENV PYTHONPATH=/app/src
+ENV PYTHONUNBUFFERED=1
+
+{% if cookiecutter.use_cli == "true" -%}
+# CLI application entry point
+ENTRYPOINT ["{{cookiecutter.package_name}}"]
+{% else -%}
+# Library - default to Python shell
+CMD ["python"]
+{% endif -%}

@@ -1,0 +1,24 @@
+# Component configuration for docker
+#
+# Used by tests:
+# - test_component_manager.py::test_discover_components
+# - test_component_manager.py::test_resolve_dependencies_complex
+# - test_component_manager.py::test_validate_selection_with_conflicts
+# - test_template_composer.py::test_build_cookiecutter_config
+# - test_template_composer.py::test_merge_component_files
+
+name: docker
+display_name: Docker Support
+description: Docker containerization support
+category: containerization
+dependencies: []
+conflicts:
+  - podman
+cookiecutter_vars:
+  use_docker: true
+files:
+  - src: Dockerfile.j2
+    dest: Dockerfile
+  - src: docker-compose.yml.j2
+    dest: docker-compose.yml
+hooks: {}
