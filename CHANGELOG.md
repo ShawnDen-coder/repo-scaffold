@@ -1,3 +1,12 @@
+## 0.12.0 (2025-07-25)
+
+### Feat
+
+- update lint
+- update
+- update template
+- refactor project
+
 ## 0.11.0 (2025-05-30)
 
 ### Feat
