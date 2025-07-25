@@ -37,7 +37,7 @@ def test_github_actions_component_exists(github_actions_component):
 
 def test_github_actions_dependencies(github_actions_component):
     """Test that GitHub Actions has correct dependencies."""
-    expected_dependencies = {'task_automation'}
+    expected_dependencies = {"task_automation"}
     assert set(github_actions_component.dependencies) == expected_dependencies
 
 
@@ -88,9 +88,6 @@ def test_ci_tests_workflow_content(components_dir):
     # Should not contain the old airflow_docker variable
     assert "use_airflow_docker" not in content
     assert "./docker/Dockerfile" not in content
-
-
-
 
 
 def test_version_bump_workflow_content(components_dir):
