@@ -43,7 +43,7 @@ def test_mkdocs_no_conflicts(mkdocs_component):
 
 def test_mkdocs_cookiecutter_vars(mkdocs_component):
     """Test that MkDocs sets correct cookiecutter variables."""
-    expected_vars = {"use_docs": True, "use_mkdocs": True}
+    expected_vars = {"use_mkdocs": True}
 
     for key, expected_value in expected_vars.items():
         assert key in mkdocs_component.cookiecutter_vars

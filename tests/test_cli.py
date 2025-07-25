@@ -250,7 +250,7 @@ def test_show_template_not_found(mock_load_config, cli_runner):
 @patch("repo_scaffold.cli.CookiecutterRunner")
 @patch("repo_scaffold.cli.load_template_config")
 def test_create_command_with_template(mock_load_config, mock_runner, mock_composer, mock_selection, cli_runner):
-    """Test create command with specified template."""
+    """Test create command with specified template and interactive input."""
     # Mock template config
     mock_config = {
         "name": "python-library",
@@ -272,7 +272,7 @@ def test_create_command_with_template(mock_load_config, mock_runner, mock_compos
     mock_runner.return_value = mock_runner_instance
     mock_runner_instance.run_cookiecutter.return_value = Path("/tmp/output/project")
 
-    result = cli_runner.invoke(create, ["--template", "python-library"])
+    result = cli_runner.invoke(create, ["--template", "python-library", "--input"])
 
     assert result.exit_code == 0
     mock_load_config.assert_called_once()
@@ -286,7 +286,7 @@ def test_create_command_with_template(mock_load_config, mock_runner, mock_compos
 @patch("repo_scaffold.cli.TemplateComposer")
 @patch("repo_scaffold.cli.CookiecutterRunner")
 def test_create_command_interactive(mock_runner, mock_composer, mock_comp_selection, mock_temp_selection, cli_runner):
-    """Test create command with interactive template selection."""
+    """Test create command with interactive template and component selection."""
     # Mock template selection
     mock_temp_selection.return_value = ("python-library", {"name": "python-library", "optional_components": {}})
 
@@ -303,11 +303,81 @@ def test_create_command_interactive(mock_runner, mock_composer, mock_comp_select
     mock_runner.return_value = mock_runner_instance
     mock_runner_instance.run_cookiecutter.return_value = Path("/tmp/output/project")
 
-    result = cli_runner.invoke(create)
+    result = cli_runner.invoke(create, ["--input"])
 
     assert result.exit_code == 0
     mock_temp_selection.assert_called_once()
     mock_comp_selection.assert_called_once()
+
+
+@patch("repo_scaffold.cli.TemplateComposer")
+@patch("repo_scaffold.cli.CookiecutterRunner")
+@patch("repo_scaffold.cli.load_template_config")
+def test_create_command_default_no_input(mock_load_config, mock_runner, mock_composer, cli_runner):
+    """Test create command with default no-input behavior."""
+    # Mock template config
+    mock_config = {
+        "name": "python-library",
+        "display_name": "Python Library",
+        "required_components": ["python_core", "task_automation"],
+    }
+    mock_load_config.return_value = mock_config
+
+    # Mock template composition
+    mock_composer_instance = Mock()
+    mock_composer.return_value = mock_composer_instance
+    mock_composer_instance.compose_template.return_value = Path("/tmp/template")
+
+    # Mock cookiecutter runner
+    mock_runner_instance = Mock()
+    mock_runner.return_value = mock_runner_instance
+    mock_runner_instance.run_cookiecutter.return_value = Path("/tmp/output/project")
+
+    # Test default behavior (should not prompt)
+    result = cli_runner.invoke(create)
+
+    assert result.exit_code == 0
+    # Should load default python-library template
+    mock_load_config.assert_called_once_with("python-library")
+    # Should use no_input=True (not prompt)
+    mock_runner_instance.run_cookiecutter.assert_called_once()
+    call_args = mock_runner_instance.run_cookiecutter.call_args
+    assert call_args[1]["no_input"] is True
+
+
+@patch("repo_scaffold.cli.TemplateComposer")
+@patch("repo_scaffold.cli.CookiecutterRunner")
+@patch("repo_scaffold.cli.load_template_config")
+def test_create_command_with_template_no_input(mock_load_config, mock_runner, mock_composer, cli_runner):
+    """Test create command with specified template and default no-input behavior."""
+    # Mock template config
+    mock_config = {
+        "name": "python-library",
+        "display_name": "Python Library",
+        "required_components": ["python_core", "task_automation"],
+    }
+    mock_load_config.return_value = mock_config
+
+    # Mock template composition
+    mock_composer_instance = Mock()
+    mock_composer.return_value = mock_composer_instance
+    mock_composer_instance.compose_template.return_value = Path("/tmp/template")
+
+    # Mock cookiecutter runner
+    mock_runner_instance = Mock()
+    mock_runner.return_value = mock_runner_instance
+    mock_runner_instance.run_cookiecutter.return_value = Path("/tmp/output/project")
+
+    # Test with specified template (should not prompt by default)
+    result = cli_runner.invoke(create, ["--template", "python-library"])
+
+    assert result.exit_code == 0
+    # Should load specified template
+    mock_load_config.assert_called_once_with("python-library")
+    # Should use no_input=True (not prompt)
+    mock_runner_instance.run_cookiecutter.assert_called_once()
+    call_args = mock_runner_instance.run_cookiecutter.call_args
+    assert call_args[1]["no_input"] is True
 
 
 @patch("repo_scaffold.cli.load_template_config")

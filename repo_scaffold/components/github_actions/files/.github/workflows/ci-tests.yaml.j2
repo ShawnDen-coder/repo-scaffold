@@ -10,10 +10,10 @@ permissions:
   contents: read
 env:
   {% if cookiecutter.use_private_pypi == "true" -%}
-  UV_INDEX_{{cookiecutter.private_pypi_name | upper}}_USERNAME: ${{ secrets.PYPI_SERVER_USERNAME }}
-  UV_INDEX_{{cookiecutter.private_pypi_name | upper}}_PASSWORD: ${{ secrets.PYPI_SERVER_PASSWORD }}
-  PYPI_SERVER_USERNAME: ${{ secrets.PYPI_SERVER_USERNAME }}
-  PYPI_SERVER_PASSWORD: ${{ secrets.PYPI_SERVER_PASSWORD }}
+  UV_INDEX_{{cookiecutter.private_pypi_name | upper}}_USERNAME: ${% raw %}{{ secrets.PYPI_SERVER_USERNAME }}{% endraw %}
+  UV_INDEX_{{cookiecutter.private_pypi_name | upper}}_PASSWORD: ${% raw %}{{ secrets.PYPI_SERVER_PASSWORD }}{% endraw %}
+  PYPI_SERVER_USERNAME: ${% raw %}{{ secrets.PYPI_SERVER_USERNAME }}{% endraw %}
+  PYPI_SERVER_PASSWORD: ${% raw %}{{ secrets.PYPI_SERVER_PASSWORD }}{% endraw %}
   {% endif -%}
 jobs:
   check:
@@ -58,13 +58,13 @@ jobs:
         id: build-container
         uses: redhat-actions/buildah-build@v2
         with:
-          image: ${{ github.repository }}-test
-          tags: test-${{ github.sha }}
+          image: ${% raw %}{{ github.repository }}{% endraw %}-test
+          tags: test-${% raw %}{{ github.sha }}{% endraw %}
           containerfiles: ./container/Containerfile
           platforms: linux/amd64,linux/arm64
           {% if cookiecutter.use_private_pypi == "true" -%}
           build-args: |-
-            PYPI_SERVER_USERNAME=${{ env.PYPI_SERVER_USERNAME }}
-            PYPI_SERVER_PASSWORD=${{ env.PYPI_SERVER_PASSWORD }}
+            PYPI_SERVER_USERNAME=${% raw %}{{ env.PYPI_SERVER_USERNAME }}{% endraw %}
+            PYPI_SERVER_PASSWORD=${% raw %}{{ env.PYPI_SERVER_PASSWORD }}{% endraw %}
           {% endif -%}
   {% endif -%}

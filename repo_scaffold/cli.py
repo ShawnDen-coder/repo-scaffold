@@ -9,9 +9,9 @@ from typing import Any
 import click
 import yaml
 
-from .core.component_manager import ComponentManager
-from .core.cookiecutter_runner import CookiecutterRunner
-from .core.template_composer import TemplateComposer
+from repo_scaffold.core.component_manager import ComponentManager
+from repo_scaffold.core.cookiecutter_runner import CookiecutterRunner
+from repo_scaffold.core.template_composer import TemplateComposer
 
 
 # Default paths - can be overridden by environment variables or config
@@ -35,19 +35,49 @@ def cli():
     default=Path.cwd(),
     help="Output directory for the generated project",
 )
-def create(template: str | None, output: Path):
-    """Create a new project from a template."""
+@click.option(
+    "--no-input",
+    is_flag=True,
+    default=True,
+    help="Do not prompt for parameters and only use cookiecutter.json file content (default: True)",
+)
+@click.option(
+    "--input",
+    "prompt_input",
+    is_flag=True,
+    help="Prompt for parameters interactively (overrides --no-input)",
+)
+def create(template: str | None, output: Path, no_input: bool, prompt_input: bool):
+    """Create a new project from a template.
+
+    By default, uses template defaults without prompting (--no-input).
+    Use --input to enable interactive prompts for customization.
+    """
     try:
+        # Determine if we should prompt for input
+        # --input flag overrides the default --no-input behavior
+        should_prompt = prompt_input or not no_input
+
         if template:
             # Use specified template
             template_config = load_template_config(template)
             template_name = template
         else:
-            # Interactive template selection
-            template_name, template_config = interactive_template_selection()
+            # Interactive template selection (only if prompting is enabled)
+            if should_prompt:
+                template_name, template_config = interactive_template_selection()
+            else:
+                # Use default template when no input is requested
+                template_name = "python-library"
+                template_config = load_template_config(template_name)
 
-        # Interactive component selection
-        selected_components = interactive_component_selection(template_config)
+        # Component selection
+        if should_prompt:
+            # Interactive component selection
+            selected_components = interactive_component_selection(template_config)
+        else:
+            # Use all required components when no input is requested
+            selected_components = template_config.get("required_components", [])
 
         # Initialize core components
         component_manager = ComponentManager(DEFAULT_COMPONENTS_DIR)
@@ -69,7 +99,7 @@ def create(template: str | None, output: Path):
         try:
             # Run cookiecutter
             click.echo("🚀 Generating project...")
-            project_path = runner.run_cookiecutter(temp_template_dir, output)
+            project_path = runner.run_cookiecutter(temp_template_dir, output, no_input=not should_prompt)
 
             click.echo(f"✅ Project created successfully at: {project_path}")
 

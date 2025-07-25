@@ -11,8 +11,8 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
     outputs:
-      should-publish-public: ${{ steps.determine-strategy.outputs.publish-public }}
-      should-publish-private: ${{ steps.determine-strategy.outputs.publish-private }}
+      should-publish-public: ${% raw %}{{ steps.determine-strategy.outputs.publish-public }}{% endraw %}
+      should-publish-private: ${% raw %}{{ steps.determine-strategy.outputs.publish-private }}{% endraw %}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -50,8 +50,8 @@ jobs:
       - name: Initialize environment and test
         env:
           {% if cookiecutter.use_private_pypi == "true" -%}
-          UV_INDEX_{{cookiecutter.private_pypi_name | upper}}_USERNAME: ${{ secrets.PYPI_SERVER_USERNAME }}
-          UV_INDEX_{{cookiecutter.private_pypi_name | upper}}_PASSWORD: ${{ secrets.PYPI_SERVER_PASSWORD }}
+          UV_INDEX_{{cookiecutter.private_pypi_name | upper}}_USERNAME: ${% raw %}{{ secrets.PYPI_SERVER_USERNAME }}{% endraw %}
+          UV_INDEX_{{cookiecutter.private_pypi_name | upper}}_PASSWORD: ${% raw %}{{ secrets.PYPI_SERVER_PASSWORD }}{% endraw %}
           {% endif -%}
         {% if cookiecutter.use_task == "true" -%}
         run: |
@@ -120,8 +120,8 @@ jobs:
 
       - name: Publish to Private PyPI
         env:
-          UV_PUBLISH_USERNAME: ${{ secrets.PYPI_SERVER_USERNAME }}
-          UV_PUBLISH_PASSWORD: ${{ secrets.PYPI_SERVER_PASSWORD }}
+          UV_PUBLISH_USERNAME: ${% raw %}{{ secrets.PYPI_SERVER_USERNAME }}{% endraw %}
+          UV_PUBLISH_PASSWORD: ${% raw %}{{ secrets.PYPI_SERVER_PASSWORD }}{% endraw %}
         run: |
           uv publish \
             --publish-url {{cookiecutter.private_pypi_url | replace('/simple/', '/') }} \
@@ -150,4 +150,4 @@ jobs:
             dist/*.whl
           generate_release_notes: true
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${% raw %}{{ secrets.GITHUB_TOKEN }}{% endraw %}

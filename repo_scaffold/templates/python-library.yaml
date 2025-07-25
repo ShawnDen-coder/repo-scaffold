@@ -32,3 +32,36 @@ base_cookiecutter_config:
     - "MIT"
     - "Apache-2.0"
     - "BSD-3-Clause"
+
+  # 组件变量默认值
+  # Python Core 组件
+  use_python: true
+  use_uv: true
+
+  # MkDocs 组件
+  use_mkdocs: true
+
+  # Task Automation 组件
+  use_task: true
+
+  # GitHub Actions 组件
+  use_github_actions: true
+
+  # Podman 组件
+  use_podman: true
+  use_containers: true
+  container_runtime: "podman"
+  podman_compose_version: "1.0.6"
+
+  # PyPI 组件
+  use_pypi: true
+  pypi_type:
+    - "public"
+    - "private"
+  use_public_pypi: true
+  use_private_pypi: false
+  private_pypi_name: "homelab"
+  private_pypi_url: "https://pypiserver.example.com/simple/"
+
+  # Pre-commit 组件
+  use_pre_commit: true

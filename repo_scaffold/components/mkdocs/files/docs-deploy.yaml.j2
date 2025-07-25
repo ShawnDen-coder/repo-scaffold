@@ -25,10 +25,10 @@ jobs:
         uses: astral-sh/setup-uv@v5
       - name: Build and deploy documentation
         env:
-          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${% raw %}{{ github.token }}{% endraw %}
           {% if cookiecutter.use_private_pypi == "true" -%}
-          UV_INDEX_{{cookiecutter.private_pypi_name | upper}}_USERNAME: ${{ secrets.PYPI_SERVER_USERNAME }}
-          UV_INDEX_{{cookiecutter.private_pypi_name | upper}}_PASSWORD: ${{ secrets.PYPI_SERVER_PASSWORD }}
+          UV_INDEX_{{cookiecutter.private_pypi_name | upper}}_USERNAME: ${% raw %}{{ secrets.PYPI_SERVER_USERNAME }}{% endraw %}
+          UV_INDEX_{{cookiecutter.private_pypi_name | upper}}_PASSWORD: ${% raw %}{{ secrets.PYPI_SERVER_PASSWORD }}{% endraw %}
           {% endif -%}
         {% if cookiecutter.use_task == "true" -%}
         run: task deploy:gh-pages

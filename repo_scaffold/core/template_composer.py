@@ -9,7 +9,7 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
-from .component_manager import ComponentManager
+from repo_scaffold.core.component_manager import ComponentManager
 
 
 class TemplateComposer:

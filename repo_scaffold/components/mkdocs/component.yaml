@@ -5,7 +5,6 @@ category: documentation
 dependencies: []
 conflicts: []
 cookiecutter_vars:
-  use_docs: true
   use_mkdocs: true
 files:
   - src: mkdocs.yml.j2

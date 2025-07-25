@@ -2,9 +2,10 @@
 version: '3'
 vars:
   package_name: {{cookiecutter.package_name}}
-  python_min_version: &dev_version '{{cookiecutter.python_version}}'
-  python_max_version: '{{cookiecutter.python_version}}'
-  python_dev_version: *dev_version
+  python_min_version: '{{cookiecutter.python_min_version}}'
+  python_max_version: '{{cookiecutter.python_max_version}}'
+  python_dev_version: &dev_version '{{cookiecutter.python_dev_version}}'
+
   {% if cookiecutter.use_private_pypi == "true" -%}
   pypi_server_url: '{{cookiecutter.private_pypi_url}}'
   {% endif -%}
@@ -17,6 +18,7 @@ tasks:
       {% if cookiecutter.use_pre_commit == "true" -%}
       - uvx pre-commit install
       {% endif -%}
+
   lint:
     desc: Run linters
     cmds:
@@ -30,10 +32,12 @@ tasks:
       - uvx ruff check --add-noqa .
       - task: lint:pre-commit
       - task: lint
+
   lint:pre-commit:
     desc: Run pre-commit hooks
     cmds:
       - uvx pre-commit run --all-files
+
   lint:watch:
     desc: Watch files and run linters
     cmds:
@@ -44,15 +48,15 @@ tasks:
     cmds:
       - task: test:version
         vars:
-          version: '{{.python_dev_version}}'
+          version: '{{ cookiecutter.python_dev_version }}'
   test:all:
     desc: Run tests with all Python versions
     vars:
       python_versions:
         sh: |
           uv run python -c "
-          min_ver = '{{.python_min_version}}'.split('.')
-          max_ver = '{{.python_max_version}}'.split('.')
+          min_ver = '{{ cookiecutter.python_min_version }}'.split('.')
+          max_ver = '{{ cookiecutter.python_max_version }}'.split('.')
           for minor in range(int(min_ver[1]), int(max_ver[1]) + 1):
               print(f'{min_ver[0]}.{minor}')
           "
@@ -60,79 +64,92 @@ tasks:
       - for: {var: python_versions, split: "\n", as: version}
         task: test:version
         vars:
-          version: '{{.version}}'
+          version: {% raw %}'{{ .version }}'{% endraw %}
   test:version:
     desc: Run tests with specific Python version
     cmds:
-      - echo "Testing with Python {{.version}}..."
-      - uv run --extra dev --python {{.version}} pytest --cov={{.package_name}} --cov-report=xml --cov-report=term-missing -v tests/
+      - echo "Testing with Python {% raw %}{{ .version }}{% endraw %}..."
+      - uv run --extra dev --python {% raw %}{{ .version }}{% endraw %} pytest --cov={{ cookiecutter.package_name }} --cov-report=xml --cov-report=term-missing -v tests/
   test:watch:
     desc: Watch files and run tests
     cmds:
       - uv run --extra dev ptw --runner "pytest -vx"
-  {% if cookiecutter.use_docs == "true" -%}
+
+  {% if cookiecutter.use_mkdocs == "true" -%}
   docs:
     desc: Build and view documentation
     cmds:
       - uv run --extra docs mkdocs serve
+
   docs:build:
     desc: Build documentation
     cmds:
       - uv run --extra docs mkdocs build
+
   deploy:gh-pages:
     desc: Deploy documentation to GitHub Pages
     cmds:
       - uv run --extra docs mkdocs gh-deploy --force
   {% endif -%}
+
   build:
     desc: Build package distribution files
     cmds:
       - uv build
+
   {% if cookiecutter.use_private_pypi == "true" -%}
   publish:pypi:
     desc: Publish existing package to PyPI
     cmds:
       - uv publish
+
   publish:pypi-server:
     desc: Publish existing package to PyPI Server
     env:
-      UV_PUBLISH_USERNAME: '{{.PYPI_SERVER_USERNAME}}'
-      UV_PUBLISH_PASSWORD: '{{.PYPI_SERVER_PASSWORD}}'
-      UV_PUBLISH_URL: '{{.pypi_server_url}}'
+      UV_PUBLISH_USERNAME: {% raw %}'{{ .PYPI_SERVER_USERNAME }}'{% endraw %}
+      UV_PUBLISH_PASSWORD: {% raw %}'{{ .PYPI_SERVER_PASSWORD }}'{% endraw %}
+      UV_PUBLISH_URL: '{{ cookiecutter.private_pypi_url }}'
     cmds:
       - uv publish dist/*.whl
+
   publish:all:
     desc: Publish existing package to both PyPI and PyPI Server
     cmds:
       - task: publish:pypi
       - task: publish:pypi-server
+
   deploy:pypi:
     desc: Build and deploy to PyPI
     cmds:
       - task: build
       - task: publish:pypi
+
   deploy:pypi-server:
     desc: Build and deploy to PyPI Server
     cmds:
       - task: build
       - task: publish:pypi-server
+
   deploy:all:
     desc: Build and deploy to all repositories
     cmds:
       - task: build
       - task: publish:all
   {% endif -%}
+
   export:deps:
     desc: Export dependencies to requirements.txt
     cmds:
       - uv pip compile pyproject.toml --no-deps --output-file requirements.txt
+
   {% if cookiecutter.use_podman == "true" -%}
   podman-compose:up:
-    desc: preview docker Service using podman
+    desc: preview container service using podman
     cmds:
-      - podman compose -f docker/docker-compose.yaml up
+      - podman compose -f compose.yml up
+
   podman-compose:down:
-    desc: stop docker Service using podman
+    desc: stop container service using podman
     cmds:
-      - podman compose -f docker/docker-compose.yaml down
+      - podman compose -f compose.yml down
   {% endif -%}

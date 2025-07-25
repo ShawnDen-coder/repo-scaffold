@@ -26,24 +26,24 @@ jobs:
         uses: redhat-actions/podman-login@v1
         with:
           registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          username: ${% raw %}{{ github.actor }}{% endraw %}
+          password: ${% raw %}{{ secrets.PERSONAL_ACCESS_TOKEN }}{% endraw %}
       - name: Build Image
         id: build-image
         uses: redhat-actions/buildah-build@v2
         with:
-          image: ${{ github.repository }}
-          tags: latest ${{ github.sha }} ${{ github.ref_name }}
+          image: ${% raw %}{{ github.repository }}{% endraw %}
+          tags: latest ${% raw %}{{ github.sha }}{% endraw %} ${% raw %}{{ github.ref_name }}{% endraw %}
           containerfiles: ./container/Containerfile
           platforms: linux/amd64,linux/arm64
           {% if cookiecutter.use_private_pypi == "true" -%}
           build-args: |
-            PYPI_SERVER_USERNAME=${{ secrets.PYPI_SERVER_USERNAME }}
-            PYPI_SERVER_PASSWORD=${{ secrets.PYPI_SERVER_PASSWORD }}
+            PYPI_SERVER_USERNAME=${% raw %}{{ secrets.PYPI_SERVER_USERNAME }}{% endraw %}
+            PYPI_SERVER_PASSWORD=${% raw %}{{ secrets.PYPI_SERVER_PASSWORD }}{% endraw %}
           {% endif -%}
       - name: Push To Registry
         uses: redhat-actions/push-to-registry@v2
         with:
-          image: ${{ steps.build-image.outputs.image }}
-          tags: ${{ steps.build-image.outputs.tags }}
+          image: ${% raw %}{{ steps.build-image.outputs.image }}{% endraw %}
+          tags: ${% raw %}{{ steps.build-image.outputs.tags }}{% endraw %}
           registry: ghcr.io

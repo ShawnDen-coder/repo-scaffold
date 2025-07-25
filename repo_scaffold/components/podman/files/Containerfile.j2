@@ -2,7 +2,7 @@
 # Based on uv Docker integration best practices
 # https://docs.astral.sh/uv/guides/integration/docker/
 
-FROM python:{{cookiecutter.python_version}}-slim
+FROM python:{{cookiecutter.python_dev_version}}-slim
 
 # Install uv
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /usr/local/bin/
