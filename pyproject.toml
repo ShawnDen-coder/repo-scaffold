@@ -7,7 +7,7 @@ authors = [
 ]
 license = "MIT"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.10"
 dependencies = [
     "cookiecutter>=2.6.0",
     "click>=8.1.8",
@@ -36,7 +36,7 @@ docs = [
 repo-scaffold = "repo_scaffold.cli:cli"
 
 [tool.setuptools.package-data]
-repo_scaffold = ["templates/**/*", "components/**/*", "languages/**/*", "schemas/**/*"]
+repo_scaffold = ["templates/**/*", "components/**/*"]
 
 [build-system]
 requires = ["hatchling"]

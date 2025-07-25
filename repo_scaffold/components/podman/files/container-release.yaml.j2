@@ -1,8 +1,18 @@
-name: 🐳 Docker Release
+name: 📦 Container Release
 on:
   release:
     types: [published]
   workflow_dispatch:
+  push:
+    branches: [main, master]
+    paths:
+      - 'container/**'
+      - '.github/workflows/container-release.yaml'
+  push:
+    branches: [main, master]
+    paths:
+      - 'container/**'
+      - '.github/workflows/container-release.yaml'
 jobs:
   push_to_registry:
     name: Push Container image
@@ -24,7 +34,7 @@ jobs:
         with:
           image: ${{ github.repository }}
           tags: latest ${{ github.sha }} ${{ github.ref_name }}
-          containerfiles: ./docker/Dockerfile
+          containerfiles: ./container/Containerfile
           platforms: linux/amd64,linux/arm64
           {% if cookiecutter.use_private_pypi == "true" -%}
           build-args: |

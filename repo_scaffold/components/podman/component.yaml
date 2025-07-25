@@ -1,0 +1,23 @@
+name: podman
+display_name: Podman Support
+description: Podman containerization with rootless containers and compose support
+category: containerization
+dependencies: []
+conflicts:
+  - docker
+  - airflow_docker
+cookiecutter_vars:
+  use_podman: true
+  use_containers: true
+  container_runtime: "podman"
+  podman_compose_version: "1.0.6"
+files:
+  - src: Containerfile.j2
+    dest: container/Containerfile
+  - src: .containerignore
+    dest: container/.containerignore
+  - src: compose.yml.j2
+    dest: container/compose.yml
+  - src: container-release.yaml.j2
+    dest: .github/workflows/container-release.yaml
+hooks: {}

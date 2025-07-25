@@ -1,6 +1,6 @@
 include = ["pyproject.toml", "repo_scaffold/**/*.py", "tests/**/*.py"]
 line-length = 120
-target-version = "py312"
+target-version = "py310"
 
 [lint]
 extend-ignore = [

@@ -1,0 +1,33 @@
+name: python_core
+display_name: Python Core
+description: Core Python project structure with uv package management
+category: core
+dependencies: []
+conflicts: []
+cookiecutter_vars:
+  use_python: true
+  use_uv: true
+files:
+  - src: pyproject.toml.j2
+    dest: pyproject.toml
+  - src: README.md.j2
+    dest: README.md
+  - src: src/__init__.py.j2
+    dest: "{{cookiecutter.project_slug}}/__init__.py"
+  - src: src/py.typed
+    dest: "{{cookiecutter.project_slug}}/py.typed"
+  - src: tests/__init__.py
+    dest: tests/__init__.py
+  - src: tests/test_basic.py.j2
+    dest: "tests/test_{{cookiecutter.package_name}}.py"
+  - src: .gitignore
+    dest: .gitignore
+  - src: .cz.yaml.j2
+    dest: .cz.yaml
+  - src: .pre-commit-config.yaml.j2
+    dest: .pre-commit-config.yaml
+  - src: .ruff.toml.j2
+    dest: .ruff.toml
+  - src: .yamlfmt.yaml.j2
+    dest: .yamlfmt.yaml
+hooks: {}

@@ -1,0 +1,46 @@
+# {{cookiecutter.project_name}}
+
+{{cookiecutter.description}}
+
+## Installation
+
+```bash
+pip install {{cookiecutter.project_slug}}
+```
+
+## Usage
+
+```python
+import {{cookiecutter.project_slug.replace('-', '_')}}
+
+# Your code here
+```
+
+## Development
+
+This project uses [uv](https://docs.astral.sh/uv/) for dependency management.
+
+```bash
+# Install dependencies
+uv sync
+
+# Install pre-commit hooks
+uv run pre-commit install
+
+# Run tests
+uv run pytest
+
+# Run linting and formatting
+uv run ruff check
+uv run ruff format
+
+# Format YAML files
+uv run yamlfmt .
+
+# Version bump and changelog
+uv run cz bump
+```
+
+## License
+
+This project is licensed under the {{cookiecutter.license}} License.

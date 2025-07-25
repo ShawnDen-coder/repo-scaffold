@@ -16,4 +16,6 @@ files:
     dest: docs/gen_ref_pages.py
   - src: docs/gen_home_pages.py.j2
     dest: docs/gen_home_pages.py
+  - src: docs-deploy.yaml.j2
+    dest: .github/workflows/docs-deploy.yaml
 hooks: {}

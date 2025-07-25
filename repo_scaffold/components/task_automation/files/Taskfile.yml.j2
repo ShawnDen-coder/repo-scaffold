@@ -6,7 +6,7 @@ vars:
   python_max_version: '{{cookiecutter.python_version}}'
   python_dev_version: *dev_version
   {% if cookiecutter.use_private_pypi == "true" -%}
-  pypi_server_url: '{{.PYPI_SERVER_URL | default "{{cookiecutter.private_pypi_url}}"}}'
+  pypi_server_url: '{{cookiecutter.private_pypi_url}}'
   {% endif -%}
 dotenv: ['.env']
 tasks:
@@ -50,7 +50,7 @@ tasks:
     vars:
       python_versions:
         sh: |
-          python3 -c "
+          uv run python -c "
           min_ver = '{{.python_min_version}}'.split('.')
           max_ver = '{{.python_max_version}}'.split('.')
           for minor in range(int(min_ver[1]), int(max_ver[1]) + 1):

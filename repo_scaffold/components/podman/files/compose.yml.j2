@@ -1,0 +1,66 @@
+# Podman Compose file for {{cookiecutter.project_name}}
+# Optimized for rootless Podman containers
+
+services:
+  {{cookiecutter.project_slug}}:
+    build:
+      context: ..
+      dockerfile: container/Containerfile
+    image: localhost/{{cookiecutter.project_slug}}:{{cookiecutter.version}}
+    container_name: {{cookiecutter.project_slug}}-app
+    restart: unless-stopped
+    
+    # Podman-specific options for rootless containers
+    userns_mode: keep-id
+    
+    # Environment variables
+    environment:
+      - PYTHONUNBUFFERED=1
+      - ENVIRONMENT=production
+      - PODMAN_USERNS=keep-id
+    
+    # Port mapping (uncomment if needed)
+    # ports:
+    #   - "8000:8000"
+    
+    # Volume mounts with SELinux labels and user namespace mapping
+    volumes:
+      - ../logs:/app/logs:Z,U
+    
+    # Health check
+    healthcheck:
+      test: ["CMD", "python", "-c", "import {{cookiecutter.project_slug.replace('-', '_')}}"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    
+    # Security options for rootless containers
+    security_opt:
+      - no-new-privileges:true
+      - label=type:container_runtime_t
+    
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
+    
+    # Podman-specific networking
+    networks:
+      - {{cookiecutter.project_slug}}-net
+
+# Named volumes
+volumes:
+  logs:
+    driver: local
+
+# Networks for Podman
+networks:
+  {{cookiecutter.project_slug}}-net:
+    driver: bridge
+    enable_ipv6: false
