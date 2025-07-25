@@ -10,7 +10,7 @@ required_components:
   - task_automation
   - podman
   - github_actions
-  - private_pypi
+  - pypi
 
 # 可选组件
 optional_components: []

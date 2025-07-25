@@ -45,22 +45,22 @@ jobs:
       - name: Run tests
         run: uv run pytest --cov={{cookiecutter.package_name}} --cov-report=xml --cov-report=term-missing
       {% endif -%}
-  {% if cookiecutter.use_airflow_docker == "true" -%}
-  docker-build-test:
-    name: 🐳 Multi-platform Docker Build Test
+  {% if cookiecutter.use_podman == "true" -%}
+  container-build-test:
+    name: 🐳 Container Build Test
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
-      - name: Test Build Image (no push)
-        id: build-image
+      - name: Test Build Container (no push)
+        id: build-container
         uses: redhat-actions/buildah-build@v2
         with:
           image: ${{ github.repository }}-test
           tags: test-${{ github.sha }}
-          containerfiles: ./docker/Dockerfile
+          containerfiles: ./container/Containerfile
           platforms: linux/amd64,linux/arm64
           {% if cookiecutter.use_private_pypi == "true" -%}
           build-args: |-

@@ -38,7 +38,7 @@ def test_podman_component_exists(podman_component):
 
 def test_podman_conflicts(podman_component):
     """Test that Podman has correct conflicts."""
-    expected_conflicts = {"docker", "airflow_docker"}
+    expected_conflicts = {"docker"}
     assert set(podman_component.conflicts) == expected_conflicts
 
 

@@ -5,7 +5,6 @@ category: containerization
 dependencies: []
 conflicts:
   - docker
-  - airflow_docker
 cookiecutter_vars:
   use_podman: true
   use_containers: true
