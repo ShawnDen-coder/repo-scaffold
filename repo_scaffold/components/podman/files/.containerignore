@@ -1,0 +1,51 @@
+# Containerignore file for Podman builds
+# Excludes unnecessary files from the container build context
+
+# Version control
+.git/
+.gitignore
+
+# Python cache and build artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+build/
+dist/
+*.egg-info/
+
+# Virtual environments
+.venv/
+venv/
+
+# Testing
+.coverage
+.pytest_cache/
+htmlcov/
+
+# Development tools
+.pre-commit-config.yaml
+.yamlfmt.yaml
+.ruff.toml
+.cz.yaml
+
+# IDEs
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs and temporary files
+logs/
+*.log
+tmp/
+*.tmp
+
+# Container files
+.containerignore
+compose.yml
+
+# CI/CD
+.github/

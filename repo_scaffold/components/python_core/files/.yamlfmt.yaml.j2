@@ -1,0 +1,22 @@
+yaml_files:
+  - "**/*.yaml"
+  - "**/*.yml"
+  - ".yamlfmt"
+  - "!**/vendor/**"
+  - "!**/node_modules/**"
+formatter:
+  type: basic
+  # 控制换行符保留 - 设为 false 可能减少不必要的空行
+  retain_line_breaks: false
+  # 只保留单个换行符，移除多余的空行
+  retain_line_breaks_single: true
+  # 注释前的空格数
+  pad_line_comments: 2
+  # 去除行尾空白字符
+  trim_trailing_whitespace: true
+  # 行长度限制
+  line_length: 100
+  # 缩进大小
+  indentation: 2
+  # 是否保留引号
+  preserve_quotes: true

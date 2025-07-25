@@ -1,0 +1,28 @@
+# Containerfile for {{cookiecutter.project_name}}
+# Based on uv Docker integration best practices
+# https://docs.astral.sh/uv/guides/integration/docker/
+
+FROM python:{{cookiecutter.python_version}}-slim
+
+# Install uv
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /usr/local/bin/
+
+# Change the working directory to the `app` directory
+WORKDIR /app
+
+# Install dependencies
+COPY ../uv.lock ../pyproject.toml ./
+RUN uv sync --frozen --no-cache
+
+# Copy the application into the container
+COPY ../{{cookiecutter.project_slug}} ./{{cookiecutter.project_slug}}
+COPY ../pyproject.toml ./
+
+# Place executables in the environment at the front of the path
+ENV PATH="/app/.venv/bin:$PATH"
+
+# Reset the entrypoint, don't invoke `uv`
+ENTRYPOINT []
+
+# Run the application
+CMD ["python", "-m", "{{cookiecutter.project_slug.replace('-', '_')}}"]

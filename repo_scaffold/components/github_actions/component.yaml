@@ -11,10 +11,6 @@ files:
     dest: .github/workflows/ci-tests.yaml
   - src: .github/workflows/package-release.yaml.j2
     dest: .github/workflows/package-release.yaml
-  - src: .github/workflows/docs-deploy.yaml.j2
-    dest: .github/workflows/docs-deploy.yaml
-  - src: .github/workflows/docker-release.yaml.j2
-    dest: .github/workflows/docker-release.yaml
   - src: .github/workflows/version-bump.yaml.j2
     dest: .github/workflows/version-bump.yaml
 hooks: {}

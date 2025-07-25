@@ -2,7 +2,7 @@
 version: '3'
 vars:
   package_name: repo_scaffold
-  python_min_version: &dev_version '3.12'
+  python_min_version: &dev_version '3.10'
   python_max_version: '3.12'
   python_dev_version: *dev_version
   pypi_server_url: '{{.PYPI_SERVER_URL | default "https://pypiserver.shawndeng.cc"}}'
@@ -44,7 +44,7 @@ tasks:
     vars:
       python_versions:
         sh: |
-          python3 -c "
+          uv run python -c "
           min_ver = '{{.python_min_version}}'.split('.')
           max_ver = '{{.python_max_version}}'.split('.')
           for minor in range(int(min_ver[1]), int(max_ver[1]) + 1):
@@ -59,7 +59,7 @@ tasks:
     desc: Run tests with specific Python version
     cmds:
       - echo "Testing with Python {{.version}}..."
-      - uv run --extra dev --python {{.version}} pytest --cov={{.package_name}} --cov-report=xml --cov-report=term-missing -v tests/
+      - uv run --extra dev --python {{.version}} pytest --cov={{.package_name}} --cov-report=xml --cov-report=term-missing tests/ -v --tb=short
   test:watch:
     desc: Watch files and run tests
     cmds:

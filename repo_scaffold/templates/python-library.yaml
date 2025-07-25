@@ -1,0 +1,34 @@
+name: python-library
+display_name: Python Library
+description: Create a Python library for GitHub with uv package management
+
+# 必需组件
+required_components:
+  - python_core
+  - mkdocs
+  - pre_commit
+  - task_automation
+  - podman
+  - github_actions
+  - private_pypi
+
+# 可选组件
+optional_components: []
+
+# 基础配置
+base_cookiecutter_config:
+  project_name: "My Python Library"
+  package_name: "{{ cookiecutter.project_name.lower().replace(' ', '_').replace('-', '_') }}"
+  project_slug: "{{ cookiecutter.project_name.lower().replace(' ', '-') }}"
+  author_name: "Your Name"
+  author_email: "your.email@example.com"
+  github_username: "{{ cookiecutter.author_name.lower().replace(' ', '') }}"
+  version: "0.1.0"
+  description: "A Python library"
+  python_min_version: "3.10"
+  python_max_version: "3.12"
+  python_dev_version: "{{ cookiecutter.python_min_version }}"
+  license:
+    - "MIT"
+    - "Apache-2.0"
+    - "BSD-3-Clause"
