@@ -2,7 +2,9 @@ name: pre_commit
 display_name: Pre-commit Hooks
 description: Pre-commit hooks for code quality and validation
 category: quality
-dependencies: []
+dependencies:
+  - task_automation  # for use_uv variable
+  - github_actions  # for use_github_actions variable
 conflicts: []
 cookiecutter_vars:
   use_pre_commit: true

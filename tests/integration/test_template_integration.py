@@ -53,7 +53,7 @@ def test_component_discovery(component_manager):
         "task_automation",
         "podman",
         "github_actions",
-        "private_pypi",
+        "pypi",
     }
 
     assert len(components) >= len(expected_components)
@@ -76,7 +76,7 @@ def test_python_library_template_config(python_library_config):
         "task_automation",
         "podman",
         "github_actions",
-        "private_pypi",
+        "pypi",
     ]
 
     assert set(required_components) == set(expected_required)

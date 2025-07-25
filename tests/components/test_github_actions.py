@@ -35,6 +35,12 @@ def test_github_actions_component_exists(github_actions_component):
     assert github_actions_component.category == "ci_cd"
 
 
+def test_github_actions_dependencies(github_actions_component):
+    """Test that GitHub Actions has correct dependencies."""
+    expected_dependencies = {'task_automation'}
+    assert set(github_actions_component.dependencies) == expected_dependencies
+
+
 def test_github_actions_no_conflicts(github_actions_component):
     """Test that GitHub Actions has no conflicts."""
     assert github_actions_component.conflicts == []
@@ -53,7 +59,6 @@ def test_github_actions_files(github_actions_component):
     """Test that GitHub Actions component has correct files."""
     expected_files = {
         ".github/workflows/ci-tests.yaml",
-        ".github/workflows/package-release.yaml",
         ".github/workflows/version-bump.yaml",
     }
 
@@ -74,18 +79,18 @@ def test_ci_tests_workflow_content(components_dir):
     assert "uv run pytest" in content or "task test:all" in content
     assert "uv run ruff" in content or "task lint" in content
 
+    # Check for conditional container build test
+    assert "use_podman" in content
+    assert "container-build-test:" in content
+    assert "./container/Containerfile" in content
+    assert "redhat-actions/buildah-build@v2" in content
 
-def test_package_release_workflow_content(components_dir):
-    """Test package release workflow content."""
-    workflow_path = components_dir / "github_actions" / "files" / ".github" / "workflows" / "package-release.yaml.j2"
-    assert workflow_path.exists()
+    # Should not contain the old airflow_docker variable
+    assert "use_airflow_docker" not in content
+    assert "./docker/Dockerfile" not in content
 
-    content = workflow_path.read_text(encoding="utf-8")
 
-    # Check for uv and PyPI publishing
-    assert "astral-sh/setup-uv@v5" in content
-    assert "uv build" in content or "task deploy:pypi-server" in content
-    assert "uv publish" in content or "softprops/action-gh-release@v2" in content
+
 
 
 def test_version_bump_workflow_content(components_dir):

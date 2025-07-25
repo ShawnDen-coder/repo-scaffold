@@ -57,7 +57,7 @@ def test_python_library_required_components(python_library_config):
         "task_automation",
         "podman",
         "github_actions",
-        "private_pypi",
+        "pypi",
     ]
 
     assert set(required_components) == set(expected_required)
@@ -187,8 +187,8 @@ def test_template_for_serious_service(python_library_config):
     # Should include task automation
     assert "task_automation" in required_components
 
-    # Should include private package support
-    assert "private_pypi" in required_components
+    # Should include PyPI publishing support
+    assert "pypi" in required_components
 
 
 def test_template_description_accuracy(python_library_config):

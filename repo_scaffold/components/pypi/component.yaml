@@ -1,0 +1,23 @@
+name: pypi
+display_name: PyPI Publishing
+description: PyPI publishing support for both public PyPI and private PyPI servers
+category: packaging
+dependencies:
+  - github_actions
+  - task_automation
+conflicts: []
+cookiecutter_vars:
+  use_pypi: true
+  pypi_type:
+    - "public"
+    - "private"
+  # Public PyPI settings (default)
+  use_public_pypi: true
+  # Private PyPI settings
+  use_private_pypi: false
+  private_pypi_name: "homelab"
+  private_pypi_url: "https://pypiserver.example.com/simple/"
+files:
+  - src: pypi-release.yaml.j2
+    dest: .github/workflows/pypi-release.yaml
+hooks: {}

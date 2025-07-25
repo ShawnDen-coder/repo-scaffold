@@ -13,3 +13,4 @@
 /site/
 htmlcov/
 .env
+test-output/
