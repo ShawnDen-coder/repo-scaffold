@@ -30,7 +30,7 @@ yaml_options:
     # 对齐后冒号和值之间的空格数
 
     colon_value: 1
-  # 数组格式化
+    # 数组格式化
 
   array:
     # 嵌套数组是否应该与父级对齐
@@ -38,7 +38,7 @@ yaml_options:
     # 数组项与前导符号 - 之间的空格数
 
     item_spacing: 1
-  # 是否移除文档注释
+    # 是否移除文档注释
 
   strip_comments: false
   # 是否保留文件开头的注释
