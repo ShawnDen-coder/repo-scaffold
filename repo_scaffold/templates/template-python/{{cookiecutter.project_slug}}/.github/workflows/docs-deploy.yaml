@@ -1,0 +1,24 @@
+name: 📚 Deploy Documentation
+on:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'  # 匹配类似 1.0.0, 2.1.3 等格式的标签
+  workflow_dispatch:
+permissions:
+  contents: write  # 用于部署到 GitHub Pages
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install Task
+        uses: arduino/setup-task@v2
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+      - name: Build and deploy documentation
+        env:
+          {% raw %}GITHUB_TOKEN: ${{ github.token }}
+          UV_INDEX_HOMELAB_USERNAME: ${{ secrets.PYPI_SERVER_USERNAME }}
+          UV_INDEX_HOMELAB_PASSWORD: ${{ secrets.PYPI_SERVER_PASSWORD }}{% endraw %}
+        run: task deploy:gh-pages

@@ -3,10 +3,12 @@ version: '3'
 
 vars:
   package_name: {{ cookiecutter.project_slug }}
-  python_min_version: '{{ cookiecutter.min_python_version }}'
-  python_max_version: &dev_version '{{ cookiecutter.max_python_version }}'
-  # 默认的开发版本
+  python_min_version: &dev_version '{{ cookiecutter.min_python_version }}'
+  python_max_version: '{{ cookiecutter.max_python_version }}'
   python_dev_version: *dev_version
+  pypi_server_url: {% raw %}'{{.PYPI_SERVER_URL | default "{{ cookiecutter.pypi_server_url }}"}}'{% endraw %}
+
+dotenv: ['.env']
 
 tasks:
   init:
@@ -25,9 +27,9 @@ tasks:
   lint:add-noqa:
     desc: Add noqa comments to files
     cmds:
-      - uvx ruff check --fix --add-noqa .  # 添加 noqa 注释以忽略特定行的检查
-      - task: lint:pre-commit              # 运行 pre-commit 钩子以确保代码风格一致
-      - task: lint                         # 重新运行 ruff 检查以确保没有遗漏的错误
+      - uvx ruff check --add-noqa .  # 添加 noqa 注释以忽略特定行的检查
+      - task: lint:pre-commit        # 运行 pre-commit 钩子以确保代码风格一致
+      - task: lint                   # 重新运行 ruff 检查以确保没有遗漏的错误
 
   lint:pre-commit:
     desc: Run pre-commit hooks
@@ -67,64 +69,104 @@ tasks:
     desc: Run tests with specific Python version
     cmds:
       - echo "Testing with Python {% raw %}{{.version}}{% endraw %}..."
-      - uvx --python {% raw %}{{.version}}{% endraw %} --with ".[dev]" pytest --cov={% raw %}{{.package_name}}{% endraw %} --cov-report=xml --cov-report=term-missing -v tests/
+      - uv run --extra dev --python {% raw %}{{.version}}{% endraw %} pytest --cov={% raw %}{{.package_name}}{% endraw %} --cov-report=xml --cov-report=term-missing -v tests/
 
   test:watch:
     desc: Watch files and run tests
     cmds:
-      - uvx --with ".[dev]" ptw --runner "pytest -vx"
+      - uv run --extra dev ptw --runner "pytest -vx"
 
+{%- if cookiecutter.use_github_actions == 'yes' %}
   docs:
     desc: Build and view documentation
     cmds:
-      - uvx --with ".[docs]" mkdocs serve
+      - uv run --extra docs mkdocs serve
 
   docs:build:
     desc: Build documentation
     cmds:
-      - uvx --with ".[docs]" mkdocs build
+      - uv run --extra docs mkdocs build
 
-{%- if cookiecutter.use_github_actions == 'yes' %}
   deploy:gh-pages:
     desc: Deploy documentation to GitHub Pages
     cmds:
-      - uvx --with ".[docs]" mkdocs gh-deploy --force
+      - uv run --extra docs mkdocs gh-deploy --force
 {%- endif %}
 
-  deploy:pypi:
-    desc: Deploy package to PyPI
+  # 构建相关任务
+  build:
+    desc: Build package distribution files
     cmds:
       - uv build
+
+  # 发布相关任务 - 使用已构建的包
+  publish:pypi:
+    desc: Publish existing package to PyPI
+    cmds:
       - uv publish
+
+  publish:pypi-server:
+    desc: Publish existing package to PyPI Server
+    env:
+      UV_PUBLISH_USERNAME: {% raw %}'{{.PYPI_SERVER_USERNAME}}'{% endraw %}
+      UV_PUBLISH_PASSWORD: {% raw %}'{{.PYPI_SERVER_PASSWORD}}'{% endraw %}
+      UV_PUBLISH_URL: {% raw %}'{{.pypi_server_url}}'{% endraw %}
+    cmds:
+      - uv publish dist/*.whl
+
+  publish:all:
+    desc: Publish existing package to both PyPI and PyPI Server
+    cmds:
+      - task: publish:pypi
+      - task: publish:pypi-server
+
+  # 组合任务 - 构建并发布
+  deploy:pypi:
+    desc: Build and deploy to PyPI
+    cmds:
+      - task: build
+      - task: publish:pypi
+
+  deploy:pypi-server:
+    desc: Build and deploy to PyPI Server
+    cmds:
+      - task: build
+      - task: publish:pypi-server
+
+  deploy:all:
+    desc: Build and deploy to all repositories
+    cmds:
+      - task: build
+      - task: publish:all
 
   export:deps:
     desc: Export dependencies to requirements.txt
     cmds:
       - uv pip compile pyproject.toml --no-deps --output-file requirements.txt
 
-{%- if cookiecutter.use_docker == 'yes' %}
-  docker:build:
-    desc: Build Docker image
+{%- if cookiecutter.use_podman == 'yes' %}
+  compose:up:
+    desc: Start services using podman compose
     cmds:
-      - docker build -t {{ cookiecutter.repo_name }}:latest .
+      - podman compose -f container/compose.yaml up
 
-  docker:run:
-    desc: Run Docker container
+  compose:down:
+    desc: Stop services using podman compose
     cmds:
-      - docker run --rm -it {{ cookiecutter.repo_name }}:latest
+      - podman compose -f container/compose.yaml down
 
-  docker-compose:up:
-    desc: Start services with docker-compose
+  compose:build:
+    desc: Build container images using podman compose
     cmds:
-      - docker-compose -f docker/docker-compose.yaml up
+      - podman compose -f container/compose.yaml build
 
-  docker-compose:down:
-    desc: Stop services with docker-compose
+  compose:logs:
+    desc: View compose logs
     cmds:
-      - docker-compose -f docker/docker-compose.yaml down
+      - podman compose -f container/compose.yaml logs -f
 
-  docker-compose:logs:
-    desc: View docker-compose logs
+  compose:shell:
+    desc: Open shell in the container
     cmds:
-      - docker-compose -f docker/docker-compose.yaml logs -f
+      - podman compose -f container/compose.yaml exec {{cookiecutter.project_slug}} /bin/bash
 {%- endif %}

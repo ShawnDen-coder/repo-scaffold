@@ -5,22 +5,18 @@
     "github_username": "ShawnDen-coder",
     "project_slug": "{{ cookiecutter.repo_name.strip().lower().replace('-', '_') }}",
     "description": "A short description of the project.",
-    "min_python_version": ["3.9", "3.10", "3.11", "3.12", "3.13","3.14"],
-    "max_python_version": ["3.9", "3.10", "3.11", "3.12", "3.13","3.14"],
-    "use_docker": ["yes", "no"],
+    "min_python_version": ["3.10", "3.9", "3.11", "3.12", "3.13","3.14"],
+    "max_python_version": ["3.12", "3.9", "3.10", "3.11", "3.13","3.14"],
+    "use_podman": ["yes", "no"],
     "include_cli": ["yes", "no"],
-    "use_github_actions": ["yes", "no"],
+    "use_github_actions": "yes",
+    "pypi_server_url": "https://pypiserver.shawndeng.cc/simple/",
     "__prompts__": {
         "repo_name": "项目名称 (my-awesome-project)",
-        "full_name": "你的全名",
-        "email": "你的邮箱地址",
-        "github_username": "你的 GitHub 用户名",
-        "project_slug": "Python 包名 (用于 import)",
         "description": "项目简短描述",
         "min_python_version": "最低支持的 Python 版本 (这将影响测试范围和依赖兼容性)",
         "max_python_version": "最高支持的 Python 版本",
-        "use_docker": "是否添加 Docker 支持?",
-        "include_cli": "是否添加命令行界面?",
-        "use_github_actions": "是否添加 GitHub Actions 支持?"
+        "use_podman": "是否添加 Podman 支持?",
+        "include_cli": "是否添加命令行界面?"
     }
 }

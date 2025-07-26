@@ -1,0 +1,38 @@
+name: 🔄 Auto Version Bump
+on:
+  push:
+    branches:
+      - master
+      - main
+  workflow_dispatch:
+    inputs:
+      increment:
+        description: 'Version increment type'
+        required: false
+        default: 'MAJOR'
+        type: choice
+        options:
+          - 'MAJOR'
+          - 'MINOR'
+          - 'PATCH'
+permissions:
+  contents: write  # 用于创建和推送标签
+  pull-requests: write  # 用于创建 PR
+jobs:
+  bump-version:
+    {% raw %}if: ${{ github.event_name == 'workflow_dispatch' || !startsWith(github.event.head_commit.message, 'bump:') }}{% endraw %}
+    runs-on: ubuntu-latest
+    name: Bump version and create changelog with commitizen
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          {% raw %}token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}{% endraw %}
+      - name: Create bump and changelog
+        uses: commitizen-tools/commitizen-action@master
+        with:
+          {% raw %}github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          branch: master
+          increment: ${{ github.event.inputs.increment || '' }}{% endraw %}
+          no_raise: '21'

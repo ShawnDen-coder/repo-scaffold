@@ -1,0 +1,92 @@
+name: 🚀 Release Build & Publish
+on:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'  # 匹配类似 1.0.0, 2.1.3 等格式的标签
+permissions:
+  contents: write  # 用于创建 release
+  id-token: write  # 用于发布到 PyPI
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      {% raw %}UV_INDEX_HOMELAB_USERNAME: ${{ secrets.PYPI_SERVER_USERNAME }}
+      UV_INDEX_HOMELAB_PASSWORD: ${{ secrets.PYPI_SERVER_PASSWORD }}
+      PYPI_SERVER_USERNAME: ${{ secrets.PYPI_SERVER_USERNAME }}
+      PYPI_SERVER_PASSWORD: ${{ secrets.PYPI_SERVER_PASSWORD }}{% endraw %}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Task
+        uses: arduino/setup-task@v2
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+      - name: init environment and test
+        run: |
+          task init # 初始化项目环境
+          task lint # 运行代码检查
+      - name: Run tests
+        run: task test:all  # 运行所有测试
+
+  publish-pypi:
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Task
+        uses: arduino/setup-task@v2
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+      - name: Build package
+        run: task build
+      - name: Publish to PyPI
+        env:
+          {% raw %}UV_PUBLISH_TOKEN: ${{ secrets.PYPI_TOKEN }}{% endraw %}
+        run: task publish:pypi
+
+  publish-private-pypi:
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      {% raw %}UV_INDEX_HOMELAB_USERNAME: ${{ secrets.PYPI_SERVER_USERNAME }}
+      UV_INDEX_HOMELAB_PASSWORD: ${{ secrets.PYPI_SERVER_PASSWORD }}
+      PYPI_SERVER_USERNAME: ${{ secrets.PYPI_SERVER_USERNAME }}
+      PYPI_SERVER_PASSWORD: ${{ secrets.PYPI_SERVER_PASSWORD }}{% endraw %}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Task
+        uses: arduino/setup-task@v2
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+      - name: Build and publish to PyPI Server
+        run: task deploy:pypi-server
+
+  release:
+    needs: [test, publish-pypi, publish-private-pypi]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Task
+        uses: arduino/setup-task@v2
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+      - name: Build package for release
+        run: task build
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          {% raw %}tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}{% endraw %}
+          files: |
+            dist/*.tar.gz
+            dist/*.whl
+          generate_release_notes: true
+        env:
+          {% raw %}GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}{% endraw %}

@@ -1,0 +1,13 @@
+services:
+  {{cookiecutter.project_slug}}:
+    build:
+      context: ..
+      dockerfile: container/Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONPATH=/app
+    volumes:
+      - ..:/app
+    working_dir: /app
+    command: ["python", "-m", "{{cookiecutter.project_slug}}"]
