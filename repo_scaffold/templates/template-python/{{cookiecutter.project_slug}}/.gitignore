@@ -11,3 +11,4 @@
 *.pyc
 # MkDocs build output
 /site/
+.env

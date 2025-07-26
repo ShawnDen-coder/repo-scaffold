@@ -120,7 +120,12 @@ def list():
     type=click.Path(file_okay=False, dir_okay=True, path_type=Path),
     help="Directory where the project will be created",
 )
-def create(template: str, output_dir: Path):
+@click.option(
+    "--no-input",
+    is_flag=True,
+    help="Do not prompt for parameters and only use cookiecutter.json file content",
+)
+def create(template: str, output_dir: Path, no_input: bool):  # noqa: D417
     """Create a new project from a template.
 
     Creates a new project based on the specified template. If no template is specified,
@@ -176,7 +181,7 @@ def create(template: str, output_dir: Path):
     cookiecutter(
         template=template_path,
         output_dir=str(output_dir),
-        no_input=False,  # 启用交互式输入,让 cookiecutter 处理所有选项
+        no_input=no_input,  # 根据用户选择决定是否启用交互式输入
     )
 
 

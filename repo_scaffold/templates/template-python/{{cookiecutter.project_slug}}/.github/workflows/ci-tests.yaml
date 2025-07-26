@@ -1,0 +1,66 @@
+name: ✅ Code Quality & Tests
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+env:
+  {% raw %}UV_INDEX_HOMELAB_USERNAME: ${{ secrets.PYPI_SERVER_USERNAME }}
+  UV_INDEX_HOMELAB_PASSWORD: ${{ secrets.PYPI_SERVER_PASSWORD }}
+  PYPI_SERVER_USERNAME: ${{ secrets.PYPI_SERVER_USERNAME }}
+  PYPI_SERVER_PASSWORD: ${{ secrets.PYPI_SERVER_PASSWORD }}{% endraw %}
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install Task
+        uses: arduino/setup-task@v2
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+      - name: Install dependencies
+        run: task init
+      - name: Run lint checks
+        id: lint
+        run: task lint
+      - name: Run test all versions
+        run: task test:all
+{%- if cookiecutter.use_podman == 'yes' %}
+
+  container-build-test:
+    name: 🐳 Multi-platform Container Build Test
+    needs: check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+      - name: Check if Dockerfile exists
+        id: dockerfile-check
+        run: |
+          if [ -f "./container/Dockerfile" ]; then
+            echo "dockerfile-exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "dockerfile-exists=false" >> $GITHUB_OUTPUT
+            echo "Dockerfile not found, skipping container build test"
+          fi
+      - name: Set up QEMU
+        if: steps.dockerfile-check.outputs.dockerfile-exists == 'true'
+        uses: docker/setup-qemu-action@v3
+      - name: Test Build Container Image (no push)
+        if: steps.dockerfile-check.outputs.dockerfile-exists == 'true'
+        id: build-image
+        uses: redhat-actions/buildah-build@v2
+        with:
+          {% raw %}image: ${{ github.repository }}-test
+          tags: test-${{ github.sha }}{% endraw %}
+          containerfiles: ./container/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          build-args: |-
+            {% raw %}PYPI_SERVER_USERNAME=${{ env.PYPI_SERVER_USERNAME }}
+            PYPI_SERVER_PASSWORD=${{ env.PYPI_SERVER_PASSWORD }}{% endraw %}
+{%- endif %}
