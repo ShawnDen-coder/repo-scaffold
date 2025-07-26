@@ -1,3 +1,10 @@
+## 0.12.0 (2025-07-26)
+
+### Feat
+
+- update project
+- update github action and build tools
+
 ## 0.11.0 (2025-05-30)
 
 ### Feat
