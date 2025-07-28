@@ -1,6 +1,6 @@
 include = ["pyproject.toml", "{{ cookiecutter.project_slug }}/**/*.py", "tests/**/*.py"]
 line-length = 120
-target-version = {{ "py" ~ cookiecutter.min_python_version.replace(".", "") }}
+target-version = "{{ "py" ~ cookiecutter.min_python_version.replace(".", "") }}"
 
 [lint]
 extend-ignore = [
