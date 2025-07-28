@@ -112,7 +112,7 @@ class ProjectInitializer:
 
         try:
             print("Installing project dependencies...")
-            subprocess.run(["task", "init"], check=True)
+            subprocess.run(["uv", "sync"], check=True)
             print("✅ Dependencies installed successfully")
         except subprocess.CalledProcessError as e:
             print(f"❌ Failed to install dependencies: {e}")
