@@ -6,7 +6,7 @@ vars:
   python_min_version: &dev_version '{{ cookiecutter.min_python_version }}'
   python_max_version: '{{ cookiecutter.max_python_version }}'
   python_dev_version: *dev_version
-  pypi_server_url: {% raw %}'{{.PYPI_SERVER_URL | default "{{ cookiecutter.pypi_server_url }}"}}'{% endraw %}
+  pypi_server_url: {% raw %}'{{.PYPI_SERVER_URL | default "https://pypiserver.shawndeng.cc"}}'{% endraw %}
 
 dotenv: ['.env']
 
