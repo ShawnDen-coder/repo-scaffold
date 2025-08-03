@@ -1,3 +1,9 @@
+## 0.13.5 (2025-08-03)
+
+### Fix
+
+- fix template github action
+
 ## 0.13.4 (2025-07-30)
 
 ### Fix
