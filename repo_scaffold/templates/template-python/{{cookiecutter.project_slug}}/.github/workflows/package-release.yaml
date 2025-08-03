@@ -31,6 +31,7 @@ jobs:
   publish-pypi:
     needs: test
     runs-on: ubuntu-latest
+    if: vars.PUBLISH_TO_PUBLIC_PYPI == 'true'
     permissions:
       contents: write
       id-token: write
@@ -67,7 +68,12 @@ jobs:
         run: task deploy:pypi-server
 
   release:
-    needs: [test, publish-pypi, publish-private-pypi]
+    needs: [test, publish-private-pypi, publish-pypi]
+    {% raw %}if: |
+      ${{ always() && 
+      needs.test.result == 'success' && 
+      needs.publish-private-pypi.result == 'success' && 
+      (needs.publish-pypi.result == 'success' || needs.publish-pypi.result == 'skipped') }}{% endraw %}
     runs-on: ubuntu-latest
     permissions:
       contents: write
