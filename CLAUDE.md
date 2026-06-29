@@ -5,14 +5,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Common commands
 
 - Bootstrap and run recipes without prior install: `uvx --from rust-just just <recipe>`.
-- Install/sync the development environment and hooks: `uvx --from rust-just just init` (runs `uv sync` and installs pre-commit hooks).
-- Run the full lint/format cycle: `uvx --from rust-just just lint` (Ruff check with fixes, Ruff format, then Ruff check again).
-- Run all pre-commit hooks: `uvx --from rust-just just lint-pre-commit`.
-- Run the default test suite with coverage: `uvx --from rust-just just test`.
-- Run tests across the configured Python version range: `uvx --from rust-just just test-all`.
+- Install/sync the development environment and hooks: `uvx --from rust-just just init` (installs `rust-just` as a uv tool, runs `uv sync`, installs pre-commit hooks). After `init`, every other recipe can be invoked as `just <recipe>` directly.
+- Run the full lint/format cycle: `just lint` (Ruff check with fixes, Ruff format, then Ruff check again).
+- Run all pre-commit hooks: `just lint-pre-commit`.
+- Run the default test suite with coverage: `just test`.
+- Run tests across the configured Python version range: `just test-all`.
 - Run a single test file or test node: `uv run --extra dev pytest -v tests/test_import.py` or `uv run --extra dev pytest -v tests/test_import.py::test_imports`.
-- Build distributions: `uvx --from rust-just just build` (`uv build`).
-- Serve docs locally: `uvx --from rust-just just docs`; build docs: `uvx --from rust-just just docs-build`.
+- Build distributions: `just build` (`uv build`).
+- Serve docs locally: `just docs`; build docs: `just docs-build`.
 - Exercise the CLI locally: `uv run repo-scaffold list` and `uv run repo-scaffold create python --no-input -o <output-dir>`.
 
 ## Project overview

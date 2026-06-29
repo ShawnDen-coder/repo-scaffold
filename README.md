@@ -62,7 +62,7 @@ Currently supported project templates:
   - Cocogitto monorepo release workflow with per-package and global tags
   - Same lint / test / docs tooling as the python template
 
-Both templates use `just` (via `rust-just`) as the task runner — every recipe can be run without a prior install via `uvx --from rust-just just <recipe>`.
+Both templates use `just` (via `rust-just`) as the task runner. Bootstrap from a clean machine with `uvx --from rust-just just init` — that recipe also installs `rust-just` as a uv tool, so every subsequent recipe can be run as plain `just <recipe>`.
 
 ## Development Setup
 
@@ -71,12 +71,12 @@ Both templates use `just` (via `rust-just`) as the task runner — every recipe 
 git clone https://github.com/ShawnDen-coder/repo-scaffold.git
 cd repo-scaffold
 
-# Sync dependencies and install pre-commit hooks
+# Bootstrap once: installs rust-just as a uv tool, syncs deps, installs hooks
 uvx --from rust-just just init
 
-# Run lint and tests
-uvx --from rust-just just lint
-uvx --from rust-just just test
+# Subsequent runs use `just` directly
+just lint
+just test
 ```
 
 ## Releasing
