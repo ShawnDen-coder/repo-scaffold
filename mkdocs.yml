@@ -15,6 +15,7 @@ nav:
       - python: templates/python.md
       - uv-workspace: templates/uv-workspace.md
       - CI/CD pipeline: templates/ci-cd.md
+      - GitHub bootstrap: templates/gh-init.md
   - API Reference: reference/
 plugins:
   - search

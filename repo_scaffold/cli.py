@@ -33,6 +33,10 @@ from typing import Any
 import click
 from cookiecutter.main import cookiecutter
 
+from repo_scaffold.github_init import GhInitClient
+from repo_scaffold.github_init import build_config
+from repo_scaffold.github_init import init_repository
+
 
 def get_package_path(relative_path: str) -> str:
     """Get absolute path to a resource in the package.
@@ -191,6 +195,132 @@ def create(template: str, output_dir: Path, no_input: bool, no_install: bool):
         no_input=no_input,  # 根据用户选择决定是否启用交互式输入
         extra_context={"install_after_generate": "no" if no_install else "yes"},
     )
+
+
+@cli.command("gh-init")
+@click.argument(
+    "project_path",
+    type=click.Path(file_okay=False, dir_okay=True, exists=True, path_type=Path),
+)
+@click.option("--owner", help="GitHub user or org (default: authenticated user).")
+@click.option("--name", help="Repository name (default: from pyproject.toml).")
+@click.option(
+    "--description",
+    help="Repository description (default: from pyproject.toml).",
+)
+@click.option(
+    "--private/--public",
+    default=False,
+    help="Repository visibility (default: public).",
+)
+@click.option(
+    "--default-branch",
+    "default_branch",
+    help="Default branch name (default: current local git branch or 'master').",
+)
+@click.option(
+    "--allow-existing",
+    is_flag=True,
+    help="Don't fail if the repository already exists; refresh secrets/variables.",
+)
+@click.option("--no-push", is_flag=True, help="Skip git init and push.")
+@click.option(
+    "--force-push",
+    is_flag=True,
+    help="Use --force when pushing the initial commit.",
+)
+@click.option(
+    "--no-input",
+    is_flag=True,
+    help="Don't prompt; missing optional secrets are skipped.",
+)
+def gh_init(
+    project_path: Path,
+    owner: str | None,
+    name: str | None,
+    description: str | None,
+    private: bool,
+    default_branch: str | None,
+    allow_existing: bool,
+    no_push: bool,
+    force_push: bool,
+    no_input: bool,
+):
+    """Initialize a GitHub repository for an already-generated project.
+
+    Creates the repository on GitHub, sets the CI secrets and variables that
+    the generated workflows expect, and (unless --no-push is given) pushes the
+    project's initial commit to the new repo.
+
+    Authentication: reads the ``GITHUB_TOKEN`` environment variable. The token
+    must have ``repo`` scope for private repos, ``public_repo`` for public
+    ones.
+    """
+    token = os.environ.get("GITHUB_TOKEN", "").strip()
+    if not token:
+        raise click.ClickException(
+            "GITHUB_TOKEN environment variable is required. "
+            "Generate a personal access token with `repo` scope at "
+            "https://github.com/settings/tokens and export it before running gh-init."
+        )
+
+    prompter = None
+    if not no_input:
+
+        def prompter(key: str, default: str | None) -> str:
+            hide = key.endswith(("_TOKEN", "_PASSWORD"))
+            return click.prompt(
+                f"{key} (Enter to skip)" if default is None else key,
+                default=default if default is not None else "",
+                hide_input=hide,
+                show_default=default is not None,
+            )
+
+    config = build_config(
+        project_path=project_path,
+        owner=owner,
+        name=name,
+        description=description,
+        private=private,
+        default_branch=default_branch,
+        push=not no_push,
+        force_push=force_push,
+        allow_existing=allow_existing,
+        prompter=prompter,
+    )
+
+    click.echo("")
+    click.echo("Will create or update repository:")
+    click.echo(f"  Repo:        {config.owner or '<authenticated user>'}/{config.name}")
+    click.echo(f"  Visibility:  {'private' if config.private else 'public'}")
+    click.echo(f"  Description: {config.description or '(none)'}")
+    click.echo(f"  Branch:      {config.default_branch}")
+    secrets_listed = ", ".join(config.secrets) or "(none)"
+    variables_listed = ", ".join(f"{k}={v}" for k, v in config.variables.items()) or "(none)"
+    click.echo(f"  Secrets:     {secrets_listed}")
+    click.echo(f"  Variables:   {variables_listed}")
+    click.echo(f"  Push:        {'yes' if config.push else 'no'}{' (force)' if config.force_push else ''}")
+    click.echo("")
+
+    if not no_input:
+        click.confirm("Proceed?", default=True, abort=True)
+
+    result = init_repository(config, GhInitClient(token))
+
+    click.echo("")
+    click.echo("✓ Repository ready")
+    click.echo(f"  URL:     {result.html_url}")
+    click.echo(f"  Actions: {result.actions_url}")
+    click.echo(f"  Pages:   {result.pages_url} (after first docs-deploy run)")
+    if result.skipped_secrets:
+        click.echo(f"  Skipped secrets (set later in repo Settings): {', '.join(result.skipped_secrets)}")
+    if result.pushed:
+        click.echo(f"  Pushed initial commit to {config.default_branch}")
+    click.echo("")
+    click.echo("Next steps:")
+    click.echo("  1. Watch the first CI run on the Actions page above.")
+    click.echo("  2. After the first docs-deploy tag run, in repo Settings → Pages set")
+    click.echo("     'Source: Deploy from a branch' to gh-pages / (root).")
 
 
 if __name__ == "__main__":
