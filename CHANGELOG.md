@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [0.15.1](https://github.com/ShawnDen-coder/repo-scaffold/compare/3fed160c1dfeb4f3f1bc8252d666a7cc5d58287d..0.15.1) - 2026-06-29
+#### Bug Fixes
+- (**ci**) checkout before download-artifact in publish-private-pypi - ([3fed160](https://github.com/ShawnDen-coder/repo-scaffold/commit/3fed160c1dfeb4f3f1bc8252d666a7cc5d58287d)) - ShawnDen-coder, Claude Opus 4.7 (1M context)
+
+- - -
+
 ## [0.15.0](https://github.com/ShawnDen-coder/repo-scaffold/compare/90ad20b8cd357961273a2d277696c6a9bbc68d2e..0.15.0) - 2026-06-29
 #### Features
 - replace commitizen with cocogitto for versioning - ([90ad20b](https://github.com/ShawnDen-coder/repo-scaffold/commit/90ad20b8cd357961273a2d277696c6a9bbc68d2e)) - ShawnDen-coder, Claude Opus 4.7 (1M context)
