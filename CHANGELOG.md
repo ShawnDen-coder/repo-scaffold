@@ -4,3 +4,25 @@ All notable changes to this project will be documented in this file.
 See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [0.15.0](https://github.com/ShawnDen-coder/repo-scaffold/compare/90ad20b8cd357961273a2d277696c6a9bbc68d2e..0.15.0) - 2026-06-29
+#### Features
+- replace commitizen with cocogitto for versioning - ([90ad20b](https://github.com/ShawnDen-coder/repo-scaffold/commit/90ad20b8cd357961273a2d277696c6a9bbc68d2e)) - ShawnDen-coder, Claude Opus 4.7 (1M context)
+#### Bug Fixes
+- (**justfile**) make recipes work on Windows PowerShell - ([f0affa4](https://github.com/ShawnDen-coder/repo-scaffold/commit/f0affa4495fa5d863ddcdf76af4ed5c4dd0659df)) - ShawnDen-coder, Claude Opus 4.7 (1M context)
+- (**uv-workspace**) skip already-published packages on monorepo release - ([2d12e44](https://github.com/ShawnDen-coder/repo-scaffold/commit/2d12e44a9803c1d8267e30a07fe87ee0d77666ce)) - ShawnDen-coder, Claude Opus 4.7 (1M context)
+#### Revert
+- (**ci**) keep docs-deploy on the gh-pages branch flow - ([4d61423](https://github.com/ShawnDen-coder/repo-scaffold/commit/4d6142331a212e1695bdc3f43ad5ac771217994f)) - ShawnDen-coder, Claude Opus 4.7 (1M context)
+#### Documentation
+- add CI/CD pipeline guide and link from template pages - ([0bfe156](https://github.com/ShawnDen-coder/repo-scaffold/commit/0bfe156ae1ed4b743f2a33c2a353da103c547f40)) - ShawnDen-coder, Claude Opus 4.7 (1M context)
+- add per-template guides and mkdocs nav entry - ([93c727b](https://github.com/ShawnDen-coder/repo-scaffold/commit/93c727bfb14037d48783ad949573464da5d84e84)) - ShawnDen-coder, Claude Opus 4.7 (1M context)
+- clarify post-init usage of plain just - ([d42970f](https://github.com/ShawnDen-coder/repo-scaffold/commit/d42970f8c1e3422c454314f5c8f5b16b39d9576b)) - ShawnDen-coder, Claude Opus 4.7 (1M context)
+#### Continuous Integration
+- rework workflows for caching, parallelism, and Pages - ([57adc4c](https://github.com/ShawnDen-coder/repo-scaffold/commit/57adc4cf70a24a5bd22636fac7da2958e3597a1c)) - ShawnDen-coder, Claude Opus 4.7 (1M context)
+#### Refactoring
+- streamline justfile and drop uvx-only dev deps - ([909f6e9](https://github.com/ShawnDen-coder/repo-scaffold/commit/909f6e98dac80719770cf3c02fb48352b4d327f2)) - ShawnDen-coder, Claude Opus 4.7 (1M context)
+#### Miscellaneous Chores
+- (**changelog**) start a fresh changelog for cocogitto - ([82237f5](https://github.com/ShawnDen-coder/repo-scaffold/commit/82237f55651102833ae84a83c759897977afd918)) - ShawnDen-coder, Claude Opus 4.7 (1M context)
+- prepare CHANGELOG.md for cocogitto - ([610c153](https://github.com/ShawnDen-coder/repo-scaffold/commit/610c15363735fe3c41f15be00b885a0cf5b977a8)) - ShawnDen-coder, Claude Opus 4.7 (1M context)
+
+- - -
+
