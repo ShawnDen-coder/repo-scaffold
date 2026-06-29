@@ -1,3 +1,13 @@
+## 0.14.0 (2026-06-29)
+
+### Feat
+
+- replace taskfile with just and add uv workspace template
+
+### Fix
+
+- improve template prompts and validation
+
 ## 0.13.5 (2025-08-03)
 
 ### Fix
