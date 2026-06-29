@@ -7,11 +7,9 @@ generate_mono_repository_global_tag = true
 generate_mono_repository_package_tags = true
 monorepo_version_separator = "-"
 
-post_bump_hooks = [
-    "uv lock --no-upgrade",
-    "git add uv.lock",
-    "git commit --amend --no-edit",
-]
+pre_bump_hooks = ["uv lock --no-upgrade"]
+
+post_bump_hooks = ["git push --follow-tags"]
 
 [changelog]
 path = "CHANGELOG.md"
