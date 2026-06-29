@@ -9,10 +9,10 @@ on:
 permissions:
   contents: read
 env:
-  UV_INDEX_HOMELAB_USERNAME: ${{ secrets.PYPI_SERVER_USERNAME }}
+  {% raw %}UV_INDEX_HOMELAB_USERNAME: ${{ secrets.PYPI_SERVER_USERNAME }}
   UV_INDEX_HOMELAB_PASSWORD: ${{ secrets.PYPI_SERVER_PASSWORD }}
   PYPI_SERVER_USERNAME: ${{ secrets.PYPI_SERVER_USERNAME }}
-  PYPI_SERVER_PASSWORD: ${{ secrets.PYPI_SERVER_PASSWORD }}
+  PYPI_SERVER_PASSWORD: ${{ secrets.PYPI_SERVER_PASSWORD }}{% endraw %}
 jobs:
   check:
     runs-on: ubuntu-latest

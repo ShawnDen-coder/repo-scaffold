@@ -19,17 +19,15 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Install Task
-        uses: arduino/setup-task@v2
       - name: Install uv
         uses: astral-sh/setup-uv@v5
       - name: Install dependencies
-        run: task init
+        run: uvx --from rust-just just init
       - name: Run lint checks
         id: lint
-        run: task lint
+        run: uvx --from rust-just just lint
       - name: Run test all versions
-        run: task test:all
+        run: uvx --from rust-just just test-all
 {%- if cookiecutter.use_podman == 'yes' %}
 
   container-build-test:

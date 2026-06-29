@@ -17,16 +17,14 @@ jobs:
       PYPI_SERVER_PASSWORD: ${{ secrets.PYPI_SERVER_PASSWORD }}
     steps:
       - uses: actions/checkout@v4
-      - name: Install Task
-        uses: arduino/setup-task@v2
       - name: Install uv
         uses: astral-sh/setup-uv@v5
       - name: init environment and test
         run: |
-          task init # 初始化项目环境
-          task lint # 运行代码检查
+          uvx --from rust-just just init # 初始化项目环境
+          uvx --from rust-just just lint # 运行代码检查
       - name: Run tests
-        run: task test:all  # 运行所有测试
+        run: uvx --from rust-just just test-all  # 运行所有测试
 
   publish-pypi:
     needs: test
@@ -36,16 +34,14 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@v4
-      - name: Install Task
-        uses: arduino/setup-task@v2
       - name: Install uv
         uses: astral-sh/setup-uv@v5
       - name: Build package
-        run: task build
+        run: uvx --from rust-just just build
       - name: Publish to PyPI
         env:
           UV_PUBLISH_TOKEN: ${{ secrets.PYPI_TOKEN }}
-        run: task publish:pypi
+        run: uvx --from rust-just just publish-pypi
 
   publish-private-pypi:
     needs: test
@@ -59,12 +55,10 @@ jobs:
       PYPI_SERVER_PASSWORD: ${{ secrets.PYPI_SERVER_PASSWORD }}
     steps:
       - uses: actions/checkout@v4
-      - name: Install Task
-        uses: arduino/setup-task@v2
       - name: Install uv
         uses: astral-sh/setup-uv@v5
       - name: Build and publish to PyPI Server
-        run: task deploy:pypi-server
+        run: uvx --from rust-just just deploy-pypi-server
 
   release:
     needs: [test, publish-pypi, publish-private-pypi]
@@ -73,12 +67,10 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
-      - name: Install Task
-        uses: arduino/setup-task@v2
       - name: Install uv
         uses: astral-sh/setup-uv@v5
       - name: Build package for release
-        run: task build
+        run: uvx --from rust-just just build
       - name: Release
         uses: softprops/action-gh-release@v2
         with:

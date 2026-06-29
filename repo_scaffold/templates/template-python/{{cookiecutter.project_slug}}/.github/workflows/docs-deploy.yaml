@@ -12,8 +12,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Install Task
-        uses: arduino/setup-task@v2
       - name: Install uv
         uses: astral-sh/setup-uv@v5
       - name: Build and deploy documentation
@@ -21,4 +19,4 @@ jobs:
           {% raw %}GITHUB_TOKEN: ${{ github.token }}
           UV_INDEX_HOMELAB_USERNAME: ${{ secrets.PYPI_SERVER_USERNAME }}
           UV_INDEX_HOMELAB_PASSWORD: ${{ secrets.PYPI_SERVER_PASSWORD }}{% endraw %}
-        run: task deploy:gh-pages
+        run: uvx --from rust-just just deploy-gh-pages
