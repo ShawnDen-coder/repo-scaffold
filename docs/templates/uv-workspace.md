@@ -100,7 +100,9 @@ Coverage is reported across the matching `package_module`.
 
 ## Build & publish
 
-`uv build --all-packages` builds every member into `dist/`, and `uv publish dist/*` ships them in one go. The `package-release.yaml` workflow runs both on tag pushes.
+`uv build --all-packages` builds every member into `dist/`, and `uv publish` ships them in one go. The `package-release.yaml` workflow runs both on tag pushes.
+
+When only a subset of packages was bumped, every member still gets rebuilt — but `uv publish` is invoked with `--check-url` against the target index, so packages whose version already exists on that index are silently skipped instead of failing the workflow. The publish step is effectively a no-op for unchanged packages without any extra logic in CI.
 
 ## Monorepo Cocogitto config
 
