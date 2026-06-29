@@ -1,8 +1,10 @@
 # repo-scaffold
 
-[![PyPI version](https://badge.fury.io/py/repo-scaffold.svg)](https://badge.fury.io/py/repo-scaffold)
+[![PyPI](https://img.shields.io/pypi/v/repo-scaffold.svg)](https://pypi.org/project/repo-scaffold/)
 [![Python Version](https://img.shields.io/pypi/pyversions/repo-scaffold.svg)](https://pypi.org/project/repo-scaffold/)
+[![CI](https://github.com/ShawnDen-coder/repo-scaffold/actions/workflows/ci-tests.yaml/badge.svg)](https://github.com/ShawnDen-coder/repo-scaffold/actions/workflows/ci-tests.yaml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
 A modern project scaffolding tool that helps you quickly create standardized project structures with best practices.
 

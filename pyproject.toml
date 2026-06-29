@@ -1,13 +1,26 @@
 [project]
 name = "repo-scaffold"
 version = "0.15.1"
-description = "shawn deng repo temple project"
+description = "A modern project scaffolding tool that helps you quickly create standardized project structures with best practices."
 authors = [
     {name = "shawndeng", email = "shawndeng1109@qq.com"}
 ]
 license = "MIT"
 readme = "README.md"
 requires-python = ">=3.12"
+keywords = ["cookiecutter", "scaffold", "template", "uv", "python"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development",
+    "Topic :: Software Development :: Code Generators",
+]
 dependencies = [
     "cookiecutter>=2.6.0",
     "click>=8.1.8",
