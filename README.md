@@ -46,7 +46,14 @@ repo-scaffold create python --no-input -o ./my-projects
 
 # Create a uv workspace monorepo
 repo-scaffold create uv-workspace -o ./my-projects
+
+# Push a generated project to GitHub: create the repo, set CI secrets,
+# push the initial commit. Reads GITHUB_TOKEN from the environment.
+export GITHUB_TOKEN=ghp_...
+repo-scaffold gh-init ./my-projects/my-python-project
 ```
+
+See the [GitHub bootstrap docs](https://shawnden-coder.github.io/repo-scaffold/templates/gh-init/) for the full flag list and the secrets/variables `gh-init` knows how to set.
 
 ## Available Templates
 
