@@ -1,0 +1,30 @@
+from_latest_tag = true
+ignore_merge_commits = true
+branch_whitelist = ["master", "main"]
+skip_ci = "[skip ci]"
+
+generate_mono_repository_global_tag = true
+generate_mono_repository_package_tags = true
+monorepo_version_separator = "-"
+
+post_bump_hooks = [
+    "uv lock --no-upgrade",
+    "git add uv.lock",
+    "git commit --amend --no-edit",
+]
+
+[changelog]
+path = "CHANGELOG.md"
+template = "remote"
+remote = "github.com"
+owner = "{{cookiecutter.github_username}}"
+repository = "{{cookiecutter.project_slug}}"
+package_template = "remote"
+
+[packages.{{cookiecutter.package_slug}}]
+path = "packages/{{cookiecutter.package_slug}}"
+public_api = true
+changelog_path = "packages/{{cookiecutter.package_slug}}/CHANGELOG.md"
+pre_bump_hooks = [
+    "uv version --package {{cookiecutter.package_slug}} {% raw %}{{version}}{% endraw %}",
+]

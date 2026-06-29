@@ -40,6 +40,8 @@ This is a Python 3.12 package that exposes the `repo-scaffold` console command. 
 
 ## Release and docs
 
-- Versioning is managed by Commitizen (`.cz.yaml`) with `version_provider: uv`; tags use plain semver like `0.13.5`.
+- Versioning is managed by [Cocogitto](https://docs.cocogitto.io/) (`cog.toml`); the root project keeps `pyproject.toml`'s version in sync via the `pre_bump_hooks` (`uv version {{version}}` + `uv lock --no-upgrade`). Tags use plain semver like `0.13.5`.
+- The version bump workflow (`.github/workflows/version-bump.yaml`) uses `cocogitto/cocogitto-action@v3` with `release: true` to compute the next version from conventional commits, write `CHANGELOG.md`, commit, and tag. The release workflow then publishes the tagged build.
+- The `template-uv-workspace` cog.toml configures `[packages.*]` for monorepo bumps, so each workspace package can be released independently with a global tag also created.
 - The release workflow publishes tagged builds to the private PyPI server by default and conditionally to public PyPI when `PUBLISH_TO_PUBLIC_PYPI` is true.
 - MkDocs uses generated pages from `docs/gen_ref_pages.py` and `docs/gen_home_pages.py`; the docs source reflects the package API and README.
