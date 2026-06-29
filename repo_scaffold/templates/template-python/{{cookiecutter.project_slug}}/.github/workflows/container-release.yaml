@@ -3,22 +3,24 @@ on:
   release:
     types: [published]
   workflow_dispatch:
+permissions:
+  contents: read
+  packages: write
 jobs:
   push_to_registry:
-    name: Push Container image
+    name: Push container image
     runs-on: ubuntu-latest
     steps:
-      - name: Check out the repo
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
-      - name: Login to GitHub Container Registry
+      - name: Log in to GitHub Container Registry
         uses: redhat-actions/podman-login@v1
         with:
           registry: ghcr.io
           {% raw %}username: ${{ github.actor }}
           password: ${{ secrets.PERSONAL_ACCESS_TOKEN }}{% endraw %}
-      - name: Build Image
+      - name: Build image
         id: build-image
         uses: redhat-actions/buildah-build@v2
         with:
@@ -29,7 +31,7 @@ jobs:
           build-args: |
             {% raw %}PYPI_SERVER_USERNAME=${{ secrets.PYPI_SERVER_USERNAME }}
             PYPI_SERVER_PASSWORD=${{ secrets.PYPI_SERVER_PASSWORD }}{% endraw %}
-      - name: Push To Registry
+      - name: Push to registry
         uses: redhat-actions/push-to-registry@v2
         with:
           {% raw %}image: ${{ steps.build-image.outputs.image }}

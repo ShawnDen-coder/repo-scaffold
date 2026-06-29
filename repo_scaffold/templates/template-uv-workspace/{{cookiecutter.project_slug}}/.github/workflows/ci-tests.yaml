@@ -8,23 +8,43 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+concurrency:
+  {% raw %}group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}{% endraw %}
 env:
   {% raw %}UV_INDEX_HOMELAB_USERNAME: ${{ secrets.PYPI_SERVER_USERNAME }}
   UV_INDEX_HOMELAB_PASSWORD: ${{ secrets.PYPI_SERVER_PASSWORD }}
   PYPI_SERVER_USERNAME: ${{ secrets.PYPI_SERVER_USERNAME }}
   PYPI_SERVER_PASSWORD: ${{ secrets.PYPI_SERVER_PASSWORD }}{% endraw %}
 jobs:
-  check:
+  lint:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5
-      - name: Install dependencies
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - name: Install dev environment
         run: uvx --from rust-just just init
-      - name: Run lint checks
-        id: lint
+      - name: Run ruff
         run: uvx --from rust-just just lint
-      - name: Run test all versions
-        run: uvx --from rust-just just test-all
+      - name: Run pre-commit hooks
+        run: uvx --from rust-just just lint-pre-commit
+
+  test:
+    runs-on: ubuntu-latest
+    needs: lint
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [{% set min_minor = cookiecutter.min_python_version.split('.')[1]|int %}{% set max_minor = cookiecutter.max_python_version.split('.')[1]|int %}{% for minor in range(min_minor, max_minor + 1) %}"3.{{ minor }}"{% if not loop.last %}, {% endif %}{% endfor %}]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          {% raw %}python-version: ${{ matrix.python-version }}{% endraw %}
+      - name: Sync workspace deps
+        {% raw %}run: uv sync --all-groups --python ${{ matrix.python-version }}{% endraw %}
+      - name: Run tests
+        {% raw %}run: uvx --from rust-just just test-version ${{ matrix.python-version }}{% endraw %}

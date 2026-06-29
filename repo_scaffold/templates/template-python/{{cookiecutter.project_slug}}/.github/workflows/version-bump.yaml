@@ -7,6 +7,9 @@ on:
   workflow_dispatch:
 permissions:
   contents: write
+concurrency:
+  {% raw %}group: version-bump-${{ github.ref }}{% endraw %}
+  cancel-in-progress: false
 jobs:
   release:
     {% raw %}if: ${{ !startsWith(github.event.head_commit.message, 'chore(version):') }}{% endraw %}
@@ -21,6 +24,8 @@ jobs:
 
       - name: Install uv
         uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
 
       - name: Cocogitto release
         id: release
@@ -29,6 +34,3 @@ jobs:
           release: true
           git-user: 'cog-bot'
           git-user-email: 'cog-bot@users.noreply.github.com'
-
-      - name: Push commit and tag
-        run: git push --follow-tags origin HEAD
