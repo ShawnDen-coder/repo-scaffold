@@ -92,7 +92,7 @@ This catches Dockerfile / dependency regressions on PRs, before they would other
 │   - run pre_bump_hooks (uv version, uv lock)    │
 │   - update CHANGELOG.md                         │
 │   - commit + tag (cog-bot identity)             │
-│   - push commit + tag                           │
+│   - run post_bump_hooks → git push --follow-tags│
 └─────────────────────────────────────────────────┘
 ```
 
@@ -108,7 +108,11 @@ Cocogitto's own bump commits are prefixed with `chore(version):`, so the workflo
 
 **Why a PAT, not the default token**
 
-Checkout uses `token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}`. When cocogitto pushes the bump commit and tag, that push needs to come from a token GitHub recognizes as "real activity" — pushes made with the default `GITHUB_TOKEN` are explicitly prevented from triggering downstream workflows, which would mean the `X.Y.Z` tag push never fires `package-release` or `docs-deploy`.
+Checkout uses `token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}`. When cocogitto's `post_bump_hooks` runs `git push --follow-tags` it reuses the auth that checkout configured, so the push must come from a token GitHub recognizes as "real activity" — pushes made with the default `GITHUB_TOKEN` are explicitly prevented from triggering downstream workflows, which would mean the `X.Y.Z` tag push never fires `package-release` or `docs-deploy`.
+
+**Push is a cog hook, not a workflow step**
+
+`cocogitto-action` only runs `cog bump --auto` locally on the runner — creating the bump commit and tag — and does **not** push. Following the [Cocogitto bump guide](https://docs.cocogitto.io/guide/bump.html), `cog.toml` declares `post_bump_hooks = ["git push --follow-tags"]` so the same `cog bump` invocation handles the push whether you run it locally or in CI. The workflow itself doesn't have a separate push step.
 
 **Concurrency**
 
