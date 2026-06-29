@@ -1,0 +1,97 @@
+set dotenv-load := true
+set shell := ["bash", "-uc"]
+
+package_name := "{{ cookiecutter.project_slug }}"
+python_min_version := "{{ cookiecutter.min_python_version }}"
+python_max_version := "{{ cookiecutter.max_python_version }}"
+python_dev_version := python_min_version
+pypi_server_url := "{{ cookiecutter.pypi_server_url | replace('/simple/', '') | replace('/simple', '') | replace('/$', '') }}"
+
+init:
+    uv sync
+    uvx pre-commit install
+
+lint:
+    uvx ruff check --fix .
+    uvx ruff format .
+    uvx ruff check .
+
+lint-add-noqa:
+    uvx ruff check --add-noqa .
+    just lint-pre-commit
+    just lint
+
+lint-pre-commit:
+    uvx pre-commit run --all-files
+
+lint-watch:
+    uvx ruff check --watch .
+
+test:
+    just test-version {% raw %}{{python_dev_version}}{% endraw %}
+
+test-all:
+    for version in $(python -c "min_ver = '{% raw %}{{python_min_version}}{% endraw %}'.split('.'); max_ver = '{% raw %}{{python_max_version}}{% endraw %}'.split('.'); [print(f'{min_ver[0]}.{minor}') for minor in range(int(min_ver[1]), int(max_ver[1]) + 1)]"); do just test-version "$version"; done
+
+test-version version:
+    echo "Testing with Python {% raw %}{{version}}{% endraw %}..."
+    uv run --extra dev --python {% raw %}{{version}}{% endraw %} pytest --cov={% raw %}{{package_name}}{% endraw %} --cov-report=xml --cov-report=term-missing -v tests/
+
+test-watch:
+    uv run --extra dev ptw --runner "pytest -vx"
+
+{%- if cookiecutter.use_github_actions == 'yes' %}
+docs:
+    uv run --extra docs mkdocs serve
+
+docs-build:
+    uv run --extra docs mkdocs build
+
+deploy-gh-pages:
+    uv run --extra docs mkdocs gh-deploy --force
+{%- endif %}
+
+build:
+    uv build
+
+publish-pypi:
+    uv publish
+
+publish-pypi-server:
+    UV_PUBLISH_USERNAME="${PYPI_SERVER_USERNAME}" UV_PUBLISH_PASSWORD="${PYPI_SERVER_PASSWORD}" UV_PUBLISH_URL="${PYPI_SERVER_URL:-{% raw %}{{pypi_server_url}}{% endraw %}}" uv publish dist/*.whl
+
+publish-all:
+    just publish-pypi
+    just publish-pypi-server
+
+deploy-pypi:
+    just build
+    just publish-pypi
+
+deploy-pypi-server:
+    just build
+    just publish-pypi-server
+
+deploy-all:
+    just build
+    just publish-all
+
+export-deps:
+    uv pip compile pyproject.toml --no-deps --output-file requirements.txt
+
+{%- if cookiecutter.use_podman == 'yes' %}
+compose-up:
+    podman compose -f container/compose.yaml up
+
+compose-down:
+    podman compose -f container/compose.yaml down
+
+compose-build:
+    podman compose -f container/compose.yaml build
+
+compose-logs:
+    podman compose -f container/compose.yaml logs -f
+
+compose-shell:
+    podman compose -f container/compose.yaml exec {{cookiecutter.project_slug}} /bin/bash
+{%- endif %}

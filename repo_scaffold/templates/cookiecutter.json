@@ -4,6 +4,11 @@
       "path": "template-python",
       "title": "python",
       "description": "template for python project"
+    },
+    "template-uv-workspace": {
+      "path": "template-uv-workspace",
+      "title": "uv-workspace",
+      "description": "template for uv workspace python project"
     }
   }
 }

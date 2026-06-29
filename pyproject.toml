@@ -21,6 +21,7 @@ dev = [
     "pytest-mock>=3.14.0",
     "pytest-cov>=6.0.0",
     "commitizen>=3.12.0",
+    "rust-just>=1.42.4",
 ]
 
 docs = [
@@ -36,8 +37,27 @@ docs = [
 [project.scripts]
 repo-scaffold = "repo_scaffold.cli:cli"
 
-[tool.setuptools.package-data]
-repo_scaffold = ["templates/**/*", "cookiecutter.json"]
+[tool.coverage.run]
+omit = [
+    "repo_scaffold/templates/*",
+]
+
+[tool.coverage.report]
+omit = [
+    "repo_scaffold/templates/*",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["repo_scaffold"]
+artifacts = ["repo_scaffold/templates/**"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "repo_scaffold/**",
+    "tests/**",
+    "README.md",
+    "pyproject.toml",
+]
 
 [build-system]
 requires = ["hatchling"]

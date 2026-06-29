@@ -6,13 +6,12 @@ authors = [{name = "{{cookiecutter.full_name}}", email = "{{cookiecutter.email}}
 license = "MIT"
 readme = "README.md"
 requires-python = ">={{cookiecutter.min_python_version}},<{{cookiecutter.max_python_version}}.99"
-dependencies = [
-{%- if cookiecutter.include_cli == 'yes' %}
-    "click>=8.1.8",
-{%- endif %}
-]
+dependencies = []
 
-[project.optional-dependencies]
+[tool.uv.workspace]
+members = ["packages/*"]
+
+[dependency-groups]
 dev = [
     "ruff>=0.9.7",
     "pytest>=8.3.4",
@@ -21,7 +20,7 @@ dev = [
     "commitizen>=3.12.0",
     "rust-just>=1.42.4",
 ]
-{%- if cookiecutter.use_github_actions == 'yes' %}
+
 docs = [
     "mkdocs>=1.5.3",
     "mkdocs-material>=9.5.3",
@@ -31,13 +30,3 @@ docs = [
     "pymdown-extensions>=10.7",
     "mkdocs-literate-nav>=0.6.1",
 ]
-{%- endif %}
-
-{% if cookiecutter.include_cli == 'yes' -%}
-[project.scripts]
-{{cookiecutter.project_slug}} = "{{cookiecutter.project_slug}}.cli:cli"
-{%- endif %}
-
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"

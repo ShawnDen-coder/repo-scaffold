@@ -1,0 +1,22 @@
+{
+  "repo_name": "my-uv-workspace",
+  "full_name": "Shawn Deng",
+  "email": "shawndeng1109@qq.com",
+  "github_username": "ShawnDen-coder",
+  "project_slug": "{{ cookiecutter.repo_name.strip().lower().replace(' ', '-').replace('_', '-') }}",
+  "package_name": "{{ cookiecutter.project_slug }}-core",
+  "package_slug": "{{ cookiecutter.package_name.strip().lower().replace(' ', '-').replace('_', '-') }}",
+  "package_module": "{{ cookiecutter.package_slug.replace('-', '_') }}",
+  "description": "A short description of the workspace.",
+  "min_python_version": ["3.12", "3.10", "3.11", "3.13", "3.14"],
+  "max_python_version": ["3.12", "3.10", "3.11", "3.13", "3.14"],
+  "use_github_actions": "yes",
+  "pypi_server_url": "https://pypiserver.shawndeng.cc/simple/",
+  "__prompts__": {
+    "repo_name": "工作区仓库名称 (my-uv-workspace)",
+    "package_name": "初始包名称 (my-uv-workspace-core)",
+    "description": "项目简短描述",
+    "min_python_version": "最低支持的 Python 版本",
+    "max_python_version": "最高支持的 Python 版本"
+  }
+}
