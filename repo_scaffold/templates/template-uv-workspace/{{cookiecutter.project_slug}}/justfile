@@ -64,13 +64,13 @@ deploy-gh-pages:
 build:
     uv build --all-packages
 
-# Publish to public PyPI
+# Publish to public PyPI (skip packages whose version already exists)
 publish-pypi:
-    uv publish
+    uv publish --check-url https://pypi.org/simple/
 
-# Publish to the private PyPI server
+# Publish to the private PyPI server (skip packages whose version already exists)
 publish-pypi-server:
-    uv publish --username {% raw %}{{env_var('PYPI_SERVER_USERNAME')}}{% endraw %} --password {% raw %}{{env_var('PYPI_SERVER_PASSWORD')}}{% endraw %} --publish-url {% raw %}{{env_var_or_default('PYPI_SERVER_URL', pypi_server_url)}}{% endraw %}
+    uv publish --username {% raw %}{{env_var('PYPI_SERVER_USERNAME')}}{% endraw %} --password {% raw %}{{env_var('PYPI_SERVER_PASSWORD')}}{% endraw %} --publish-url {% raw %}{{env_var_or_default('PYPI_SERVER_URL', pypi_server_url)}}{% endraw %} --check-url {% raw %}{{env_var_or_default('PYPI_SERVER_URL', pypi_server_url)}}{% endraw %}/simple/
 
 # Publish to both indexes
 publish-all: publish-pypi publish-pypi-server
