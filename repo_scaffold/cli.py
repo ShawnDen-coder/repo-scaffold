@@ -125,7 +125,12 @@ def list():
     is_flag=True,
     help="Do not prompt for parameters and only use cookiecutter.json file content",
 )
-def create(template: str, output_dir: Path, no_input: bool):  # noqa: D417
+@click.option(
+    "--no-install",
+    is_flag=True,
+    help="Generate the project without running post-generation dependency installation",
+)
+def create(template: str, output_dir: Path, no_input: bool, no_install: bool):
     """Create a new project from a template.
 
     Creates a new project based on the specified template. If no template is specified,
@@ -135,6 +140,8 @@ def create(template: str, output_dir: Path, no_input: bool):  # noqa: D417
     Args:
         template: Template name or title (e.g., 'template-python' or 'python')
         output_dir: Target directory where the project will be created
+        no_input: Do not prompt for parameters and only use cookiecutter defaults
+        no_install: Skip post-generation dependency installation
 
     Example:
         Create a Python project:
@@ -182,6 +189,7 @@ def create(template: str, output_dir: Path, no_input: bool):  # noqa: D417
         template=template_path,
         output_dir=str(output_dir),
         no_input=no_input,  # 根据用户选择决定是否启用交互式输入
+        extra_context={"install_after_generate": "no" if no_install else "yes"},
     )
 
 

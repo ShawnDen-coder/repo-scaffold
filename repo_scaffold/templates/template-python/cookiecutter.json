@@ -1,22 +1,28 @@
 {
     "repo_name": "my-python-project",
-    "full_name": "Shawn Deng",
-    "email": "shawndeng1109@qq.com",
-    "github_username": "ShawnDen-coder",
-    "project_slug": "{{ cookiecutter.repo_name.strip().lower().replace('-', '_') }}",
+    "full_name": "Your Name",
+    "email": "you@example.com",
+    "github_username": "your-github-username",
+    "project_slug": "{{ cookiecutter.repo_name.strip().lower().replace(' ', '_').replace('-', '_') }}",
     "description": "A short description of the project.",
-    "min_python_version": ["3.10", "3.9", "3.11", "3.12", "3.13","3.14"],
-    "max_python_version": ["3.12", "3.9", "3.10", "3.11", "3.13","3.14"],
-    "use_podman": ["yes", "no"],
+    "min_python_version": ["3.12", "3.11", "3.10", "3.9", "3.13", "3.14"],
+    "max_python_version": ["3.12", "3.13", "3.14", "3.11", "3.10", "3.9"],
+    "use_podman": ["no", "yes"],
     "include_cli": ["yes", "no"],
-    "use_github_actions": "yes",
-    "pypi_server_url": "https://pypiserver.shawndeng.cc/simple/",
+    "use_github_actions": ["yes", "no"],
+    "pypi_server_url": "",
+    "install_after_generate": "yes",
     "__prompts__": {
         "repo_name": "项目名称 (my-awesome-project)",
+        "full_name": "作者姓名",
+        "email": "作者邮箱",
+        "github_username": "GitHub 用户名或组织名",
         "description": "项目简短描述",
         "min_python_version": "最低支持的 Python 版本 (这将影响测试范围和依赖兼容性)",
         "max_python_version": "最高支持的 Python 版本",
         "use_podman": "是否添加 Podman 支持?",
-        "include_cli": "是否添加命令行界面?"
+        "include_cli": "是否添加命令行界面?",
+        "use_github_actions": "是否添加 GitHub Actions 和文档配置?",
+        "pypi_server_url": "私有 PyPI Server URL (可留空，发布时也可用 PYPI_SERVER_URL 覆盖)"
     }
 }

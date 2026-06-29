@@ -8,6 +8,9 @@ readme = "README.md"
 requires-python = ">={{cookiecutter.min_python_version}},<{{cookiecutter.max_python_version}}.99"
 dependencies = []
 
+[tool.uv]
+package = false
+
 [tool.uv.workspace]
 members = ["packages/*"]
 

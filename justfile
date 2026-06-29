@@ -56,7 +56,7 @@ publish-pypi:
     uv publish
 
 publish-pypi-server:
-    UV_PUBLISH_USERNAME="${PYPI_SERVER_USERNAME}" UV_PUBLISH_PASSWORD="${PYPI_SERVER_PASSWORD}" UV_PUBLISH_URL="${PYPI_SERVER_URL:-{{pypi_server_url}}}" uv publish dist/*.whl
+    UV_PUBLISH_USERNAME="${PYPI_SERVER_USERNAME}" UV_PUBLISH_PASSWORD="${PYPI_SERVER_PASSWORD}" UV_PUBLISH_URL="${PYPI_SERVER_URL:-{{pypi_server_url}}}" uv publish dist/*
 
 publish-all:
     just publish-pypi
