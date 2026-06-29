@@ -1,15 +1,45 @@
 """Post-generation project setup and cleanup script.
 
 This script runs after cookiecutter generates the project template.
-It removes unnecessary files based on user choices and initializes the project.
+It removes unnecessary files based on user choices and optionally initializes the project.
 """
 
-import os
+import re
 import shutil
 import subprocess
 import sys
 from pathlib import Path
 from typing import List, Union
+
+
+class ProjectValidator:
+    """Validates rendered Cookiecutter values before cleanup and initialization."""
+
+    def __init__(self):
+        self.project_slug = "{{cookiecutter.project_slug}}"
+        self.min_python_version = "{{cookiecutter.min_python_version}}"
+        self.max_python_version = "{{cookiecutter.max_python_version}}"
+
+    def _version_tuple(self, version: str) -> tuple[int, int]:
+        """Convert a Python major.minor version string into a comparable tuple."""
+        major, minor = version.split(".", 1)
+        return int(major), int(minor)
+
+    def validate(self) -> None:
+        """Validate generated names and Python version bounds."""
+        if self._version_tuple(self.min_python_version) > self._version_tuple(self.max_python_version):
+            print(
+                "Error: min_python_version must be less than or equal to max_python_version "
+                f"({self.min_python_version} > {self.max_python_version})"
+            )
+            sys.exit(1)
+
+        if not re.fullmatch(r"[a-zA-Z_][a-zA-Z0-9_]*", self.project_slug):
+            print(
+                "Error: project_slug must be a valid Python package name "
+                f"(got {self.project_slug!r})"
+            )
+            sys.exit(1)
 
 
 class ProjectCleaner:
@@ -97,18 +127,18 @@ class ProjectInitializer:
     """Handles project initialization tasks."""
 
     def __init__(self):
-        self.project_slug = "{{cookiecutter.project_slug}}"
+        self.install_after_generate = "{{cookiecutter.install_after_generate}}" == "yes"
 
     def setup_environment(self) -> None:
         """Initialize project dependencies and environment."""
-        project_dir = Path(self.project_slug).resolve()
+        if not self.install_after_generate:
+            print("Skipping dependency installation (--no-install selected).")
+            return
 
-        if not project_dir.exists():
-            print(f"Error: Project directory {project_dir} does not exist")
+        project_dir = Path.cwd()
+        if not (project_dir / "pyproject.toml").exists():
+            print(f"Error: Project pyproject.toml not found in {project_dir}")
             sys.exit(1)
-
-        print(f"Changing to project directory: {project_dir}")
-        os.chdir(project_dir)
 
         try:
             print("Installing project dependencies...")
@@ -126,7 +156,9 @@ def main() -> None:
     """Main execution function."""
     print("🚀 Starting post-generation project setup...")
 
-    # Initialize cleaner and perform cleanup
+    validator = ProjectValidator()
+    validator.validate()
+
     cleaner = ProjectCleaner()
 
     print("\n📁 Cleaning up unnecessary files...")
@@ -134,7 +166,6 @@ def main() -> None:
     cleaner.clean_container_files()
     cleaner.clean_github_actions_files()
 
-    # Initialize project
     print("\n🔧 Initializing project...")
     initializer = ProjectInitializer()
     initializer.setup_environment()
