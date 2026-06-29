@@ -75,18 +75,7 @@ The tag then triggers `package-release.yaml` to build & publish.
 
 ### CI/CD — GitHub Actions
 
-| Workflow | Trigger | Job |
-| --- | --- | --- |
-| `ci-tests.yaml` | push / pull request to `main`/`master` | `just init`, `just lint`, `just test-all`. |
-| `version-bump.yaml` | push to `master`/`main` (skipping bump commits) | Cocogitto release. |
-| `package-release.yaml` | tag push matching `[0-9]+.[0-9]+.[0-9]+` | Build distributions, publish to public PyPI (if `PUBLISH_TO_PUBLIC_PYPI` is `true`) and the private PyPI server, then attach a GitHub Release. |
-| `docs-deploy.yaml` | tag push or manual dispatch | `mkdocs gh-deploy`. |
-
-Required secrets:
-
-- `PERSONAL_ACCESS_TOKEN` — used by `actions/checkout` and `softprops/action-gh-release`.
-- `PYPI_TOKEN` — public PyPI token.
-- `PYPI_SERVER_USERNAME` / `PYPI_SERVER_PASSWORD` — private PyPI credentials.
+Both templates ship the same five-workflow pipeline (the `python` template adds a sixth for container builds when Podman is enabled). See the [CI/CD pipeline](ci-cd.md) page for the full job DAG, what each workflow does, and the secrets / variables it needs.
 
 ### Docs — [MkDocs Material](https://squidfunk.github.io/mkdocs-material/)
 

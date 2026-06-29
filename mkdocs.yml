@@ -14,6 +14,7 @@ nav:
       - Overview: templates/index.md
       - python: templates/python.md
       - uv-workspace: templates/uv-workspace.md
+      - CI/CD pipeline: templates/ci-cd.md
   - API Reference: reference/
 plugins:
   - search

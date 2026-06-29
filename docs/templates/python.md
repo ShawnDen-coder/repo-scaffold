@@ -8,7 +8,7 @@ repo-scaffold create python
 repo-scaffold create python --no-input -o ./out
 ```
 
-For everything shared with the other template (uv, just, Ruff, pytest, pre-commit, Cocogitto, GitHub Actions, MkDocs), see the [shared infrastructure](index.md#shared-infrastructure) section.
+For everything shared with the other template (uv, just, Ruff, pytest, pre-commit, Cocogitto, GitHub Actions, MkDocs), see the [shared infrastructure](index.md#shared-infrastructure) section. The full GitHub Actions pipeline — including the optional Podman build smoke test in `ci-tests` and the `container-release` workflow — is documented on the [CI/CD pipeline](ci-cd.md) page. The full GitHub Actions pipeline — including the optional Podman build smoke test in `ci-tests` and the `container-release` workflow — is documented on the [CI/CD pipeline](ci-cd.md) page.
 
 ## Layout
 

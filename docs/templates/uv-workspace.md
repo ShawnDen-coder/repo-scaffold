@@ -8,7 +8,7 @@ repo-scaffold create uv-workspace
 repo-scaffold create uv-workspace --no-input -o ./out
 ```
 
-For everything shared with the [`python`](python.md) template, see the [shared infrastructure](index.md#shared-infrastructure) section.
+For everything shared with the [`python`](python.md) template, see the [shared infrastructure](index.md#shared-infrastructure) section. The monorepo-specific behavior of `version-bump` (per-package + global tags) and `package-release` (`uv publish --check-url` to skip already-published packages) is covered on the [CI/CD pipeline](ci-cd.md) page.
 
 ## Layout
 
