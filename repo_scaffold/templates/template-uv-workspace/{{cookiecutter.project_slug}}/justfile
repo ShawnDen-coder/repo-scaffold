@@ -1,5 +1,5 @@
 set dotenv-load := true
-set shell := ["bash", "-uc"]
+set shell := ["bash", "-euc"]
 
 package_name := "{{ cookiecutter.package_module }}"
 python_min_version := "{{ cookiecutter.min_python_version }}"
@@ -7,72 +7,82 @@ python_max_version := "{{ cookiecutter.max_python_version }}"
 python_dev_version := python_min_version
 pypi_server_url := "{{ cookiecutter.pypi_server_url | replace('/simple/', '') | replace('/simple', '') | replace('/$', '') }}"
 
+# Show available recipes
+default:
+    @just --list
+
+# Sync workspace deps and install pre-commit hooks
 init:
     uv sync --all-groups
     uvx pre-commit install
 
+# Run ruff fix + format + check
 lint:
     uvx ruff check --fix .
     uvx ruff format .
     uvx ruff check .
 
-lint-add-noqa:
+# Add `# noqa` for current violations, then re-run lint
+lint-add-noqa: && lint-pre-commit lint
     uvx ruff check --add-noqa .
-    just lint-pre-commit
-    just lint
 
+# Run all pre-commit hooks against the whole tree
 lint-pre-commit:
     uvx pre-commit run --all-files
 
+# Watch and re-run ruff on changes
 lint-watch:
     uvx ruff check --watch .
 
+# Run tests with the dev Python version
 test:
-    just test-version {% raw %}{{python_dev_version}}{% endraw %}
+    @just test-version {% raw %}{{python_dev_version}}{% endraw %}
 
+# Run tests across the configured Python version range
 test-all:
     for version in $(python -c "min_ver = '{% raw %}{{python_min_version}}{% endraw %}'.split('.'); max_ver = '{% raw %}{{python_max_version}}{% endraw %}'.split('.'); [print(f'{min_ver[0]}.{minor}') for minor in range(int(min_ver[1]), int(max_ver[1]) + 1)]"); do just test-version "$version"; done
 
+# Run tests for a specific Python version
 test-version version:
     echo "Testing with Python {% raw %}{{version}}{% endraw %}..."
     uv run --all-groups --python {% raw %}{{version}}{% endraw %} pytest --cov={% raw %}{{package_name}}{% endraw %} --cov-report=xml --cov-report=term-missing -v packages/*/tests/
 
-test-watch:
-    uv run --all-groups ptw --runner "pytest -vx packages/*/tests/"
-
+# Serve docs locally
 docs:
     uv run --group docs mkdocs serve
 
+# Build static docs
 docs-build:
     uv run --group docs mkdocs build
 
+# Deploy docs to GitHub Pages
 deploy-gh-pages:
     uv run --group docs mkdocs gh-deploy --force
 
+# Build sdist + wheel for every workspace package
 build:
     uv build --all-packages
 
+# Publish to public PyPI
 publish-pypi:
     uv publish dist/*
 
+# Publish to the private PyPI server
 publish-pypi-server:
     UV_PUBLISH_USERNAME="${PYPI_SERVER_USERNAME}" UV_PUBLISH_PASSWORD="${PYPI_SERVER_PASSWORD}" UV_PUBLISH_URL="${PYPI_SERVER_URL:-{% raw %}{{pypi_server_url}}{% endraw %}}" uv publish dist/*
 
-publish-all:
-    just publish-pypi
-    just publish-pypi-server
+# Publish to both indexes
+publish-all: publish-pypi publish-pypi-server
 
-deploy-pypi:
-    just build
-    just publish-pypi
+# Build then publish to public PyPI
+deploy-pypi: build publish-pypi
 
-deploy-pypi-server:
-    just build
-    just publish-pypi-server
+# Build then publish to the private server
+deploy-pypi-server: build publish-pypi-server
 
-deploy-all:
-    just build
-    just publish-all
+# Build then publish to both indexes
+deploy-all: build publish-all
 
+# Export pinned deps to requirements.txt
 export-deps:
     uv export --no-hashes --output-file requirements.txt

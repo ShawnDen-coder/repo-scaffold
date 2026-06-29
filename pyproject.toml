@@ -16,11 +16,9 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "ruff>=0.9.7",
     "pytest>=8.3.4",
     "pytest-mock>=3.14.0",
     "pytest-cov>=6.0.0",
-    "rust-just>=1.42.4",
 ]
 
 docs = [
