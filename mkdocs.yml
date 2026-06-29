@@ -6,8 +6,14 @@ site_author: ShawnDen-coder
 edit_uri: edit/main/docs/
 repo_name: ShawnDen-coder/repo-scaffold
 copyright: Maintained by <a href="https://github.com/ShawnDen-coder">ShawnDen-coder</a>.
+exclude_docs: |
+  !templates/
 nav:
   - Home: index.md
+  - Templates:
+      - Overview: templates/index.md
+      - python: templates/python.md
+      - uv-workspace: templates/uv-workspace.md
   - API Reference: reference/
 plugins:
   - search
