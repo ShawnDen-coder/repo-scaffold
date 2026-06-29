@@ -47,11 +47,11 @@ jobs:
       PYPI_SERVER_USERNAME: ${{ secrets.PYPI_SERVER_USERNAME }}
       PYPI_SERVER_PASSWORD: ${{ secrets.PYPI_SERVER_PASSWORD }}
     steps:
+      - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
           name: dist
           path: dist/
-      - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
       - name: Publish to private PyPI server
         run: uvx --from rust-just just publish-pypi-server
