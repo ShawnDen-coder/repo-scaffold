@@ -1,5 +1,6 @@
 set dotenv-load := true
 set shell := ["bash", "-euc"]
+set windows-shell := ["powershell.exe", "-NoLogo", "-NoProfile", "-Command"]
 
 package_name := "{{ cookiecutter.package_module }}"
 python_min_version := "{{ cookiecutter.min_python_version }}"
@@ -13,6 +14,7 @@ default:
 
 # Sync workspace deps and install pre-commit hooks
 init:
+    uv tool install rust-just
     uv sync --all-groups
     uvx pre-commit install
 
@@ -40,12 +42,11 @@ test:
 
 # Run tests across the configured Python version range
 test-all:
-    for version in $(python -c "min_ver = '{% raw %}{{python_min_version}}{% endraw %}'.split('.'); max_ver = '{% raw %}{{python_max_version}}{% endraw %}'.split('.'); [print(f'{min_ver[0]}.{minor}') for minor in range(int(min_ver[1]), int(max_ver[1]) + 1)]"); do just test-version "$version"; done
+    uv run python -c "import subprocess; mn=int('{% raw %}{{python_min_version}}{% endraw %}'.split('.')[1]); mx=int('{% raw %}{{python_max_version}}{% endraw %}'.split('.')[1]); [subprocess.check_call(['uv','run','--all-groups','--python',f'3.{m}','pytest','--cov={% raw %}{{package_name}}{% endraw %}','--cov-report=xml','--cov-report=term-missing','-v','packages/']) for m in range(mn, mx + 1)]"
 
 # Run tests for a specific Python version
 test-version version:
-    echo "Testing with Python {% raw %}{{version}}{% endraw %}..."
-    uv run --all-groups --python {% raw %}{{version}}{% endraw %} pytest --cov={% raw %}{{package_name}}{% endraw %} --cov-report=xml --cov-report=term-missing -v packages/*/tests/
+    uv run --all-groups --python {% raw %}{{version}}{% endraw %} pytest --cov={% raw %}{{package_name}}{% endraw %} --cov-report=xml --cov-report=term-missing -v packages/
 
 # Serve docs locally
 docs:
@@ -65,11 +66,11 @@ build:
 
 # Publish to public PyPI
 publish-pypi:
-    uv publish dist/*
+    uv publish
 
 # Publish to the private PyPI server
 publish-pypi-server:
-    UV_PUBLISH_USERNAME="${PYPI_SERVER_USERNAME}" UV_PUBLISH_PASSWORD="${PYPI_SERVER_PASSWORD}" UV_PUBLISH_URL="${PYPI_SERVER_URL:-{% raw %}{{pypi_server_url}}{% endraw %}}" uv publish dist/*
+    uv publish --username {% raw %}{{env_var('PYPI_SERVER_USERNAME')}}{% endraw %} --password {% raw %}{{env_var('PYPI_SERVER_PASSWORD')}}{% endraw %} --publish-url {% raw %}{{env_var_or_default('PYPI_SERVER_URL', pypi_server_url)}}{% endraw %}
 
 # Publish to both indexes
 publish-all: publish-pypi publish-pypi-server
