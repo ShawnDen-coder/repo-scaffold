@@ -20,7 +20,6 @@ dev = [
     "pytest>=8.3.4",
     "pytest-mock>=3.14.0",
     "pytest-cov>=6.0.0",
-    "commitizen>=3.12.0",
     "rust-just>=1.42.4",
 ]
 
