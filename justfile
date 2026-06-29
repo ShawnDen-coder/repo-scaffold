@@ -1,5 +1,6 @@
 set dotenv-load := true
 set shell := ["bash", "-euc"]
+set windows-shell := ["powershell.exe", "-NoLogo", "-NoProfile", "-Command"]
 
 package_name := "repo_scaffold"
 python_min_version := "3.12"
@@ -13,6 +14,7 @@ default:
 
 # Sync deps and install pre-commit hooks
 init:
+    uv tool install rust-just
     uv sync --all-extras
     uvx pre-commit install
 
@@ -40,11 +42,10 @@ test:
 
 # Run tests across the configured Python version range
 test-all:
-    for version in $(python -c "min_ver = '{{python_min_version}}'.split('.'); max_ver = '{{python_max_version}}'.split('.'); [print(f'{min_ver[0]}.{minor}') for minor in range(int(min_ver[1]), int(max_ver[1]) + 1)]"); do just test-version "$version"; done
+    uv run python -c "import subprocess; mn=int('{{python_min_version}}'.split('.')[1]); mx=int('{{python_max_version}}'.split('.')[1]); [subprocess.check_call(['uv','run','--extra','dev','--python',f'3.{m}','pytest','--cov={{package_name}}','--cov-report=xml','--cov-report=term-missing','-v','tests/']) for m in range(mn, mx + 1)]"
 
 # Run tests for a specific Python version
 test-version version:
-    echo "Testing with Python {{version}}..."
     uv run --extra dev --python {{version}} pytest --cov={{package_name}} --cov-report=xml --cov-report=term-missing -v tests/
 
 # Serve docs locally
@@ -69,7 +70,7 @@ publish-pypi:
 
 # Publish to the private PyPI server
 publish-pypi-server:
-    UV_PUBLISH_USERNAME="${PYPI_SERVER_USERNAME}" UV_PUBLISH_PASSWORD="${PYPI_SERVER_PASSWORD}" UV_PUBLISH_URL="${PYPI_SERVER_URL:-{{pypi_server_url}}}" uv publish dist/*
+    uv publish --username {{env_var('PYPI_SERVER_USERNAME')}} --password {{env_var('PYPI_SERVER_PASSWORD')}} --publish-url {{env_var_or_default('PYPI_SERVER_URL', pypi_server_url)}}
 
 # Publish to both indexes
 publish-all: publish-pypi publish-pypi-server
