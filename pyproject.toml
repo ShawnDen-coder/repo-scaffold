@@ -1,6 +1,6 @@
 [project]
 name = "repo-scaffold"
-version = "0.15.1"
+version = "0.16.0"
 description = "A modern project scaffolding tool that helps you quickly create standardized project structures with best practices."
 authors = [
     {name = "shawndeng", email = "shawndeng1109@qq.com"}

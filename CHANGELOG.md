@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [0.16.0](https://github.com/ShawnDen-coder/repo-scaffold/compare/c312abdad572ea98e387557470eb429bbf6f3d11..0.16.0) - 2026-06-29
+#### Bug Fixes
+- **(ci)** push bump commit + tag from cog.toml post_bump_hooks - ([363df66](https://github.com/ShawnDen-coder/repo-scaffold/commit/363df66eadf66de1f833c95f63b810a2f202d505)) - ShawnDen-coder
+- replace broken pypi badge and add classifiers - ([c312abd](https://github.com/ShawnDen-coder/repo-scaffold/commit/c312abdad572ea98e387557470eb429bbf6f3d11)) - ShawnDen-coder
+#### Features
+- add `repo-scaffold gh-init` to bootstrap GitHub for a project - ([c70c5a9](https://github.com/ShawnDen-coder/repo-scaffold/commit/c70c5a9f1ab2dd44b4ae0fabf3bf5b9763e11c5a)) - ShawnDen-coder
+
+- - -
+
 ## [0.15.1](https://github.com/ShawnDen-coder/repo-scaffold/compare/3fed160c1dfeb4f3f1bc8252d666a7cc5d58287d..0.15.1) - 2026-06-29
 #### Bug Fixes
 - (**ci**) checkout before download-artifact in publish-private-pypi - ([3fed160](https://github.com/ShawnDen-coder/repo-scaffold/commit/3fed160c1dfeb4f3f1bc8252d666a7cc5d58287d)) - ShawnDen-coder, Claude Opus 4.7 (1M context)
