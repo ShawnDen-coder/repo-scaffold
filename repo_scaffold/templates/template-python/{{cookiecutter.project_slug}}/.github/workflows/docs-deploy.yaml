@@ -5,36 +5,21 @@ on:
       - '[0-9]+.[0-9]+.[0-9]+'
   workflow_dispatch:
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 concurrency:
   group: pages
   cancel-in-progress: false
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     env:
-      {% raw %}UV_INDEX_HOMELAB_USERNAME: ${{ secrets.PYPI_SERVER_USERNAME }}
+      {% raw %}GITHUB_TOKEN: ${{ github.token }}
+      UV_INDEX_HOMELAB_USERNAME: ${{ secrets.PYPI_SERVER_USERNAME }}
       UV_INDEX_HOMELAB_PASSWORD: ${{ secrets.PYPI_SERVER_PASSWORD }}{% endraw %}
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
-      - name: Build documentation
-        run: uvx --from rust-just just docs-build
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: site
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      {% raw %}url: ${{ steps.deployment.outputs.page_url }}{% endraw %}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Build and deploy documentation
+        run: uvx --from rust-just just deploy-gh-pages
