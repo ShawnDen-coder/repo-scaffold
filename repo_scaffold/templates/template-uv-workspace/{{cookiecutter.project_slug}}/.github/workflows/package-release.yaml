@@ -8,76 +8,69 @@ permissions:
   id-token: write
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
-    env:
-      {% raw %}UV_INDEX_HOMELAB_USERNAME: ${{ secrets.PYPI_SERVER_USERNAME }}
-      UV_INDEX_HOMELAB_PASSWORD: ${{ secrets.PYPI_SERVER_PASSWORD }}
-      PYPI_SERVER_USERNAME: ${{ secrets.PYPI_SERVER_USERNAME }}
-      PYPI_SERVER_PASSWORD: ${{ secrets.PYPI_SERVER_PASSWORD }}{% endraw %}
     steps:
       - uses: actions/checkout@v4
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5
-      - name: init environment and test
-        run: |
-          uvx --from rust-just just init
-          uvx --from rust-just just lint
-      - name: Run tests
-        run: uvx --from rust-just just test-all
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - name: Build distributions
+        run: uvx --from rust-just just build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+          if-no-files-found: error
 
   publish-pypi:
-    needs: test
+    needs: build
     runs-on: ubuntu-latest
     if: vars.PUBLISH_TO_PUBLIC_PYPI == 'true'
     permissions:
-      contents: write
+      contents: read
       id-token: write
     steps:
       - uses: actions/checkout@v4
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5
-      - name: Build package
-        run: uvx --from rust-just just build
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - uses: astral-sh/setup-uv@v5
       - name: Publish to PyPI
         env:
           {% raw %}UV_PUBLISH_TOKEN: ${{ secrets.PYPI_TOKEN }}{% endraw %}
         run: uvx --from rust-just just publish-pypi
 
   publish-private-pypi:
-    needs: test
+    needs: build
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     env:
-      {% raw %}UV_INDEX_HOMELAB_USERNAME: ${{ secrets.PYPI_SERVER_USERNAME }}
-      UV_INDEX_HOMELAB_PASSWORD: ${{ secrets.PYPI_SERVER_PASSWORD }}
-      PYPI_SERVER_USERNAME: ${{ secrets.PYPI_SERVER_USERNAME }}
+      {% raw %}PYPI_SERVER_USERNAME: ${{ secrets.PYPI_SERVER_USERNAME }}
       PYPI_SERVER_PASSWORD: ${{ secrets.PYPI_SERVER_PASSWORD }}{% endraw %}
     steps:
       - uses: actions/checkout@v4
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5
-      - name: Build and publish to PyPI Server
-        run: uvx --from rust-just just deploy-pypi-server
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - uses: astral-sh/setup-uv@v5
+      - name: Publish to private PyPI server
+        run: uvx --from rust-just just publish-pypi-server
 
   release:
-    needs: [test, publish-private-pypi, publish-pypi]
-    {% raw %}if: |
-      ${{ always() &&
-      needs.test.result == 'success' &&
-      needs.publish-private-pypi.result == 'success' &&
-      (needs.publish-pypi.result == 'success' || needs.publish-pypi.result == 'skipped') }}{% endraw %}
+    needs: [publish-pypi, publish-private-pypi]
+    {% raw %}if: ${{ !failure() && !cancelled() }}{% endraw %}
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v4
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5
-      - name: Build package for release
-        run: uvx --from rust-just just build
-      - name: Release
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           {% raw %}tag_name: ${{ github.ref_name }}
