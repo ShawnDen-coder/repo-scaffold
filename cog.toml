@@ -8,7 +8,10 @@ pre_bump_hooks = [
     "uv lock --no-upgrade",
 ]
 
-post_bump_hooks = ["git push --follow-tags"]
+post_bump_hooks = [
+    "git push",
+    "git push origin {{version}}",
+]
 
 [changelog]
 path = "CHANGELOG.md"
