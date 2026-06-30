@@ -1,0 +1,1270 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A Python project template generator">
+      
+      
+        <meta name="author" content="ShawnDen-coder">
+      
+      
+        <link rel="canonical" href="https://ShawnDen-coder.github.io/repo-scaffold/templates/ci-cd/">
+      
+      
+        <link rel="prev" href="../uv-workspace/">
+      
+      
+        <link rel="next" href="../gh-init/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.4">
+    
+    
+      
+        <title>CI/CD pipeline - repo-scaffold</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.8608ea7d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#cicd-pipeline" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="repo-scaffold" class="md-header__button md-logo" aria-label="repo-scaffold" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            repo-scaffold
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              CI/CD pipeline
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ShawnDen-coder/repo-scaffold" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ShawnDen-coder/repo-scaffold
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="repo-scaffold" class="md-nav__button md-logo" aria-label="repo-scaffold" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    repo-scaffold
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ShawnDen-coder/repo-scaffold" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ShawnDen-coder/repo-scaffold
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Templates
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Templates
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../python/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    python
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../uv-workspace/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    uv-workspace
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    CI/CD pipeline
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    CI/CD pipeline
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#pipeline-at-a-glance" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pipeline at a glance
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#required-secrets-and-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      Required secrets and variables
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ci-testsyaml-code-quality-gate" class="md-nav__link">
+    <span class="md-ellipsis">
+      ci-tests.yaml — code quality gate
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-bumpyaml-cocogitto-release" class="md-nav__link">
+    <span class="md-ellipsis">
+      version-bump.yaml — cocogitto release
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#package-releaseyaml-build-publish" class="md-nav__link">
+    <span class="md-ellipsis">
+      package-release.yaml — build &amp; publish
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#docs-deployyaml-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      docs-deploy.yaml — documentation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#container-releaseyaml-podman-ghcr" class="md-nav__link">
+    <span class="md-ellipsis">
+      container-release.yaml — Podman / GHCR
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#end-to-end-timeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      End-to-end timeline
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gh-init/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    GitHub bootstrap
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    API Reference
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            API Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_1" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../reference/repo_scaffold/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    repo_scaffold
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_1" id="__nav_3_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_1">
+            <span class="md-nav__icon md-icon"></span>
+            repo_scaffold
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/repo_scaffold/cli/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    cli
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_1_3" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../reference/repo_scaffold/github_init/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    github_init
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_1_3" id="__nav_3_1_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_1_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_1_3">
+            <span class="md-nav__icon md-icon"></span>
+            github_init
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/repo_scaffold/github_init/client/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    client
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/repo_scaffold/github_init/config/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    config
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#pipeline-at-a-glance" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pipeline at a glance
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#required-secrets-and-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      Required secrets and variables
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ci-testsyaml-code-quality-gate" class="md-nav__link">
+    <span class="md-ellipsis">
+      ci-tests.yaml — code quality gate
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-bumpyaml-cocogitto-release" class="md-nav__link">
+    <span class="md-ellipsis">
+      version-bump.yaml — cocogitto release
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#package-releaseyaml-build-publish" class="md-nav__link">
+    <span class="md-ellipsis">
+      package-release.yaml — build &amp; publish
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#docs-deployyaml-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      docs-deploy.yaml — documentation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#container-releaseyaml-podman-ghcr" class="md-nav__link">
+    <span class="md-ellipsis">
+      container-release.yaml — Podman / GHCR
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#end-to-end-timeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      End-to-end timeline
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="cicd-pipeline">CI/CD pipeline<a class="headerlink" href="#cicd-pipeline" title="Permanent link">&para;</a></h1>
+<p>Every generated project ships a self-contained GitHub Actions pipeline that wires test → version bump → publish → docs → (optional) container release together. Both templates use the same five-workflow skeleton; the <code>python</code> template adds a sixth workflow when Podman is enabled.</p>
+<p>This page documents what each workflow does, how they trigger one another, and what secrets / variables you need to configure on the repository.</p>
+<h2 id="pipeline-at-a-glance">Pipeline at a glance<a class="headerlink" href="#pipeline-at-a-glance" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>push to master/main ──▶ ci-tests       (lint + matrix tests)
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>                  └──▶ version-bump    (cocogitto release)
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>                          │
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>                          └─push tag X.Y.Z──▶ package-release  (build → publish → GitHub release)
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>                                          └─▶ docs-deploy      (mkdocs gh-deploy)
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>                                          └─▶ container-release (python + use_podman only)
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>pull_request ────────▶ ci-tests
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Workflow</th>
+<th>Trigger</th>
+<th>Purpose</th>
+<th><code>python</code></th>
+<th><code>uv-workspace</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ci-tests.yaml</code></td>
+<td>push / pull_request</td>
+<td>Lint + multi-Python matrix tests</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><code>version-bump.yaml</code></td>
+<td>push to <code>master</code> / <code>main</code></td>
+<td>Cocogitto computes next version, updates files, tags</td>
+<td>✅</td>
+<td>✅ (monorepo mode)</td>
+</tr>
+<tr>
+<td><code>package-release.yaml</code></td>
+<td>tag matching <code>[0-9]+.[0-9]+.[0-9]+</code></td>
+<td>Build → publish (public + private PyPI) → GitHub Release</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><code>docs-deploy.yaml</code></td>
+<td>tag or manual dispatch</td>
+<td><code>mkdocs gh-deploy</code> to the <code>gh-pages</code> branch</td>
+<td>only with <code>use_github_actions=yes</code></td>
+<td>only with <code>use_github_actions=yes</code></td>
+</tr>
+<tr>
+<td><code>container-release.yaml</code></td>
+<td>GitHub Release published</td>
+<td>Multi-arch container build → push to GHCR</td>
+<td>only with <code>use_podman=yes</code></td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h2 id="required-secrets-and-variables">Required secrets and variables<a class="headerlink" href="#required-secrets-and-variables" title="Permanent link">&para;</a></h2>
+<p>Set these once in <strong>Settings → Secrets and variables → Actions</strong> before the first push:</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Used by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PERSONAL_ACCESS_TOKEN</code></td>
+<td>Secret</td>
+<td><code>version-bump</code> (push tags), <code>container-release</code> (push to GHCR), <code>package-release</code> (create GitHub Release)</td>
+</tr>
+<tr>
+<td><code>PYPI_TOKEN</code></td>
+<td>Secret</td>
+<td><code>package-release</code> → public PyPI</td>
+</tr>
+<tr>
+<td><code>PYPI_SERVER_USERNAME</code> / <code>PYPI_SERVER_PASSWORD</code></td>
+<td>Secret</td>
+<td><code>package-release</code> → private PyPI server, plus uv index auth across all workflows</td>
+</tr>
+<tr>
+<td><code>PUBLISH_TO_PUBLIC_PYPI</code></td>
+<td><strong>Variable</strong></td>
+<td>Set to <code>'true'</code> to enable the public PyPI publish job. Leave unset for private-only releases.</td>
+</tr>
+</tbody>
+</table>
+<p><code>PERSONAL_ACCESS_TOKEN</code> must be a fine-grained PAT (or classic) with <strong><code>contents: write</code></strong> at minimum. The reason it is needed instead of the default <code>GITHUB_TOKEN</code> is so that the bump commit + tag pushed by <code>version-bump</code> actually triggers downstream workflows — pushes made with the default token do not re-trigger workflows by design.</p>
+<h2 id="ci-testsyaml-code-quality-gate"><code>ci-tests.yaml</code> — code quality gate<a class="headerlink" href="#ci-testsyaml-code-quality-gate" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>┌──────────┐    ┌────────────────────────────┐
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>│   lint   │──▶ │  test (matrix: 3.x, ...)   │
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>└──────────┘    └────────────────────────────┘
+</code></pre></div>
+<p>Runs on every push to <code>master</code> / <code>main</code> and every pull request.</p>
+<p><strong><code>lint</code> job</strong></p>
+<ul>
+<li><code>setup-uv@v5</code> with <code>enable-cache: true</code>.</li>
+<li><code>just init</code> to bootstrap the env (installs <code>rust-just</code> as a uv tool, <code>uv sync</code>, installs pre-commit hooks).</li>
+<li><code>just lint</code> — Ruff fix + format + final verification check.</li>
+<li><code>just lint-pre-commit</code> — runs every pre-commit hook (<code>uv-lock</code>, <code>yamlfmt</code>, <code>check-github-workflows</code>, <code>actionlint</code>) so workflow YAML errors are caught in PRs, not on <code>master</code>.</li>
+</ul>
+<p><strong><code>test</code> job (matrix)</strong></p>
+<ul>
+<li><code>strategy.matrix.python-version</code> is rendered statically by Cookiecutter from <code>min_python_version..max_python_version</code>. Picking <code>3.10..3.13</code> produces <code>["3.10", "3.11", "3.12", "3.13"]</code>, so each version runs in its own runner in parallel.</li>
+<li><code>fail-fast: false</code> so one version's failure doesn't kill the rest — useful for spotting compatibility issues at a glance.</li>
+<li><code>setup-uv@v5</code> with <code>python-version: ${{ matrix.python-version }}</code> provisions the right interpreter directly through uv (no separate <code>actions/setup-python</code> step).</li>
+<li><code>python</code> template: <code>uv sync --all-extras</code> then <code>just test-version &lt;ver&gt;</code>.</li>
+<li><code>uv-workspace</code> template: <code>uv sync --all-groups</code> then <code>just test-version &lt;ver&gt;</code> — pytest is pointed at <code>packages/</code> so all members run together.</li>
+</ul>
+<p><strong>Concurrency</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">concurrency</span><span class="p">:</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="nt">group</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ github.workflow }}-${{ github.ref }}</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">  </span><span class="nt">cancel-in-progress</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ github.event_name == &#39;pull_request&#39; }}</span>
+</code></pre></div>
+<p>PR pushes cancel superseded runs to save minutes; pushes to <code>master</code> / <code>main</code> are queued (never cancelled), so failed runs on the default branch always show up.</p>
+<p><strong>Container build smoke test (<code>python</code> only, <code>use_podman=yes</code>)</strong></p>
+<p>When the <code>python</code> template is generated with <code>use_podman=yes</code>, an extra <code>container-build-test</code> job runs alongside the test matrix:</p>
+<ul>
+<li>Sets up QEMU.</li>
+<li>Builds the container image for <code>linux/amd64</code> and <code>linux/arm64</code> via <code>redhat-actions/buildah-build@v2</code>.</li>
+<li><strong>Does not push</strong> — the build itself is the assertion.</li>
+</ul>
+<p>This catches Dockerfile / dependency regressions on PRs, before they would otherwise blow up in <code>container-release</code>.</p>
+<h2 id="version-bumpyaml-cocogitto-release"><code>version-bump.yaml</code> — cocogitto release<a class="headerlink" href="#version-bumpyaml-cocogitto-release" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>┌─────────────────────────────────────────────────┐
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>│ release (cocogitto/cocogitto-action@v3)         │
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>│   - cog bump --auto                             │
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>│   - run pre_bump_hooks (uv version, uv lock)    │
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>│   - update CHANGELOG.md                         │
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>│   - commit + tag (cog-bot identity)             │
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>│   - run post_bump_hooks → git push --follow-tags│
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>└─────────────────────────────────────────────────┘
+</code></pre></div>
+<p>Triggers on every push to <code>master</code> / <code>main</code> (and <code>workflow_dispatch</code>).</p>
+<p><strong>Skip guard</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ !startsWith(github.event.head_commit.message, &#39;chore(version):&#39;) }}</span>
+</code></pre></div>
+<p>Cocogitto's own bump commits are prefixed with <code>chore(version):</code>, so the workflow ignores them and avoids re-triggering itself.</p>
+<p><strong>Why a PAT, not the default token</strong></p>
+<p>Checkout uses <code>token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}</code>. When cocogitto's <code>post_bump_hooks</code> runs <code>git push --follow-tags</code> it reuses the auth that checkout configured, so the push must come from a token GitHub recognizes as "real activity" — pushes made with the default <code>GITHUB_TOKEN</code> are explicitly prevented from triggering downstream workflows, which would mean the <code>X.Y.Z</code> tag push never fires <code>package-release</code> or <code>docs-deploy</code>.</p>
+<p><strong>Push is a cog hook, not a workflow step</strong></p>
+<p><code>cocogitto-action</code> only runs <code>cog bump --auto</code> locally on the runner — creating the bump commit and tag — and does <strong>not</strong> push. Following the <a href="https://docs.cocogitto.io/guide/bump.html">Cocogitto bump guide</a>, <code>cog.toml</code> declares <code>post_bump_hooks = ["git push --follow-tags"]</code> so the same <code>cog bump</code> invocation handles the push whether you run it locally or in CI. The workflow itself doesn't have a separate push step.</p>
+<p><strong>Concurrency</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nt">concurrency</span><span class="p">:</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">  </span><span class="nt">group</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">version-bump-${{ github.ref }}</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">  </span><span class="nt">cancel-in-progress</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+</code></pre></div>
+<p>Two pushes in quick succession are queued, never run in parallel — important because cocogitto computes the next version from current refs and concurrent runs would race each other.</p>
+<p><strong>Monorepo difference (<code>uv-workspace</code>)</strong></p>
+<p>The workflow file itself is identical to the <code>python</code> template's. The monorepo behavior comes entirely from <code>cog.toml</code>:</p>
+<ul>
+<li><code>generate_mono_repository_global_tag = true</code> → one <code>X.Y.Z</code> tag for the repo state.</li>
+<li><code>generate_mono_repository_package_tags = true</code> + <code>monorepo_version_separator = "-"</code> → per-package tags like <code>&lt;pkg&gt;-X.Y.Z</code>.</li>
+<li><code>[packages.&lt;slug&gt;]</code> blocks tell cocogitto which paths "belong" to each package, so a commit only bumps the packages whose paths it touched.</li>
+</ul>
+<p>The downstream <code>package-release</code> workflow only listens for the global <code>X.Y.Z</code> tag, so a single bump cycle produces one publish run.</p>
+<h2 id="package-releaseyaml-build-publish"><code>package-release.yaml</code> — build &amp; publish<a class="headerlink" href="#package-releaseyaml-build-publish" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>┌─────────┐
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>│  build  │ ── upload-artifact dist/
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>└────┬────┘
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>     ├──────────────────┬───────────────────┐
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>     ▼                  ▼                   ▼
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>publish-pypi    publish-private-pypi   (gate)
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>(if PUBLISH_     (always)               │
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a> TO_PUBLIC_PYPI                         │
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a> == &#39;true&#39;)                             │
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>     └──────────────────┴───────────────────┘
+<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>                        ▼
+<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a>                ┌──────────────┐
+<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a>                │   release    │  softprops/action-gh-release
+<a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a>                └──────────────┘
+</code></pre></div>
+<p>Triggers on tag pushes matching <code>[0-9]+.[0-9]+.[0-9]+</code>.</p>
+<p><strong><code>build</code> job</strong></p>
+<p><code>just build</code> (which is <code>uv build</code> for the <code>python</code> template, <code>uv build --all-packages</code> for <code>uv-workspace</code>). The <code>dist/</code> directory is uploaded as an artifact named <code>dist</code>, so downstream publishers don't recompile.</p>
+<p><strong><code>publish-pypi</code> (public)</strong></p>
+<ul>
+<li>Gated on the <code>PUBLISH_TO_PUBLIC_PYPI</code> repository variable so closed-source projects can release to private only.</li>
+<li>Uses PyPI <a href="https://docs.pypi.org/trusted-publishers/">trusted publishing</a> (<code>id-token: write</code>) plus <code>UV_PUBLISH_TOKEN</code>.</li>
+<li><code>uv-workspace</code>: <code>just publish-pypi</code> invokes <code>uv publish --check-url https://pypi.org/simple/</code>, so packages whose version is already on PyPI are silently skipped — important when only some workspace members were bumped.</li>
+</ul>
+<p><strong><code>publish-private-pypi</code></strong></p>
+<ul>
+<li>Always runs.</li>
+<li>Calls <code>just publish-pypi-server</code>, which forwards <code>PYPI_SERVER_USERNAME</code> / <code>PYPI_SERVER_PASSWORD</code> and the configured <code>PYPI_SERVER_URL</code> to <code>uv publish --username --password --publish-url</code>.</li>
+<li><code>uv-workspace</code>: same <code>--check-url</code> skip behavior, scoped to the private index.</li>
+</ul>
+<p><strong><code>release</code> job</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nt">needs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">publish-pypi</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">publish-private-pypi</span><span class="p p-Indicator">]</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ !failure() &amp;&amp; !cancelled() }}</span>
+</code></pre></div>
+<p>Runs after both publish jobs as long as nothing actually failed — a <code>skipped</code> <code>publish-pypi</code> (private-only mode) does not block the GitHub Release. Downloads the <code>dist/</code> artifact and creates a GitHub Release with auto-generated notes plus the wheel and sdist attached.</p>
+<h2 id="docs-deployyaml-documentation"><code>docs-deploy.yaml</code> — documentation<a class="headerlink" href="#docs-deployyaml-documentation" title="Permanent link">&para;</a></h2>
+<p>A single job; both templates ship the same content.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>push tag X.Y.Z (or workflow_dispatch)
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>       │
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>       ▼
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>┌─────────────────────────────────────────────┐
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>│ deploy                                      │
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>│   - actions/checkout                        │
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>│   - setup-uv (cache)                        │
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>│   - just deploy-gh-pages                    │
+<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>│        ↳ uv run mkdocs gh-deploy --force    │
+<a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a>│        ↳ pushes to gh-pages branch          │
+<a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a>└─────────────────────────────────────────────┘
+</code></pre></div>
+<ul>
+<li>Uses the default <code>GITHUB_TOKEN</code> with <code>permissions: contents: write</code> — sufficient to push the <code>gh-pages</code> branch, no PAT needed.</li>
+<li><code>concurrency: { group: pages, cancel-in-progress: false }</code> queues two close-together releases instead of letting them race the gh-pages branch.</li>
+<li><strong>Repository setting</strong>: Pages must use Source → <strong>Deploy from a branch</strong> → <code>gh-pages</code> / <code>(root)</code>. <code>repo-scaffold gh-init</code> configures this automatically; set it manually under Settings → Pages only if you bootstrapped without it (or used <code>--no-pages</code>).</li>
+</ul>
+<p>The workflow is gated on the same <code>use_github_actions=yes</code> cookiecutter prompt as the rest of the docs setup; opting out removes the workflow file along with <code>mkdocs.yml</code> and the <code>docs/</code> directory.</p>
+<h2 id="container-releaseyaml-podman-ghcr"><code>container-release.yaml</code> — Podman / GHCR<a class="headerlink" href="#container-releaseyaml-podman-ghcr" title="Permanent link">&para;</a></h2>
+<p>Generated only for the <code>python</code> template when <code>use_podman=yes</code>. Skipped (the file is removed by <code>post_gen_project.py</code>) otherwise.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>release (Published)
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>       │
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>       ▼
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>┌────────────────────────────────────────────┐
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>│ push_to_registry                           │
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>│   - actions/checkout                       │
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>│   - QEMU                                   │
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>│   - podman-login (ghcr.io, PAT)            │
+<a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>│   - buildah-build (linux/amd64,arm64)      │
+<a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a>│       tags: latest, ${sha}, ${ref_name}    │
+<a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a>│   - push-to-registry                       │
+<a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a>└────────────────────────────────────────────┘
+</code></pre></div>
+<ul>
+<li>Triggers on <code>release: { types: [published] }</code>, so it runs after <code>package-release</code> finishes successfully.</li>
+<li><code>permissions: { contents: read, packages: write }</code> — the <code>packages: write</code> line is what authorizes the push to GHCR.</li>
+<li>Multi-arch builds use buildah with QEMU emulation; the <code>redhat-actions/*</code> action stack is small and doesn't need BuildKit.</li>
+<li>Tags pushed every release: <code>latest</code>, the commit <code>${sha}</code>, and the version <code>${ref_name}</code>. <code>latest</code> always points at the most recent published release.</li>
+</ul>
+<h2 id="end-to-end-timeline">End-to-end timeline<a class="headerlink" href="#end-to-end-timeline" title="Permanent link">&para;</a></h2>
+<p>A push of <code>feat: …</code> to <code>master</code> produces, in order:</p>
+<ol>
+<li><strong><code>ci-tests</code></strong> — lint passes, every Python version in the matrix passes.</li>
+<li><strong><code>version-bump</code></strong> — cocogitto computes a minor bump, updates <code>pyproject.toml</code> + <code>uv.lock</code> + <code>CHANGELOG.md</code>, commits as <code>cog-bot</code>, pushes tag <code>0.2.0</code>.</li>
+<li><strong><code>package-release</code></strong> — builds, publishes to public + private PyPI, attaches the wheel/sdist to a GitHub Release. The release itself becomes "published".</li>
+<li><strong><code>docs-deploy</code></strong> — <code>mkdocs gh-deploy</code> updates <code>gh-pages</code> from the freshly tagged source.</li>
+<li><strong><code>container-release</code></strong> (python + Podman only) — multi-arch container image pushed to GHCR.</li>
+</ol>
+<p>The whole sequence runs without manual intervention as long as commits follow <a href="https://www.conventionalcommits.org/">Conventional Commits</a>. The only setup is the initial repository configuration — secrets, the <code>PUBLISH_TO_PUBLIC_PYPI</code> variable, and the Pages source pointed at <code>gh-pages</code> — all of which <code>repo-scaffold gh-init</code> applies for you.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Maintained by <a href="https://github.com/ShawnDen-coder">ShawnDen-coder</a>.
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/ShawnDen-coder/repo-scaffold" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8M97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://pypi.org/project/repo-scaffold" target="_blank" rel="noopener" title="pypi.org" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.8 200.5c-7.7-30.9-22.3-54.2-53.4-54.2h-40.1v47.4c0 36.8-31.2 67.8-66.8 67.8H172.7c-29.2 0-53.4 25-53.4 54.3v101.8c0 29 25.2 46 53.4 54.3 33.8 9.9 66.3 11.7 106.8 0 26.9-7.8 53.4-23.5 53.4-54.3v-40.7H226.2v-13.6h160.2c31.1 0 42.6-21.7 53.4-54.2 11.2-33.5 10.7-65.7 0-108.6M286.2 404c11.1 0 20.1 9.1 20.1 20.3 0 11.3-9 20.4-20.1 20.4-11 0-20.1-9.2-20.1-20.4.1-11.3 9.1-20.3 20.1-20.3M167.8 248.1h106.8c29.7 0 53.4-24.5 53.4-54.3V91.9c0-29-24.4-50.7-53.4-55.6-35.8-5.9-74.7-5.6-106.8.1-45.2 8-53.4 24.7-53.4 55.6v40.7h106.9v13.6h-147c-31.1 0-58.3 18.7-66.8 54.2-9.8 40.7-10.2 66.1 0 108.6 7.6 31.6 25.7 54.2 56.8 54.2H101v-48.8c0-35.3 30.5-66.4 66.8-66.4m-6.7-142.6c-11.1 0-20.1-9.1-20.1-20.3.1-11.3 9-20.4 20.1-20.4 11 0 20.1 9.2 20.1 20.4s-9 20.3-20.1 20.3"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.highlight", "search.share", "search.suggest", "content.code.copy"], "search": "../../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.f1b6f286.min.js"></script>
+      
+    
+  </body>
+</html>
