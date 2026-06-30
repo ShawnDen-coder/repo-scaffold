@@ -106,9 +106,13 @@ def _render_template(
 def _assert_no_unrendered_markers(project_dir: Path) -> None:
     markers = ("{{ cookiecutter", "{{cookiecutter", "{% raw %}", "{% endraw %}")
     for path in project_dir.rglob("*"):
-        if path.is_file():
+        if not path.is_file() or "__pycache__" in path.parts:
+            continue
+        try:
             text = path.read_text(encoding="utf-8")
-            assert not any(marker in text for marker in markers), path
+        except UnicodeDecodeError:
+            continue
+        assert not any(marker in text for marker in markers), path
 
 
 def _assert_no_task_runner_references(project_dir: Path) -> None:
@@ -170,6 +174,17 @@ def _assert_cog_does_not_require_existing_tag(project_dir: Path) -> None:
     assert "from_latest_tag" not in cog_config.read_text(encoding="utf-8")
 
 
+def _assert_cog_pushes_tags_explicitly(project_dir: Path) -> None:
+    cog_config = project_dir / "cog.toml"
+    if not cog_config.exists():
+        return
+
+    text = cog_config.read_text(encoding="utf-8")
+    assert '"git push"' in text
+    assert "git push origin " in text or '"git push --tags"' in text
+    assert "git push --follow-tags" not in text
+
+
 def _assert_static_project_valid(project_dir: Path) -> None:
     _assert_no_task_runner_references(project_dir)
     _assert_no_unrendered_markers(project_dir)
@@ -178,6 +193,7 @@ def _assert_static_project_valid(project_dir: Path) -> None:
     _assert_workflows_have_github_expressions(project_dir)
     _assert_version_bump_avoids_self_trigger(project_dir)
     _assert_cog_does_not_require_existing_tag(project_dir)
+    _assert_cog_pushes_tags_explicitly(project_dir)
 
 
 def test_template_python_renders_with_justfile(tmp_path):
