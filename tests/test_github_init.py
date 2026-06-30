@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import base64
 import subprocess
 from pathlib import Path
 from typing import Any
@@ -266,6 +267,7 @@ def test_init_repository_pushes_when_enabled(tmp_path, monkeypatch):
         remote_url="https://github.com/me/demo.git",
         branch="master",
         force=True,
+        token=client.token,
     )
     assert result.pushed is True
 
@@ -360,6 +362,46 @@ def test_deploy_docs_raises_runtime_error_on_failure(tmp_path, monkeypatch):
         github_init.deploy_docs(tmp_path)
 
 
+def test_deploy_docs_passes_token_in_env(tmp_path, monkeypatch):
+    """With a token, deploy_docs injects the PAT into the subprocess env.
+
+    ``mkdocs gh-deploy`` shells out to ``git push`` itself, so the PAT is passed
+    as an ``http.extraheader`` ``Authorization: Basic`` header via
+    ``GIT_CONFIG_PARAMETERS`` (and the terminal prompt is disabled) rather than
+    being written to ``.git/config``.
+    """
+    captured = {}
+
+    def fake_run(cmd, **kwargs):
+        captured["env"] = kwargs.get("env")
+        return subprocess.CompletedProcess(cmd, 0, stdout="", stderr="")
+
+    monkeypatch.setattr(subprocess, "run", fake_run)
+    github_init.deploy_docs(tmp_path, token="test")
+
+    env = captured["env"]
+    assert env is not None
+    expected_creds = base64.b64encode(b"x-access-token:test").decode()
+    assert env["GIT_CONFIG_PARAMETERS"] == f"'http.extraheader=Authorization: Basic {expected_creds}'"
+    assert env["GIT_TERMINAL_PROMPT"] == "0"
+    # The existing environment is preserved alongside the injected entries.
+    assert "PATH" in env
+
+
+def test_deploy_docs_omits_env_without_token(tmp_path, monkeypatch):
+    """Without a token, deploy_docs passes no custom env (lets git auth itself)."""
+    captured = {}
+
+    def fake_run(cmd, **kwargs):
+        captured["env"] = kwargs.get("env")
+        return subprocess.CompletedProcess(cmd, 0, stdout="", stderr="")
+
+    monkeypatch.setattr(subprocess, "run", fake_run)
+    github_init.deploy_docs(tmp_path)
+
+    assert captured["env"] is None
+
+
 def test_enable_pages_creates_site():
     """enable_pages POSTs the source config to the Pages endpoint."""
     client = GhInitClient.__new__(GhInitClient)
@@ -410,7 +452,7 @@ def test_init_repository_configures_pages_after_push(tmp_path, monkeypatch):
 
     result = init_repository(config, client)
 
-    deploy.assert_called_once_with(tmp_path)
+    deploy.assert_called_once_with(tmp_path, token=client.token)
     client.enable_pages.assert_called_once_with(repo, "gh-pages")
     client.set_homepage.assert_called_once_with(repo, "https://me.github.io/demo")
     assert result.pages_configured is True
@@ -727,6 +769,34 @@ def test_git_push_skips_commit_when_head_exists(tmp_path, monkeypatch):
     # `INITIAL_COMMIT_MESSAGE` doesn't trigger a false positive.
     assert not any("add" in c and "-A" in c for c in calls)
     assert not any("commit" in c for c in calls)
+
+
+def test_git_push_embeds_token_in_extraheader(tmp_path, monkeypatch):
+    """With a token, git_push authenticates the push via a one-shot http.extraheader.
+
+    The remote URL stays clean (no embedded creds, so the token never lands in
+    .git/config); the PAT is sent as an Authorization: Basic header through
+    `-c` on the push command itself.
+    """
+    calls = _record_calls(monkeypatch, head_exists=False)
+    git_push(tmp_path, "https://github.com/me/demo.git", branch="master", force=False, token="test")
+
+    expected_creds = base64.b64encode(b"x-access-token:test").decode()
+    push_calls = [" ".join(c) for c in calls if "push" in c]
+    assert any(f"http.extraheader=Authorization: Basic {expected_creds}" in c for c in push_calls)
+    # Remote is added against the clean URL (token not embedded).
+    assert any("remote add origin https://github.com/me/demo.git" in " ".join(c) for c in calls)
+    assert any(c.endswith("push -u origin master") for c in push_calls)
+
+
+def test_git_push_omits_extraheader_without_token(tmp_path, monkeypatch):
+    """Without a token, git_push pushes plainly (lets SSH / credential helpers work)."""
+    calls = _record_calls(monkeypatch, head_exists=False)
+    git_push(tmp_path, "git@github.com:me/demo.git", branch="master", force=False)
+
+    push_calls = [" ".join(c) for c in calls if "push" in c]
+    assert any(c.endswith("push -u origin master") for c in push_calls)
+    assert not any("extraheader" in c for c in push_calls)
 
 
 # Constant under test, kept local to avoid importing internal name into tests.

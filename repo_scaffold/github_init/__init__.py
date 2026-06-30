@@ -18,6 +18,8 @@ extra dependency on GitPython.
 
 from __future__ import annotations
 
+import base64
+import os
 import subprocess
 from pathlib import Path
 
@@ -69,17 +71,31 @@ def _github_error_message(exc: GithubException) -> str:
     return str(data["message"]) if isinstance(data, dict) and "message" in data else str(exc)
 
 
-def deploy_docs(project_path: Path) -> None:
+def deploy_docs(project_path: Path, *, token: str | None = None) -> None:
     """Build the MkDocs site and push it to the ``gh-pages`` branch.
 
     Runs the project's ``deploy-gh-pages`` just recipe (``mkdocs gh-deploy
     --force``), which builds with the right docs dependency group/extra, writes
     ``.nojekyll``, and pushes to ``origin``. Raises ``RuntimeError`` on failure
     so the orchestrator can surface it without aborting the whole bootstrap.
+
+    ``mkdocs gh-deploy`` shells out to ``git push`` itself, so when ``token`` is
+    given the PAT is injected via ``GIT_CONFIG_PARAMETERS`` (an
+    ``http.extraheader`` ``Authorization: Basic`` header) and the terminal
+    prompt is disabled. This authenticates the push non-interactively without
+    ever writing the token to ``.git/config``.
     """
     cmd = ["uvx", "--from", "rust-just", "just", "deploy-gh-pages"]
+    env = None
+    if token:
+        creds = base64.b64encode(f"x-access-token:{token}".encode()).decode()
+        env = {
+            **os.environ,
+            "GIT_CONFIG_PARAMETERS": f"'http.extraheader=Authorization: Basic {creds}'",
+            "GIT_TERMINAL_PROMPT": "0",
+        }
     try:
-        subprocess.run(cmd, cwd=str(project_path), check=True, capture_output=True, text=True)
+        subprocess.run(cmd, cwd=str(project_path), check=True, capture_output=True, text=True, env=env)
     except FileNotFoundError as exc:
         raise RuntimeError("`uvx` was not found on PATH; install uv before running gh-init.") from exc
     except subprocess.CalledProcessError as exc:
@@ -96,7 +112,14 @@ def _git(project_path: Path, *args: str) -> subprocess.CompletedProcess[str]:
     )
 
 
-def git_push(project_path: Path, remote_url: str, branch: str, force: bool) -> None:
+def git_push(
+    project_path: Path,
+    remote_url: str,
+    branch: str,
+    force: bool,
+    *,
+    token: str | None = None,
+) -> None:
     """Initialize git in ``project_path`` if needed, commit, and push to origin.
 
     Steps:
@@ -106,6 +129,13 @@ def git_push(project_path: Path, remote_url: str, branch: str, force: bool) -> N
       3. Rename the current branch to ``branch``.
       4. (Re-)add ``origin`` pointing at ``remote_url``.
       5. Push ``branch`` to ``origin`` with ``-u`` (and optionally ``--force``).
+
+    ``remote_url`` is the repo's plain HTTPS clone URL (no embedded creds), so a
+    non-interactive push has no way to authenticate: there is no TTY under
+    ``capture_output`` and no credential helper is assumed. When ``token`` is
+    given, the PAT is sent as an ``Authorization: Basic`` header via a one-shot
+    ``-c http.extraheader=...`` so the push authenticates without the token ever
+    being written to ``.git/config``.
     """
     try:
         if not (project_path / ".git").exists():
@@ -145,7 +175,11 @@ def git_push(project_path: Path, remote_url: str, branch: str, force: bool) -> N
         )
         _git(project_path, "remote", "add", "origin", remote_url)
 
-        push_args = ["push", "-u"]
+        push_args: list[str] = []
+        if token:
+            creds = base64.b64encode(f"x-access-token:{token}".encode()).decode()
+            push_args += ["-c", f"http.extraheader=Authorization: Basic {creds}"]
+        push_args += ["push", "-u"]
         if force:
             push_args.append("--force")
         push_args += ["origin", branch]
@@ -176,6 +210,7 @@ def init_repository(config: GhInitConfig, client: GhInitClient) -> GhInitResult:
             remote_url=repo.clone_url,
             branch=config.default_branch,
             force=config.force_push,
+            token=client.token,
         )
         pushed = True
 
@@ -195,7 +230,7 @@ def init_repository(config: GhInitConfig, client: GhInitClient) -> GhInitResult:
     has_docs = (config.project_path / "mkdocs.yml").is_file()
     if config.setup_pages and pushed and has_docs:
         try:
-            deploy_docs(config.project_path)
+            deploy_docs(config.project_path, token=client.token)
             client.enable_pages(repo, PAGES_BRANCH)
             pages_configured = True
             client.set_homepage(repo, pages_url)

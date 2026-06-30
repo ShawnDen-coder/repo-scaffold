@@ -20,6 +20,18 @@ class GhInitClient:
         """Construct a client backed by the given personal access token."""
         self._gh = Github(auth=Auth.Token(token))
         self._user_login: str | None = None
+        self._token = token
+
+    @property
+    def token(self) -> str:
+        """The personal access token this client authenticates with.
+
+        Exposed so the orchestrator can feed it to the non-interactive
+        ``git push`` / ``mkdocs gh-deploy`` subprocesses (see ``git_push`` and
+        ``deploy_docs``), which need it to authenticate an HTTPS remote that has
+        no credential helper and no TTY.
+        """
+        return self._token
 
     def authenticated_login(self) -> str:
         """Return the login of the token's user. Raises on a bad token."""
