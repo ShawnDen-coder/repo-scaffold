@@ -135,6 +135,50 @@ def test_build_config_setup_pages_defaults_true(tmp_path):
     assert build_config(tmp_path, extra_env={}, protect_branch=True).protect_branch is True
 
 
+def test_detect_owner_from_pyproject_urls(tmp_path):
+    """Owner is read from a github.com URL in [project.urls]."""
+    (tmp_path / "pyproject.toml").write_text(
+        '[project]\nname = "x"\n\n[project.urls]\nRepository = "https://github.com/my-org/x"\n',
+        encoding="utf-8",
+    )
+    assert github_init.detect_owner(tmp_path) == ("my-org", "pyproject")
+
+
+def test_detect_owner_falls_back_to_cog(tmp_path):
+    """Without pyproject URLs, owner comes from cog.toml [changelog].owner."""
+    (tmp_path / "pyproject.toml").write_text('[project]\nname = "x"\n', encoding="utf-8")
+    (tmp_path / "cog.toml").write_text('[changelog]\nowner = "cog-org"\nrepository = "x"\n', encoding="utf-8")
+    assert github_init.detect_owner(tmp_path) == ("cog-org", "cog.toml")
+
+
+def test_detect_owner_none_when_absent(tmp_path):
+    """No URL and no cog.toml yields no detected owner."""
+    (tmp_path / "pyproject.toml").write_text('[project]\nname = "x"\n', encoding="utf-8")
+    assert github_init.detect_owner(tmp_path) == (None, None)
+
+
+def test_build_config_resolves_owner_from_project(tmp_path):
+    """build_config picks up the detected owner and records its source."""
+    (tmp_path / "pyproject.toml").write_text(
+        '[project]\nname = "x"\n\n[project.urls]\nHomepage = "https://github.com/auto-org/x"\n',
+        encoding="utf-8",
+    )
+    config = build_config(tmp_path, extra_env={})
+    assert config.owner == "auto-org"
+    assert config._owner_source == "pyproject"
+
+
+def test_build_config_explicit_owner_wins_over_detection(tmp_path):
+    """An explicit --owner overrides any detected owner."""
+    (tmp_path / "pyproject.toml").write_text(
+        '[project]\nname = "x"\n\n[project.urls]\nHomepage = "https://github.com/auto-org/x"\n',
+        encoding="utf-8",
+    )
+    config = build_config(tmp_path, owner="flag-org", extra_env={})
+    assert config.owner == "flag-org"
+    assert config._owner_source == "flag"
+
+
 def _make_config(tmp_path: Path, **overrides: Any) -> GhInitConfig:
     base: dict[str, Any] = {
         "project_path": tmp_path,
@@ -281,35 +325,39 @@ def test_set_variable_reraises_on_other_errors():
         client.set_variable(repo, "X", "Y")
 
 
-def test_ensure_branch_creates_from_base_when_missing():
-    """A missing branch is created from the base branch's head commit."""
+def test_set_homepage_edits_repo():
+    """set_homepage points the repo Website field at the docs URL."""
     client = GhInitClient.__new__(GhInitClient)
     repo = MagicMock()
-    base = MagicMock()
-    base.commit.sha = "abc123"
 
-    def get_branch(name):
-        if name == "gh-pages":
-            raise GithubException(status=404, data={"message": "Branch not found"})
-        return base
+    client.set_homepage(repo, "https://me.github.io/demo")
 
-    repo.get_branch.side_effect = get_branch
-
-    created = client.ensure_branch(repo, "gh-pages", "master")
-
-    assert created is True
-    repo.create_git_ref.assert_called_once_with("refs/heads/gh-pages", "abc123")
+    repo.edit.assert_called_once_with(homepage="https://me.github.io/demo")
 
 
-def test_ensure_branch_skips_when_present():
-    """An existing branch is left untouched and reported as not created."""
-    client = GhInitClient.__new__(GhInitClient)
-    repo = MagicMock()  # get_branch returns a branch without raising
+def test_deploy_docs_runs_just_recipe(tmp_path, monkeypatch):
+    """deploy_docs shells out to the project's deploy-gh-pages just recipe."""
+    calls = []
 
-    created = client.ensure_branch(repo, "gh-pages", "master")
+    def fake_run(cmd, **kwargs):
+        calls.append((list(cmd), kwargs.get("cwd")))
+        return subprocess.CompletedProcess(cmd, 0, stdout="", stderr="")
 
-    assert created is False
-    repo.create_git_ref.assert_not_called()
+    monkeypatch.setattr(subprocess, "run", fake_run)
+    github_init.deploy_docs(tmp_path)
+
+    assert calls == [(["uvx", "--from", "rust-just", "just", "deploy-gh-pages"], str(tmp_path))]
+
+
+def test_deploy_docs_raises_runtime_error_on_failure(tmp_path, monkeypatch):
+    """A non-zero mkdocs gh-deploy surfaces as a RuntimeError with the stderr tail."""
+
+    def fake_run(cmd, **kwargs):
+        raise subprocess.CalledProcessError(1, cmd, output="", stderr="boom: build failed")
+
+    monkeypatch.setattr(subprocess, "run", fake_run)
+    with pytest.raises(RuntimeError, match="gh-deploy"):
+        github_init.deploy_docs(tmp_path)
 
 
 def test_enable_pages_creates_site():
@@ -344,9 +392,12 @@ def test_enable_pages_updates_on_conflict():
 
 
 def test_init_repository_configures_pages_after_push(tmp_path, monkeypatch):
-    """With push + setup_pages, gh-pages is created and Pages is configured."""
+    """With push + setup_pages + a docs site, gh-init deploys docs, enables Pages, sets homepage."""
+    (tmp_path / "mkdocs.yml").write_text("site_name: demo\n", encoding="utf-8")
     config = _make_config(tmp_path, push=True, setup_pages=True)
     monkeypatch.setattr(github_init, "git_push", MagicMock())
+    deploy = MagicMock()
+    monkeypatch.setattr(github_init, "deploy_docs", deploy)
 
     repo = MagicMock()
     repo.clone_url = "https://github.com/me/demo.git"
@@ -359,15 +410,20 @@ def test_init_repository_configures_pages_after_push(tmp_path, monkeypatch):
 
     result = init_repository(config, client)
 
-    client.ensure_branch.assert_called_once_with(repo, "gh-pages", "master")
+    deploy.assert_called_once_with(tmp_path)
     client.enable_pages.assert_called_once_with(repo, "gh-pages")
+    client.set_homepage.assert_called_once_with(repo, "https://me.github.io/demo")
     assert result.pages_configured is True
+    assert result.homepage_set is True
     assert result.pages_branch == "gh-pages"
 
 
 def test_init_repository_skips_pages_without_push(tmp_path, monkeypatch):
-    """Pages setup is skipped when nothing was pushed (no remote default branch)."""
+    """Pages setup is skipped when nothing was pushed (no remote branch to deploy)."""
+    (tmp_path / "mkdocs.yml").write_text("site_name: demo\n", encoding="utf-8")
     config = _make_config(tmp_path, push=False, setup_pages=True)
+    deploy = MagicMock()
+    monkeypatch.setattr(github_init, "deploy_docs", deploy)
 
     repo = MagicMock()
     repo.html_url = "https://github.com/me/demo"
@@ -379,15 +435,41 @@ def test_init_repository_skips_pages_without_push(tmp_path, monkeypatch):
 
     result = init_repository(config, client)
 
-    client.ensure_branch.assert_not_called()
+    deploy.assert_not_called()
+    client.enable_pages.assert_not_called()
+    assert result.pages_configured is False
+
+
+def test_init_repository_skips_pages_without_docs(tmp_path, monkeypatch):
+    """Pages setup is skipped when the project has no mkdocs.yml."""
+    config = _make_config(tmp_path, push=True, setup_pages=True)
+    monkeypatch.setattr(github_init, "git_push", MagicMock())
+    deploy = MagicMock()
+    monkeypatch.setattr(github_init, "deploy_docs", deploy)
+
+    repo = MagicMock()
+    repo.clone_url = "https://github.com/me/demo.git"
+    repo.html_url = "https://github.com/me/demo"
+    repo.name = "demo"
+    repo.owner.login = "me"
+
+    client = MagicMock(spec=GhInitClient)
+    client.get_or_create_repo.return_value = repo
+
+    result = init_repository(config, client)
+
+    deploy.assert_not_called()
     client.enable_pages.assert_not_called()
     assert result.pages_configured is False
 
 
 def test_init_repository_records_pages_error_without_aborting(tmp_path, monkeypatch):
-    """A Pages API failure is recorded but does not abort the bootstrap."""
+    """A docs-deploy failure is recorded but does not abort the bootstrap."""
+    (tmp_path / "mkdocs.yml").write_text("site_name: demo\n", encoding="utf-8")
     config = _make_config(tmp_path, push=True, setup_pages=True)
     monkeypatch.setattr(github_init, "git_push", MagicMock())
+    deploy = MagicMock(side_effect=RuntimeError("mkdocs gh-deploy failed: boom"))
+    monkeypatch.setattr(github_init, "deploy_docs", deploy)
 
     repo = MagicMock()
     repo.clone_url = "https://github.com/me/demo.git"
@@ -397,12 +479,12 @@ def test_init_repository_records_pages_error_without_aborting(tmp_path, monkeypa
 
     client = MagicMock(spec=GhInitClient)
     client.get_or_create_repo.return_value = repo
-    client.ensure_branch.side_effect = GithubException(status=403, data={"message": "no permissions"})
 
     result = init_repository(config, client)
 
     assert result.pages_configured is False
-    assert "no permissions" in result.pages_error
+    assert "boom" in result.pages_error
+    client.enable_pages.assert_not_called()
 
 
 def test_protect_branch_calls_edit_protection():

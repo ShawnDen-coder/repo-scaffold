@@ -218,6 +218,9 @@ def test_template_python_renders_with_justfile(tmp_path):
     assert (project_dir / "pyproject.toml").is_file()
     assert (project_dir / "justfile").is_file()
     assert (project_dir / ".github" / "workflows" / "ci-tests.yaml").is_file()
+    with (project_dir / "pyproject.toml").open("rb") as f:
+        pyproject = tomllib.load(f)
+    assert pyproject["project"]["urls"]["Repository"].startswith("https://github.com/")
     _assert_static_project_valid(project_dir)
 
 
@@ -252,6 +255,11 @@ def test_template_uv_workspace_renders(tmp_path):
         pyproject = tomllib.load(f)
     assert pyproject["tool"]["uv"]["package"] is False
     assert pyproject["tool"]["uv"]["workspace"]["members"] == ["packages/*"]
+    assert pyproject["project"]["urls"]["Repository"].startswith("https://github.com/")
+
+    # mkdocstrings must point at all workspace package sources, not just the first.
+    mkdocs = (project_dir / "mkdocs.yml").read_text(encoding="utf-8")
+    assert 'paths: ["packages/*/src"]' in mkdocs
 
     _assert_static_project_valid(project_dir)
 

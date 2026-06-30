@@ -20,7 +20,7 @@ plugins:
   - mkdocstrings:
       handlers:
         python:
-          paths: ["packages/{{cookiecutter.package_slug}}/src"]
+          paths: ["packages/*/src"]
           options:
             docstring_style: "google"
             show_source: true

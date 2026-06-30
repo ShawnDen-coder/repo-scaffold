@@ -8,6 +8,11 @@ readme = "README.md"
 requires-python = ">={{cookiecutter.min_python_version}},<{{cookiecutter.max_python_version}}.99"
 dependencies = []
 
+[project.urls]
+Homepage = "https://github.com/{{cookiecutter.github_username}}/{{cookiecutter.project_slug}}"
+Repository = "https://github.com/{{cookiecutter.github_username}}/{{cookiecutter.project_slug}}"
+Documentation = "https://{{cookiecutter.github_username}}.github.io/{{cookiecutter.project_slug}}"
+
 [tool.uv]
 package = false
 
