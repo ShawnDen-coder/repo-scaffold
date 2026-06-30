@@ -89,6 +89,7 @@ Common opt-outs:
 
 - `repo-scaffold create python --no-git` — skip the local `git init`.
 - `repo-scaffold gh-init . --private` — create a private repository.
+- `repo-scaffold gh-init . --protect-branch` — protect the default branch (require PR review; admins can still push so releases keep working).
 - `repo-scaffold gh-init . --no-push` — create the repo and set secrets without pushing (Pages setup is skipped, since it needs the pushed branch).
 - `repo-scaffold gh-init . --no-pages` — push, but don't create `gh-pages` or configure Pages (you can set it later in repo Settings → Pages).
 
