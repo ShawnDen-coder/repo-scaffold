@@ -7,6 +7,15 @@ See [conventional commits](https://www.conventionalcommits.org/) for commit guid
 ## [0.16.1](https://github.com/ShawnDen-coder/repo-scaffold/compare/850b0ba9ec973262479b6d85ab1fb8f4bbf47efd..0.16.1) - 2026-06-30
 #### Bug Fixes
 - **(ci)** skip bootstrap workflows for generated repos - ([850b0ba](https://github.com/ShawnDen-coder/repo-scaffold/commit/850b0ba9ec973262479b6d85ab1fb8f4bbf47efd)) - ShawnDen-coder
+#### Miscellaneous Chores
+- **(ci)** push cocogitto tags explicitly - ([87ecfa6](https://github.com/ShawnDen-coder/repo-scaffold/commit/87ecfa6d040c87981470f4933aaffbdd6126c427)) - ShawnDen-coder
+- **(version)** 0.16.1 - ([f059cdc](https://github.com/ShawnDen-coder/repo-scaffold/commit/f059cdc09bb06c1094e3ff34bc8c298d7eccaeef)) - cog-bot
+
+- - -
+
+## [0.16.1](https://github.com/ShawnDen-coder/repo-scaffold/compare/850b0ba9ec973262479b6d85ab1fb8f4bbf47efd..0.16.1) - 2026-06-30
+#### Bug Fixes
+- **(ci)** skip bootstrap workflows for generated repos - ([850b0ba](https://github.com/ShawnDen-coder/repo-scaffold/commit/850b0ba9ec973262479b6d85ab1fb8f4bbf47efd)) - ShawnDen-coder
 
 - - -
 
