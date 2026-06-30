@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [0.19.0](https://github.com/ShawnDen-coder/repo-scaffold/compare/6c5976cd291c8c8da62c9c6c03de71e2f0fcc567..0.19.0) - 2026-06-30
+#### Features
+- **(gh-init)** detect owner, deploy docs via mkdocs, and split into a package - ([6c5976c](https://github.com/ShawnDen-coder/repo-scaffold/commit/6c5976cd291c8c8da62c9c6c03de71e2f0fcc567)) - ShawnDen-coder
+
+- - -
+
 ## [0.18.0](https://github.com/ShawnDen-coder/repo-scaffold/compare/90f983ea941980ba867fd5fd4cd47b5b65360972..0.18.0) - 2026-06-30
 #### Features
 - **(gh-init)** add --protect-branch to protect the default branch - ([90f983e](https://github.com/ShawnDen-coder/repo-scaffold/commit/90f983ea941980ba867fd5fd4cd47b5b65360972)) - ShawnDen-coder
