@@ -126,10 +126,13 @@ def test_build_config_prompter_fills_missing_values(tmp_path):
 
 
 def test_build_config_setup_pages_defaults_true(tmp_path):
-    """setup_pages defaults to True and is overridable via kwarg."""
+    """setup_pages defaults to True (and protect_branch to False); both overridable."""
     _write_pyproject(tmp_path / "pyproject.toml", name="x")
-    assert build_config(tmp_path, extra_env={}).setup_pages is True
+    default = build_config(tmp_path, extra_env={})
+    assert default.setup_pages is True
+    assert default.protect_branch is False
     assert build_config(tmp_path, extra_env={}, setup_pages=False).setup_pages is False
+    assert build_config(tmp_path, extra_env={}, protect_branch=True).protect_branch is True
 
 
 def _make_config(tmp_path: Path, **overrides: Any) -> GhInitConfig:
@@ -402,6 +405,84 @@ def test_init_repository_records_pages_error_without_aborting(tmp_path, monkeypa
     assert "no permissions" in result.pages_error
 
 
+def test_protect_branch_calls_edit_protection():
+    """protect_branch applies release-compatible rules (enforce_admins off)."""
+    client = GhInitClient.__new__(GhInitClient)
+    repo = MagicMock()
+    branch = repo.get_branch.return_value
+
+    client.protect_branch(repo, "master")
+
+    repo.get_branch.assert_called_once_with("master")
+    branch.edit_protection.assert_called_once_with(
+        required_approving_review_count=1,
+        enforce_admins=False,
+        allow_force_pushes=False,
+        allow_deletions=False,
+    )
+
+
+def test_init_repository_protects_branch_when_enabled(tmp_path, monkeypatch):
+    """With push + protect_branch, the default branch is protected."""
+    config = _make_config(tmp_path, push=True, setup_pages=False, protect_branch=True)
+    monkeypatch.setattr(github_init, "git_push", MagicMock())
+
+    repo = MagicMock()
+    repo.clone_url = "https://github.com/me/demo.git"
+    repo.html_url = "https://github.com/me/demo"
+    repo.name = "demo"
+    repo.owner.login = "me"
+
+    client = MagicMock(spec=GhInitClient)
+    client.get_or_create_repo.return_value = repo
+
+    result = init_repository(config, client)
+
+    client.protect_branch.assert_called_once_with(repo, "master")
+    assert result.branch_protected is True
+
+
+def test_init_repository_skips_protection_without_push(tmp_path):
+    """Branch protection is skipped when nothing was pushed."""
+    config = _make_config(tmp_path, push=False, protect_branch=True)
+
+    repo = MagicMock()
+    repo.html_url = "https://github.com/me/demo"
+    repo.name = "demo"
+    repo.owner.login = "me"
+
+    client = MagicMock(spec=GhInitClient)
+    client.get_or_create_repo.return_value = repo
+
+    result = init_repository(config, client)
+
+    client.protect_branch.assert_not_called()
+    assert result.branch_protected is False
+
+
+def test_init_repository_records_protection_error_without_aborting(tmp_path, monkeypatch):
+    """A protection failure (e.g. private repo on a free plan) is non-fatal."""
+    config = _make_config(tmp_path, push=True, setup_pages=False, protect_branch=True)
+    monkeypatch.setattr(github_init, "git_push", MagicMock())
+
+    repo = MagicMock()
+    repo.clone_url = "https://github.com/me/demo.git"
+    repo.html_url = "https://github.com/me/demo"
+    repo.name = "demo"
+    repo.owner.login = "me"
+
+    client = MagicMock(spec=GhInitClient)
+    client.get_or_create_repo.return_value = repo
+    client.protect_branch.side_effect = GithubException(
+        status=403, data={"message": "Upgrade to GitHub Pro for private branch protection"}
+    )
+
+    result = init_repository(config, client)
+
+    assert result.branch_protected is False
+    assert "Upgrade" in result.protection_error
+
+
 def test_cli_gh_init_requires_token(tmp_path, monkeypatch):
     """gh-init exits non-zero with a clear message when GITHUB_TOKEN is missing."""
     _write_pyproject(tmp_path / "pyproject.toml", name="x")
@@ -480,6 +561,40 @@ def test_cli_gh_init_no_pages_disables_pages(tmp_path, monkeypatch):
 
     assert result.exit_code == 0, result.output
     assert captured["config"].setup_pages is False
+
+
+def test_cli_gh_init_protect_branch_flag(tmp_path, monkeypatch):
+    """``--protect-branch`` resolves a config with protect_branch enabled."""
+    _write_pyproject(tmp_path / "pyproject.toml", name="demo")
+    monkeypatch.setenv("GITHUB_TOKEN", "stub")
+    captured = {}
+
+    class StubClient:
+        def __init__(self, token: str):
+            pass
+
+    def fake_init(config, client):
+        captured["config"] = config
+        return github_init.GhInitResult(
+            html_url="https://github.com/me/demo",
+            actions_url="https://github.com/me/demo/actions",
+            pages_url="https://me.github.io/demo",
+            skipped_secrets=[],
+            pushed=True,
+            branch_protected=True,
+        )
+
+    monkeypatch.setattr("repo_scaffold.cli.GhInitClient", StubClient)
+    monkeypatch.setattr("repo_scaffold.cli.init_repository", fake_init)
+
+    result = CliRunner().invoke(
+        cli,
+        ["gh-init", str(tmp_path), "--no-input", "--no-push", "--protect-branch"],
+    )
+
+    assert result.exit_code == 0, result.output
+    assert captured["config"].protect_branch is True
+    assert "Protected branch" in result.output
 
 
 def _record_calls(monkeypatch, *, head_exists: bool = False):

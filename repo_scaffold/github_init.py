@@ -66,6 +66,7 @@ class GhInitConfig:
     force_push: bool = False
     allow_existing: bool = False
     setup_pages: bool = True
+    protect_branch: bool = False
 
 
 @dataclass
@@ -80,6 +81,8 @@ class GhInitResult:
     pages_configured: bool = False
     pages_branch: str = PAGES_BRANCH
     pages_error: str | None = None
+    branch_protected: bool = False
+    protection_error: str | None = None
 
 
 def parse_dotenv(text: str) -> dict[str, str]:
@@ -143,6 +146,7 @@ def build_config(
     force_push: bool = False,
     allow_existing: bool = False,
     setup_pages: bool = True,
+    protect_branch: bool = False,
     extra_env: dict[str, str] | None = None,
     prompter: Callable[[str, str | None], str] | None = None,
 ) -> GhInitConfig:
@@ -202,6 +206,7 @@ def build_config(
         force_push=force_push,
         allow_existing=allow_existing,
         setup_pages=setup_pages,
+        protect_branch=protect_branch,
     )
     config._skipped_secrets = skipped  # type: ignore[attr-defined]
     return config
@@ -302,6 +307,28 @@ class GhInitClient:
                 return
             raise
 
+    def protect_branch(self, repo: Repository, branch: str) -> None:
+        """Enable branch protection on ``branch`` (requires admin on the repo).
+
+        Rules are intentionally compatible with the generated ``version-bump``
+        workflow: ``enforce_admins`` is left off so the release token (owned by
+        a repo admin) can still push ``chore(version):`` commits and tags
+        directly. Branch protection is unavailable on private repos without a
+        paid GitHub plan; such a failure surfaces to the caller.
+        """
+        repo.get_branch(branch).edit_protection(
+            required_approving_review_count=1,
+            enforce_admins=False,
+            allow_force_pushes=False,
+            allow_deletions=False,
+        )
+
+
+def _github_error_message(exc: GithubException) -> str:
+    """Best-effort human-readable message from a GithubException."""
+    data = getattr(exc, "data", None)
+    return str(data["message"]) if isinstance(data, dict) and "message" in data else str(exc)
+
 
 def init_repository(config: GhInitConfig, client: GhInitClient) -> GhInitResult:
     """Apply the config to GitHub and (optionally) push the initial commit."""
@@ -339,8 +366,19 @@ def init_repository(config: GhInitConfig, client: GhInitClient) -> GhInitResult:
             client.enable_pages(repo, PAGES_BRANCH)
             pages_configured = True
         except GithubException as exc:
-            data = getattr(exc, "data", None)
-            pages_error = str(data["message"]) if isinstance(data, dict) and "message" in data else str(exc)
+            pages_error = _github_error_message(exc)
+
+    # Branch protection also needs the branch to exist on the remote. Like
+    # Pages, a failure (e.g. private repo on a free plan, or a token without
+    # admin rights) is reported but never aborts the bootstrap.
+    branch_protected = False
+    protection_error: str | None = None
+    if config.protect_branch and pushed:
+        try:
+            client.protect_branch(repo, config.default_branch)
+            branch_protected = True
+        except GithubException as exc:
+            protection_error = _github_error_message(exc)
 
     owner_login = repo.owner.login
     html_url = repo.html_url
@@ -356,6 +394,8 @@ def init_repository(config: GhInitConfig, client: GhInitClient) -> GhInitResult:
         pages_configured=pages_configured,
         pages_branch=PAGES_BRANCH,
         pages_error=pages_error,
+        branch_protected=branch_protected,
+        protection_error=protection_error,
     )
 
 

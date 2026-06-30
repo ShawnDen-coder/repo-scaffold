@@ -239,6 +239,11 @@ def create(template: str, output_dir: Path, no_input: bool, no_install: bool, no
     help="Skip creating the gh-pages branch and configuring GitHub Pages.",
 )
 @click.option(
+    "--protect-branch",
+    is_flag=True,
+    help="Protect the default branch (require PR review; admins can still push for releases).",
+)
+@click.option(
     "--force-push",
     is_flag=True,
     help="Use --force when pushing the initial commit.",
@@ -258,6 +263,7 @@ def gh_init(
     allow_existing: bool,
     no_push: bool,
     no_pages: bool,
+    protect_branch: bool,
     force_push: bool,
     no_input: bool,
 ):
@@ -302,6 +308,7 @@ def gh_init(
         force_push=force_push,
         allow_existing=allow_existing,
         setup_pages=not no_pages,
+        protect_branch=protect_branch,
         prompter=prompter,
     )
 
@@ -318,6 +325,8 @@ def gh_init(
     click.echo(f"  Push:        {'yes' if config.push else 'no'}{' (force)' if config.force_push else ''}")
     pages_plan = "yes (gh-pages branch + Pages source)" if (config.setup_pages and config.push) else "no"
     click.echo(f"  Pages:       {pages_plan}")
+    protect_plan = "yes (require PR review)" if (config.protect_branch and config.push) else "no"
+    click.echo(f"  Protection:  {protect_plan} -> {config.default_branch}")
     click.echo("")
 
     if not no_input:
@@ -338,6 +347,10 @@ def gh_init(
         click.echo(f"  Configured GitHub Pages to deploy from '{result.pages_branch}'")
     elif result.pages_error:
         click.echo(f"  ⚠️  Could not configure GitHub Pages automatically: {result.pages_error}")
+    if result.branch_protected:
+        click.echo(f"  Protected branch '{config.default_branch}' (PR review required)")
+    elif result.protection_error:
+        click.echo(f"  ⚠️  Could not protect '{config.default_branch}': {result.protection_error}")
     click.echo("")
     click.echo("Next steps:")
     click.echo("  1. Watch the first CI run on the Actions page above.")

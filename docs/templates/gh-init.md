@@ -42,6 +42,7 @@ The command will print a summary, prompt you to confirm, then create the repo an
 | `--allow-existing` | Don't fail if the repo already exists; refresh secrets/variables. |
 | `--no-push` | Skip git init and push — only configure GitHub. Pages setup is skipped too. |
 | `--no-pages` | Push, but don't create `gh-pages` or configure GitHub Pages. |
+| `--protect-branch` | Protect the default branch after pushing (require PR review; admins can still push). |
 | `--force-push` | `git push --force` the initial commit (if the remote already has commits). |
 | `--no-input` | Don't prompt; missing optional secrets are skipped. |
 
@@ -92,6 +93,26 @@ Anything you skip can be added later under **Settings → Secrets and variables 
 4. For each non-empty variable, calls the Actions variables API. If the variable already exists, the call falls back to an `edit`.
 5. Unless `--no-push` is set: runs `git init` if needed, stages every tracked and untracked file, creates a `chore: initial commit from repo-scaffold [skip ci]` commit (only if HEAD doesn't yet exist), renames the current branch, sets `origin`, and pushes. GitHub Actions treats `[skip ci]` in the commit message as a built-in signal to skip workflows for this bootstrap push; `gh-init` only adds it to the generated initial commit, not to later user commits.
 6. Unless `--no-pages` (or `--no-push`) is set: creates `refs/heads/gh-pages` from the pushed default branch's head commit (skipped if it already exists), then calls the Pages API (`POST .../pages`, falling back to `PUT` if a site already exists) to set the source to `gh-pages` / `/ (root)`. PyGithub 2.x has no Pages helper, so this goes through the raw REST requester. A failure here is reported but does not abort the bootstrap.
+7. If `--protect-branch` is set (and a push happened): enables branch protection on the default branch (`PUT .../branches/{branch}/protection` via `Branch.edit_protection`). A failure is reported but does not abort the bootstrap.
+
+## Protecting the default branch (`--protect-branch`)
+
+Opt in with `--protect-branch` to protect the default branch right after the initial push. The applied rules are deliberately minimal and **compatible with the generated `version-bump` workflow**:
+
+| Rule | Value |
+| --- | --- |
+| Require a pull request before merging | yes (1 approving review) |
+| Include administrators (`enforce_admins`) | **no** |
+| Allow force pushes | no |
+| Allow deletions | no |
+
+`enforce_admins` is left **off** on purpose: the `version-bump` workflow pushes `chore(version):` commits and tags directly to the default branch using `PERSONAL_ACCESS_TOKEN`. As long as that token belongs to a repo admin, those automated pushes keep working while human contributors still go through pull requests.
+
+Caveats:
+
+- **Requires admin** on the repository (classic PAT `repo` scope on your own repo; fine-grained token needs `Administration: write`).
+- **Private repos need a paid plan.** Branch protection on private repositories requires GitHub Pro/Team/Enterprise; on a free private repo the API returns 403 and `gh-init` reports it without failing the run.
+- Needs `--no-push` to be absent — the branch must exist on the remote first.
 
 ## Enabling Pages manually (`--no-pages`)
 
