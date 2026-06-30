@@ -5,8 +5,9 @@ Bootstrap a GitHub repository for a project that you've already generated with `
 1. Creates the repository on GitHub (or finds it, with `--allow-existing`).
 2. Sets the Actions secrets and variables that the generated workflows expect.
 3. Initializes git locally (if needed), commits, and pushes the initial revision.
+4. Creates the `gh-pages` branch and sets it as the GitHub Pages source (unless `--no-pages`).
 
-After the first `docs-deploy` workflow run, you flip Pages to `gh-pages / (root)` once in **Settings → Pages**. That's the only manual step left.
+Pages is configured for you, so there's no manual **Settings → Pages** step left — push your first version tag and the `docs-deploy` workflow publishes to `gh-pages`.
 
 ## Prerequisites
 
@@ -39,7 +40,8 @@ The command will print a summary, prompt you to confirm, then create the repo an
 | `--private` / `--public` | Repository visibility (default: public). |
 | `--default-branch <name>` | Override the default branch (default: current local git branch or `master`). |
 | `--allow-existing` | Don't fail if the repo already exists; refresh secrets/variables. |
-| `--no-push` | Skip git init and push — only configure GitHub. |
+| `--no-push` | Skip git init and push — only configure GitHub. Pages setup is skipped too. |
+| `--no-pages` | Push, but don't create `gh-pages` or configure GitHub Pages. |
 | `--force-push` | `git push --force` the initial commit (if the remote already has commits). |
 | `--no-input` | Don't prompt; missing optional secrets are skipped. |
 
@@ -89,12 +91,13 @@ Anything you skip can be added later under **Settings → Secrets and variables 
 3. For each non-empty secret, calls the Actions secrets API (PUT, so existing secrets are overwritten).
 4. For each non-empty variable, calls the Actions variables API. If the variable already exists, the call falls back to an `edit`.
 5. Unless `--no-push` is set: runs `git init` if needed, stages every tracked and untracked file, creates a `chore: initial commit from repo-scaffold [skip ci]` commit (only if HEAD doesn't yet exist), renames the current branch, sets `origin`, and pushes. GitHub Actions treats `[skip ci]` in the commit message as a built-in signal to skip workflows for this bootstrap push; `gh-init` only adds it to the generated initial commit, not to later user commits.
+6. Unless `--no-pages` (or `--no-push`) is set: creates `refs/heads/gh-pages` from the pushed default branch's head commit (skipped if it already exists), then calls the Pages API (`POST .../pages`, falling back to `PUT` if a site already exists) to set the source to `gh-pages` / `/ (root)`. PyGithub 2.x has no Pages helper, so this goes through the raw REST requester. A failure here is reported but does not abort the bootstrap.
 
-## Manual step: enable Pages
+## Enabling Pages manually (`--no-pages`)
 
-The docs workflow uses `mkdocs gh-deploy --force` to push static HTML to a `gh-pages` branch. That branch doesn't exist until the first deploy runs, and GitHub's Pages API rejects enabling Pages with a non-existent source — so `gh-init` doesn't try.
+By default `gh-init` creates the `gh-pages` branch and points Pages at it, so the site goes live after the first `docs-deploy` run with no extra clicks. The docs workflow uses `mkdocs gh-deploy --force` to overwrite `gh-pages` with the built HTML on each version tag.
 
-After the first `docs-deploy` workflow run completes (triggered by your first version tag, e.g. `0.1.0`):
+If you ran with `--no-pages` (or `--no-push`), enable it yourself after the first `docs-deploy` run (triggered by your first version tag, e.g. `0.1.0`):
 
 1. Open the new repo on GitHub.
 2. Go to **Settings → Pages**.

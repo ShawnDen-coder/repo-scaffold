@@ -56,6 +56,7 @@ def test_template_question_defaults_are_user_friendly():
         assert config["github_username"] == "your-github-username"
         assert config["pypi_server_url"] == ""
         assert config["install_after_generate"] == "yes"
+        assert config["init_git"] == "yes"
         assert config["use_github_actions"] == ["yes", "no"]
         assert config["min_python_version"][0] == "3.12"
         assert config["max_python_version"][0] == "3.12"
@@ -81,8 +82,22 @@ def test_cli_create_resolves_template_key_and_title(monkeypatch, tmp_path):
     assert all(call["no_input"] is True for call in calls)
     assert all(call["output_dir"] == str(tmp_path) for call in calls)
     assert all(call["template"].endswith("template-uv-workspace") for call in calls)
-    assert calls[0]["extra_context"] == {"install_after_generate": "yes"}
-    assert calls[1]["extra_context"] == {"install_after_generate": "no"}
+    assert calls[0]["extra_context"] == {"install_after_generate": "yes", "init_git": "yes"}
+    assert calls[1]["extra_context"] == {"install_after_generate": "no", "init_git": "yes"}
+
+
+def test_cli_create_no_git_sets_extra_context(monkeypatch, tmp_path):
+    """``--no-git`` flips the init_git extra_context value to 'no'."""
+    calls = []
+    mock_cookiecutter = Mock(side_effect=lambda **kwargs: calls.append(kwargs))
+    monkeypatch.setattr("repo_scaffold.cli.cookiecutter", mock_cookiecutter)
+
+    result = CliRunner().invoke(
+        cli, ["create", "template-python", "--no-input", "--no-git", "-o", str(tmp_path)]
+    )
+
+    assert result.exit_code == 0
+    assert calls[0]["extra_context"]["init_git"] == "no"
 
 
 def _render_template(
@@ -275,7 +290,44 @@ def test_python_post_gen_hook_uses_project_root_and_can_skip_install(monkeypatch
     initializer.setup_environment()
 
 
-def test_workspace_post_gen_hook_uses_project_root(monkeypatch, tmp_path):
+def test_python_post_gen_hook_inits_git_on_master(monkeypatch, tmp_path):
+    """Test Python hook runs ``git init`` on branch master when init_git is yes."""
+    monkeypatch.chdir(tmp_path)
+    hook_path = Path(get_package_path("templates/template-python/hooks/post_gen_project.py"))
+    source = hook_path.read_text(encoding="utf-8")
+    source = source.replace('"{{cookiecutter.install_after_generate}}"', '"no"')
+    source = source.replace('"{{cookiecutter.init_git}}"', '"yes"')
+
+    calls = []
+
+    def fake_run(command, check, **kwargs):
+        calls.append(list(command))
+        return subprocess.CompletedProcess(command, 0, stdout="", stderr="")
+
+    namespace = {"__name__": "hook_under_test"}
+    exec(compile(source, str(hook_path), "exec"), namespace)
+    monkeypatch.setattr(namespace["subprocess"], "run", fake_run)
+
+    namespace["ProjectInitializer"]().init_git_repo()
+
+    assert calls == [["git", "init", "-b", "master"]]
+
+
+def test_python_post_gen_hook_skips_git_when_disabled(monkeypatch, tmp_path):
+    """Test Python hook skips git init entirely when init_git is no."""
+    monkeypatch.chdir(tmp_path)
+    hook_path = Path(get_package_path("templates/template-python/hooks/post_gen_project.py"))
+    source = hook_path.read_text(encoding="utf-8")
+    source = source.replace('"{{cookiecutter.init_git}}"', '"no"')
+
+    calls = []
+    namespace = {"__name__": "hook_under_test"}
+    exec(compile(source, str(hook_path), "exec"), namespace)
+    monkeypatch.setattr(namespace["subprocess"], "run", lambda *a, **k: calls.append(a))
+
+    namespace["ProjectInitializer"]().init_git_repo()
+
+    assert calls == []
     """Test workspace hook invokes uv sync from the current project root."""
     monkeypatch.chdir(tmp_path)
     (tmp_path / "pyproject.toml").write_text("[project]\nname = 'demo'\nversion = '0.1.0'\n", encoding="utf-8")

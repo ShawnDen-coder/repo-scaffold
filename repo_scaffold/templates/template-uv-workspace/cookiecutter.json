@@ -13,6 +13,7 @@
   "use_github_actions": ["yes", "no"],
   "pypi_server_url": "",
   "install_after_generate": "yes",
+  "init_git": "yes",
   "__prompts__": {
     "repo_name": "工作区仓库名称 (my-uv-workspace)",
     "full_name": "作者姓名",

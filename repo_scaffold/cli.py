@@ -134,7 +134,12 @@ def list():
     is_flag=True,
     help="Generate the project without running post-generation dependency installation",
 )
-def create(template: str, output_dir: Path, no_input: bool, no_install: bool):
+@click.option(
+    "--no-git",
+    is_flag=True,
+    help="Generate the project without initializing a git repository (default branch: master)",
+)
+def create(template: str, output_dir: Path, no_input: bool, no_install: bool, no_git: bool):
     """Create a new project from a template.
 
     Creates a new project based on the specified template. If no template is specified,
@@ -146,6 +151,7 @@ def create(template: str, output_dir: Path, no_input: bool, no_install: bool):
         output_dir: Target directory where the project will be created
         no_input: Do not prompt for parameters and only use cookiecutter defaults
         no_install: Skip post-generation dependency installation
+        no_git: Skip git repository initialization (otherwise inits on branch master)
 
     Example:
         Create a Python project:
@@ -193,7 +199,10 @@ def create(template: str, output_dir: Path, no_input: bool, no_install: bool):
         template=template_path,
         output_dir=str(output_dir),
         no_input=no_input,  # 根据用户选择决定是否启用交互式输入
-        extra_context={"install_after_generate": "no" if no_install else "yes"},
+        extra_context={
+            "install_after_generate": "no" if no_install else "yes",
+            "init_git": "no" if no_git else "yes",
+        },
     )
 
 
@@ -225,6 +234,11 @@ def create(template: str, output_dir: Path, no_input: bool, no_install: bool):
 )
 @click.option("--no-push", is_flag=True, help="Skip git init and push.")
 @click.option(
+    "--no-pages",
+    is_flag=True,
+    help="Skip creating the gh-pages branch and configuring GitHub Pages.",
+)
+@click.option(
     "--force-push",
     is_flag=True,
     help="Use --force when pushing the initial commit.",
@@ -243,6 +257,7 @@ def gh_init(
     default_branch: str | None,
     allow_existing: bool,
     no_push: bool,
+    no_pages: bool,
     force_push: bool,
     no_input: bool,
 ):
@@ -286,6 +301,7 @@ def gh_init(
         push=not no_push,
         force_push=force_push,
         allow_existing=allow_existing,
+        setup_pages=not no_pages,
         prompter=prompter,
     )
 
@@ -300,6 +316,8 @@ def gh_init(
     click.echo(f"  Secrets:     {secrets_listed}")
     click.echo(f"  Variables:   {variables_listed}")
     click.echo(f"  Push:        {'yes' if config.push else 'no'}{' (force)' if config.force_push else ''}")
+    pages_plan = "yes (gh-pages branch + Pages source)" if (config.setup_pages and config.push) else "no"
+    click.echo(f"  Pages:       {pages_plan}")
     click.echo("")
 
     if not no_input:
@@ -316,11 +334,19 @@ def gh_init(
         click.echo(f"  Skipped secrets (set later in repo Settings): {', '.join(result.skipped_secrets)}")
     if result.pushed:
         click.echo(f"  Pushed initial commit to {config.default_branch}")
+    if result.pages_configured:
+        click.echo(f"  Configured GitHub Pages to deploy from '{result.pages_branch}'")
+    elif result.pages_error:
+        click.echo(f"  ⚠️  Could not configure GitHub Pages automatically: {result.pages_error}")
     click.echo("")
     click.echo("Next steps:")
     click.echo("  1. Watch the first CI run on the Actions page above.")
-    click.echo("  2. After the first docs-deploy tag run, in repo Settings → Pages set")
-    click.echo("     'Source: Deploy from a branch' to gh-pages / (root).")
+    if result.pages_configured:
+        click.echo("  2. Push a release tag to trigger docs-deploy; docs will publish to")
+        click.echo(f"     '{result.pages_branch}' and serve at the Pages URL above.")
+    else:
+        click.echo("  2. After the first docs-deploy tag run, in repo Settings → Pages set")
+        click.echo("     'Source: Deploy from a branch' to gh-pages / (root).")
 
 
 if __name__ == "__main__":
