@@ -48,12 +48,49 @@ repo-scaffold create python --no-input -o ./my-projects
 repo-scaffold create uv-workspace -o ./my-projects
 
 # Push a generated project to GitHub: create the repo, set CI secrets,
-# push the initial commit. Reads GITHUB_TOKEN from the environment.
+# push the initial commit, create the gh-pages branch, and point GitHub
+# Pages at it. Reads GITHUB_TOKEN from the environment.
 export GITHUB_TOKEN=ghp_...
 repo-scaffold gh-init ./my-projects/my-python-project
 ```
 
 See the [GitHub bootstrap docs](https://shawnden-coder.github.io/repo-scaffold/templates/gh-init/) for the full flag list and the secrets/variables `gh-init` knows how to set.
+
+## End-to-End: From `create` to GitHub Pages
+
+A full walkthrough from an empty directory to a published repository with CI and docs.
+
+```bash
+# 1. Generate the project. `create` also runs `git init` on branch `master`
+#    (opt out with --no-git). Drop --no-input to configure it interactively.
+repo-scaffold create python --no-input -o ./workspace
+cd ./workspace/my_python_project   # directory name is the project_slug
+
+# 2. (Optional) make your own first changes here. gh-init creates the
+#    initial commit for you, so an extra commit at this point is optional.
+
+# 3. Provide a GitHub token with `repo` scope (or `public_repo` for public repos).
+export GITHUB_TOKEN=ghp_...
+
+# 4. Bootstrap GitHub. By default gh-init will:
+#      - create the repository (name/description pulled from pyproject.toml)
+#      - set the CI secrets/variables the generated workflows expect
+#      - push the initial commit to `master`
+#      - create the `gh-pages` branch and set it as the GitHub Pages source
+repo-scaffold gh-init .
+
+# 5. Publish docs: push a release tag (or let the Cocogitto version-bump
+#    workflow create one). The docs-deploy workflow builds the site and
+#    pushes it to `gh-pages`, which GitHub Pages now serves automatically.
+git push --tags   # or: git tag 0.1.0 && git push origin 0.1.0
+```
+
+Common opt-outs:
+
+- `repo-scaffold create python --no-git` — skip the local `git init`.
+- `repo-scaffold gh-init . --private` — create a private repository.
+- `repo-scaffold gh-init . --no-push` — create the repo and set secrets without pushing (Pages setup is skipped, since it needs the pushed branch).
+- `repo-scaffold gh-init . --no-pages` — push, but don't create `gh-pages` or configure Pages (you can set it later in repo Settings → Pages).
 
 ## Available Templates
 

@@ -200,7 +200,7 @@ push tag X.Y.Z (or workflow_dispatch)
 
 - Uses the default `GITHUB_TOKEN` with `permissions: contents: write` — sufficient to push the `gh-pages` branch, no PAT needed.
 - `concurrency: { group: pages, cancel-in-progress: false }` queues two close-together releases instead of letting them race the gh-pages branch.
-- **Repository setting required**: Settings → Pages → Source → **Deploy from a branch** → `gh-pages` / `(root)`.
+- **Repository setting**: Pages must use Source → **Deploy from a branch** → `gh-pages` / `(root)`. `repo-scaffold gh-init` configures this automatically; set it manually under Settings → Pages only if you bootstrapped without it (or used `--no-pages`).
 
 The workflow is gated on the same `use_github_actions=yes` cookiecutter prompt as the rest of the docs setup; opting out removes the workflow file along with `mkdocs.yml` and the `docs/` directory.
 
@@ -238,4 +238,4 @@ A push of `feat: …` to `master` produces, in order:
 4. **`docs-deploy`** — `mkdocs gh-deploy` updates `gh-pages` from the freshly tagged source.
 5. **`container-release`** (python + Podman only) — multi-arch container image pushed to GHCR.
 
-The whole sequence runs without manual intervention as long as commits follow [Conventional Commits](https://www.conventionalcommits.org/). The only manual step is the initial repository configuration: secrets, the `PUBLISH_TO_PUBLIC_PYPI` variable, and Pages source pointed at `gh-pages`.
+The whole sequence runs without manual intervention as long as commits follow [Conventional Commits](https://www.conventionalcommits.org/). The only setup is the initial repository configuration — secrets, the `PUBLISH_TO_PUBLIC_PYPI` variable, and the Pages source pointed at `gh-pages` — all of which `repo-scaffold gh-init` applies for you.

@@ -39,6 +39,10 @@ DEFAULT_SECRET_KEYS: tuple[str, ...] = (
 
 DEFAULT_VARIABLE_KEYS: tuple[str, ...] = ("PUBLISH_TO_PUBLIC_PYPI",)
 
+# Branch the generated docs-deploy workflow (mkdocs gh-deploy) publishes to,
+# and which GitHub Pages is configured to serve from.
+PAGES_BRANCH = "gh-pages"
+
 # GitHub Actions recognizes this marker in commit messages and skips
 # workflows for the bootstrap push. Later user commits are not modified.
 INITIAL_COMMIT_MESSAGE = "chore: initial commit from repo-scaffold [skip ci]"
@@ -61,6 +65,7 @@ class GhInitConfig:
     push: bool = True
     force_push: bool = False
     allow_existing: bool = False
+    setup_pages: bool = True
 
 
 @dataclass
@@ -72,6 +77,9 @@ class GhInitResult:
     pages_url: str
     skipped_secrets: list[str]
     pushed: bool
+    pages_configured: bool = False
+    pages_branch: str = PAGES_BRANCH
+    pages_error: str | None = None
 
 
 def parse_dotenv(text: str) -> dict[str, str]:
@@ -134,6 +142,7 @@ def build_config(
     push: bool = True,
     force_push: bool = False,
     allow_existing: bool = False,
+    setup_pages: bool = True,
     extra_env: dict[str, str] | None = None,
     prompter: Callable[[str, str | None], str] | None = None,
 ) -> GhInitConfig:
@@ -192,6 +201,7 @@ def build_config(
         push=push,
         force_push=force_push,
         allow_existing=allow_existing,
+        setup_pages=setup_pages,
     )
     config._skipped_secrets = skipped  # type: ignore[attr-defined]
     return config
@@ -258,6 +268,40 @@ class GhInitClient:
                 return
             raise
 
+    def ensure_branch(self, repo: Repository, branch: str, base_branch: str) -> bool:
+        """Create ``branch`` from ``base_branch``'s head if it doesn't exist yet.
+
+        Returns ``True`` when a new branch was created, ``False`` when it was
+        already present. Requires ``base_branch`` to exist on the remote (i.e.
+        the initial commit has been pushed).
+        """
+        try:
+            repo.get_branch(branch)
+            return False
+        except GithubException as exc:
+            if exc.status != 404:
+                raise
+
+        base_sha = repo.get_branch(base_branch).commit.sha
+        repo.create_git_ref(f"refs/heads/{branch}", base_sha)
+        return True
+
+    def enable_pages(self, repo: Repository, branch: str, path: str = "/") -> None:
+        """Configure GitHub Pages to deploy from ``branch``/``path``.
+
+        PyGithub 2.x has no Pages helper, so this calls the REST API directly:
+        ``POST .../pages`` to create the site, falling back to ``PUT`` to update
+        the source when a site already exists.
+        """
+        source = {"branch": branch, "path": path}
+        try:
+            repo.requester.requestJsonAndCheck("POST", f"{repo.url}/pages", input={"source": source})
+        except GithubException as exc:
+            if exc.status in (409, 422):
+                repo.requester.requestJsonAndCheck("PUT", f"{repo.url}/pages", input={"source": source})
+                return
+            raise
+
 
 def init_repository(config: GhInitConfig, client: GhInitClient) -> GhInitResult:
     """Apply the config to GitHub and (optionally) push the initial commit."""
@@ -284,6 +328,20 @@ def init_repository(config: GhInitConfig, client: GhInitClient) -> GhInitResult:
         )
         pushed = True
 
+    # Pages needs the default branch to exist on the remote, so only attempt
+    # this once the initial commit has been pushed. Failures here are surfaced
+    # but never abort a bootstrap that already created the repo and pushed code.
+    pages_configured = False
+    pages_error: str | None = None
+    if config.setup_pages and pushed:
+        try:
+            client.ensure_branch(repo, PAGES_BRANCH, config.default_branch)
+            client.enable_pages(repo, PAGES_BRANCH)
+            pages_configured = True
+        except GithubException as exc:
+            data = getattr(exc, "data", None)
+            pages_error = str(data["message"]) if isinstance(data, dict) and "message" in data else str(exc)
+
     owner_login = repo.owner.login
     html_url = repo.html_url
     actions_url = f"{html_url}/actions"
@@ -295,6 +353,9 @@ def init_repository(config: GhInitConfig, client: GhInitClient) -> GhInitResult:
         pages_url=pages_url,
         skipped_secrets=skipped,
         pushed=pushed,
+        pages_configured=pages_configured,
+        pages_branch=PAGES_BRANCH,
+        pages_error=pages_error,
     )
 
 

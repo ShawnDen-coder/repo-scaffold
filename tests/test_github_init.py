@@ -125,6 +125,13 @@ def test_build_config_prompter_fills_missing_values(tmp_path):
     assert config.variables == {"PUBLISH_TO_PUBLIC_PYPI": "true"}
 
 
+def test_build_config_setup_pages_defaults_true(tmp_path):
+    """setup_pages defaults to True and is overridable via kwarg."""
+    _write_pyproject(tmp_path / "pyproject.toml", name="x")
+    assert build_config(tmp_path, extra_env={}).setup_pages is True
+    assert build_config(tmp_path, extra_env={}, setup_pages=False).setup_pages is False
+
+
 def _make_config(tmp_path: Path, **overrides: Any) -> GhInitConfig:
     base: dict[str, Any] = {
         "project_path": tmp_path,
@@ -271,6 +278,130 @@ def test_set_variable_reraises_on_other_errors():
         client.set_variable(repo, "X", "Y")
 
 
+def test_ensure_branch_creates_from_base_when_missing():
+    """A missing branch is created from the base branch's head commit."""
+    client = GhInitClient.__new__(GhInitClient)
+    repo = MagicMock()
+    base = MagicMock()
+    base.commit.sha = "abc123"
+
+    def get_branch(name):
+        if name == "gh-pages":
+            raise GithubException(status=404, data={"message": "Branch not found"})
+        return base
+
+    repo.get_branch.side_effect = get_branch
+
+    created = client.ensure_branch(repo, "gh-pages", "master")
+
+    assert created is True
+    repo.create_git_ref.assert_called_once_with("refs/heads/gh-pages", "abc123")
+
+
+def test_ensure_branch_skips_when_present():
+    """An existing branch is left untouched and reported as not created."""
+    client = GhInitClient.__new__(GhInitClient)
+    repo = MagicMock()  # get_branch returns a branch without raising
+
+    created = client.ensure_branch(repo, "gh-pages", "master")
+
+    assert created is False
+    repo.create_git_ref.assert_not_called()
+
+
+def test_enable_pages_creates_site():
+    """enable_pages POSTs the source config to the Pages endpoint."""
+    client = GhInitClient.__new__(GhInitClient)
+    repo = MagicMock()
+    repo.url = "https://api.github.com/repos/me/demo"
+
+    client.enable_pages(repo, "gh-pages")
+
+    repo.requester.requestJsonAndCheck.assert_called_once_with(
+        "POST",
+        "https://api.github.com/repos/me/demo/pages",
+        input={"source": {"branch": "gh-pages", "path": "/"}},
+    )
+
+
+def test_enable_pages_updates_on_conflict():
+    """When a Pages site already exists, enable_pages falls back to a PUT update."""
+    client = GhInitClient.__new__(GhInitClient)
+    repo = MagicMock()
+    repo.url = "https://api.github.com/repos/me/demo"
+    repo.requester.requestJsonAndCheck.side_effect = [
+        GithubException(status=409, data={"message": "exists"}),
+        (None, None),
+    ]
+
+    client.enable_pages(repo, "gh-pages")
+
+    assert repo.requester.requestJsonAndCheck.call_count == 2
+    assert repo.requester.requestJsonAndCheck.call_args_list[1][0][0] == "PUT"
+
+
+def test_init_repository_configures_pages_after_push(tmp_path, monkeypatch):
+    """With push + setup_pages, gh-pages is created and Pages is configured."""
+    config = _make_config(tmp_path, push=True, setup_pages=True)
+    monkeypatch.setattr(github_init, "git_push", MagicMock())
+
+    repo = MagicMock()
+    repo.clone_url = "https://github.com/me/demo.git"
+    repo.html_url = "https://github.com/me/demo"
+    repo.name = "demo"
+    repo.owner.login = "me"
+
+    client = MagicMock(spec=GhInitClient)
+    client.get_or_create_repo.return_value = repo
+
+    result = init_repository(config, client)
+
+    client.ensure_branch.assert_called_once_with(repo, "gh-pages", "master")
+    client.enable_pages.assert_called_once_with(repo, "gh-pages")
+    assert result.pages_configured is True
+    assert result.pages_branch == "gh-pages"
+
+
+def test_init_repository_skips_pages_without_push(tmp_path, monkeypatch):
+    """Pages setup is skipped when nothing was pushed (no remote default branch)."""
+    config = _make_config(tmp_path, push=False, setup_pages=True)
+
+    repo = MagicMock()
+    repo.html_url = "https://github.com/me/demo"
+    repo.name = "demo"
+    repo.owner.login = "me"
+
+    client = MagicMock(spec=GhInitClient)
+    client.get_or_create_repo.return_value = repo
+
+    result = init_repository(config, client)
+
+    client.ensure_branch.assert_not_called()
+    client.enable_pages.assert_not_called()
+    assert result.pages_configured is False
+
+
+def test_init_repository_records_pages_error_without_aborting(tmp_path, monkeypatch):
+    """A Pages API failure is recorded but does not abort the bootstrap."""
+    config = _make_config(tmp_path, push=True, setup_pages=True)
+    monkeypatch.setattr(github_init, "git_push", MagicMock())
+
+    repo = MagicMock()
+    repo.clone_url = "https://github.com/me/demo.git"
+    repo.html_url = "https://github.com/me/demo"
+    repo.name = "demo"
+    repo.owner.login = "me"
+
+    client = MagicMock(spec=GhInitClient)
+    client.get_or_create_repo.return_value = repo
+    client.ensure_branch.side_effect = GithubException(status=403, data={"message": "no permissions"})
+
+    result = init_repository(config, client)
+
+    assert result.pages_configured is False
+    assert "no permissions" in result.pages_error
+
+
 def test_cli_gh_init_requires_token(tmp_path, monkeypatch):
     """gh-init exits non-zero with a clear message when GITHUB_TOKEN is missing."""
     _write_pyproject(tmp_path / "pyproject.toml", name="x")
@@ -317,6 +448,38 @@ def test_cli_gh_init_invokes_orchestrator(tmp_path, monkeypatch):
     assert captured["config"].push is False
     assert "Repository ready" in result.output
     assert "Skipped secrets" in result.output
+
+
+def test_cli_gh_init_no_pages_disables_pages(tmp_path, monkeypatch):
+    """``--no-pages`` resolves a config with setup_pages disabled."""
+    _write_pyproject(tmp_path / "pyproject.toml", name="demo")
+    monkeypatch.setenv("GITHUB_TOKEN", "stub")
+    captured = {}
+
+    class StubClient:
+        def __init__(self, token: str):
+            pass
+
+    def fake_init(config, client):
+        captured["config"] = config
+        return github_init.GhInitResult(
+            html_url="https://github.com/me/demo",
+            actions_url="https://github.com/me/demo/actions",
+            pages_url="https://me.github.io/demo",
+            skipped_secrets=[],
+            pushed=False,
+        )
+
+    monkeypatch.setattr("repo_scaffold.cli.GhInitClient", StubClient)
+    monkeypatch.setattr("repo_scaffold.cli.init_repository", fake_init)
+
+    result = CliRunner().invoke(
+        cli,
+        ["gh-init", str(tmp_path), "--no-input", "--no-push", "--no-pages"],
+    )
+
+    assert result.exit_code == 0, result.output
+    assert captured["config"].setup_pages is False
 
 
 def _record_calls(monkeypatch, *, head_exists: bool = False):

@@ -128,6 +128,31 @@ class ProjectInitializer:
 
     def __init__(self):
         self.install_after_generate = "{{cookiecutter.install_after_generate}}" == "yes"
+        self.init_git = "{{cookiecutter.init_git}}" == "yes"
+
+    def init_git_repo(self) -> None:
+        """Initialize a git repository on branch ``master`` (best effort)."""
+        if not self.init_git:
+            print("Skipping git init (--no-git selected).")
+            return
+
+        if (Path.cwd() / ".git").exists():
+            print("Git repository already initialized, skipping git init.")
+            return
+
+        try:
+            print("Initializing git repository (branch: master)...")
+            try:
+                subprocess.run(["git", "init", "-b", "master"], check=True, capture_output=True)
+            except subprocess.CalledProcessError:
+                # Older git without `-b`: init, then point HEAD at master.
+                subprocess.run(["git", "init"], check=True, capture_output=True)
+                subprocess.run(["git", "symbolic-ref", "HEAD", "refs/heads/master"], check=True, capture_output=True)
+            print("✅ Initialized empty git repository on branch 'master'")
+        except FileNotFoundError:
+            print("⚠️  git not found; skipped git init. Install git to enable version control.")
+        except subprocess.CalledProcessError as e:
+            print(f"⚠️  Skipped git init: {e}")
 
     def setup_environment(self) -> None:
         """Initialize project dependencies and environment."""
@@ -168,6 +193,7 @@ def main() -> None:
 
     print("\n🔧 Initializing project...")
     initializer = ProjectInitializer()
+    initializer.init_git_repo()
     initializer.setup_environment()
 
     print("\n✨ Project setup completed successfully!")
