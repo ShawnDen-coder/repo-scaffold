@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [0.18.0](https://github.com/ShawnDen-coder/repo-scaffold/compare/90f983ea941980ba867fd5fd4cd47b5b65360972..0.18.0) - 2026-06-30
+#### Features
+- **(gh-init)** add --protect-branch to protect the default branch - ([90f983e](https://github.com/ShawnDen-coder/repo-scaffold/commit/90f983ea941980ba867fd5fd4cd47b5b65360972)) - ShawnDen-coder
+
+- - -
+
 ## [0.17.0](https://github.com/ShawnDen-coder/repo-scaffold/compare/182fdc7e74b0604f60f49a5dd069a5660365edde..0.17.0) - 2026-06-30
 #### Features
 - git init on create and auto-configure gh-pages in gh-init - ([182fdc7](https://github.com/ShawnDen-coder/repo-scaffold/commit/182fdc7e74b0604f60f49a5dd069a5660365edde)) - ShawnDen-coder
