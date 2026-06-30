@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [0.16.1](https://github.com/ShawnDen-coder/repo-scaffold/compare/850b0ba9ec973262479b6d85ab1fb8f4bbf47efd..0.16.1) - 2026-06-30
+#### Bug Fixes
+- **(ci)** skip bootstrap workflows for generated repos - ([850b0ba](https://github.com/ShawnDen-coder/repo-scaffold/commit/850b0ba9ec973262479b6d85ab1fb8f4bbf47efd)) - ShawnDen-coder
+
+- - -
+
 ## [0.16.0](https://github.com/ShawnDen-coder/repo-scaffold/compare/c312abdad572ea98e387557470eb429bbf6f3d11..0.16.0) - 2026-06-29
 #### Bug Fixes
 - **(ci)** push bump commit + tag from cog.toml post_bump_hooks - ([363df66](https://github.com/ShawnDen-coder/repo-scaffold/commit/363df66eadf66de1f833c95f63b810a2f202d505)) - ShawnDen-coder
