@@ -88,7 +88,7 @@ Anything you skip can be added later under **Settings → Secrets and variables 
 2. Calls `POST /user/repos` (or `POST /orgs/{owner}/repos`) with `auto_init=false`. If the repo exists and `--allow-existing` is set, it falls back to `GET /repos/{owner}/{name}`.
 3. For each non-empty secret, calls the Actions secrets API (PUT, so existing secrets are overwritten).
 4. For each non-empty variable, calls the Actions variables API. If the variable already exists, the call falls back to an `edit`.
-5. Unless `--no-push` is set: runs `git init` if needed, stages every tracked and untracked file, creates a `chore: initial commit from repo-scaffold` commit (only if HEAD doesn't yet exist), renames the current branch, sets `origin`, and pushes.
+5. Unless `--no-push` is set: runs `git init` if needed, stages every tracked and untracked file, creates a `chore: initial commit from repo-scaffold [skip ci]` commit (only if HEAD doesn't yet exist), renames the current branch, sets `origin`, and pushes. GitHub Actions treats `[skip ci]` in the commit message as a built-in signal to skip workflows for this bootstrap push; `gh-init` only adds it to the generated initial commit, not to later user commits.
 
 ## Manual step: enable Pages
 

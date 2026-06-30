@@ -370,4 +370,4 @@ def test_git_push_skips_commit_when_head_exists(tmp_path, monkeypatch):
 
 
 # Constant under test, kept local to avoid importing internal name into tests.
-INITIAL_COMMIT_MESSAGE = "chore: initial commit from repo-scaffold"
+INITIAL_COMMIT_MESSAGE = "chore: initial commit from repo-scaffold [skip ci]"
