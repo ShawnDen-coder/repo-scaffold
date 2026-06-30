@@ -39,7 +39,9 @@ DEFAULT_SECRET_KEYS: tuple[str, ...] = (
 
 DEFAULT_VARIABLE_KEYS: tuple[str, ...] = ("PUBLISH_TO_PUBLIC_PYPI",)
 
-INITIAL_COMMIT_MESSAGE = "chore: initial commit from repo-scaffold"
+# GitHub Actions recognizes this marker in commit messages and skips
+# workflows for the bootstrap push. Later user commits are not modified.
+INITIAL_COMMIT_MESSAGE = "chore: initial commit from repo-scaffold [skip ci]"
 INITIAL_COMMIT_USER = "repo-scaffold"
 INITIAL_COMMIT_EMAIL = "repo-scaffold@users.noreply.github.com"
 

@@ -153,12 +153,31 @@ def _assert_workflows_have_github_expressions(project_dir: Path) -> None:
     assert any("${{" in path.read_text(encoding="utf-8") for path in workflows)
 
 
+def _assert_version_bump_avoids_self_trigger(project_dir: Path) -> None:
+    version_bump = project_dir / ".github" / "workflows" / "version-bump.yaml"
+    if not version_bump.exists():
+        return
+
+    text = version_bump.read_text(encoding="utf-8")
+    assert "!startsWith(github.event.head_commit.message, 'chore(version):')" in text
+
+
+def _assert_cog_does_not_require_existing_tag(project_dir: Path) -> None:
+    cog_config = project_dir / "cog.toml"
+    if not cog_config.exists():
+        return
+
+    assert "from_latest_tag" not in cog_config.read_text(encoding="utf-8")
+
+
 def _assert_static_project_valid(project_dir: Path) -> None:
     _assert_no_task_runner_references(project_dir)
     _assert_no_unrendered_markers(project_dir)
     _assert_pyproject_files_parse(project_dir)
     _assert_justfile_parses(project_dir)
     _assert_workflows_have_github_expressions(project_dir)
+    _assert_version_bump_avoids_self_trigger(project_dir)
+    _assert_cog_does_not_require_existing_tag(project_dir)
 
 
 def test_template_python_renders_with_justfile(tmp_path):
