@@ -314,7 +314,9 @@ def gh_init(
 
     click.echo("")
     click.echo("Will create or update repository:")
-    click.echo(f"  Repo:        {config.owner or '<authenticated user>'}/{config.name}")
+    owner_source = getattr(config, "_owner_source", None)
+    owner_suffix = f"  (owner <- {owner_source})" if owner_source and owner_source != "flag" else ""
+    click.echo(f"  Repo:        {config.owner or '<authenticated user>'}/{config.name}{owner_suffix}")
     click.echo(f"  Visibility:  {'private' if config.private else 'public'}")
     click.echo(f"  Description: {config.description or '(none)'}")
     click.echo(f"  Branch:      {config.default_branch}")
@@ -323,7 +325,13 @@ def gh_init(
     click.echo(f"  Secrets:     {secrets_listed}")
     click.echo(f"  Variables:   {variables_listed}")
     click.echo(f"  Push:        {'yes' if config.push else 'no'}{' (force)' if config.force_push else ''}")
-    pages_plan = "yes (gh-pages branch + Pages source)" if (config.setup_pages and config.push) else "no"
+    has_docs = (config.project_path / "mkdocs.yml").is_file()
+    if config.setup_pages and config.push and has_docs:
+        pages_plan = "yes (mkdocs gh-deploy -> Pages source + repo website)"
+    elif config.setup_pages and config.push and not has_docs:
+        pages_plan = "no (no mkdocs.yml in project)"
+    else:
+        pages_plan = "no"
     click.echo(f"  Pages:       {pages_plan}")
     protect_plan = "yes (require PR review)" if (config.protect_branch and config.push) else "no"
     click.echo(f"  Protection:  {protect_plan} -> {config.default_branch}")
@@ -338,15 +346,20 @@ def gh_init(
     click.echo("✓ Repository ready")
     click.echo(f"  URL:     {result.html_url}")
     click.echo(f"  Actions: {result.actions_url}")
-    click.echo(f"  Pages:   {result.pages_url} (after first docs-deploy run)")
+    if result.pages_configured:
+        click.echo(f"  Pages:   {result.pages_url}")
+    else:
+        click.echo(f"  Pages:   {result.pages_url} (after first docs-deploy run)")
     if result.skipped_secrets:
         click.echo(f"  Skipped secrets (set later in repo Settings): {', '.join(result.skipped_secrets)}")
     if result.pushed:
         click.echo(f"  Pushed initial commit to {config.default_branch}")
     if result.pages_configured:
-        click.echo(f"  Configured GitHub Pages to deploy from '{result.pages_branch}'")
+        click.echo(f"  Built & deployed docs to '{result.pages_branch}' and enabled GitHub Pages")
+        if result.homepage_set:
+            click.echo(f"  Set repository website to {result.pages_url}")
     elif result.pages_error:
-        click.echo(f"  ⚠️  Could not configure GitHub Pages automatically: {result.pages_error}")
+        click.echo(f"  ⚠️  Could not deploy docs / configure Pages automatically: {result.pages_error}")
     if result.branch_protected:
         click.echo(f"  Protected branch '{config.default_branch}' (PR review required)")
     elif result.protection_error:
@@ -355,8 +368,11 @@ def gh_init(
     click.echo("Next steps:")
     click.echo("  1. Watch the first CI run on the Actions page above.")
     if result.pages_configured:
-        click.echo("  2. Push a release tag to trigger docs-deploy; docs will publish to")
-        click.echo(f"     '{result.pages_branch}' and serve at the Pages URL above.")
+        click.echo(f"  2. Your docs are live at {result.pages_url}")
+        click.echo("     (re-published automatically by docs-deploy on each version tag).")
+    elif result.pages_error:
+        click.echo("  2. Docs deploy failed above — fix it, then run `just deploy-gh-pages`")
+        click.echo("     and set Settings → Pages source to gh-pages / (root) if needed.")
     else:
         click.echo("  2. After the first docs-deploy tag run, in repo Settings → Pages set")
         click.echo("     'Source: Deploy from a branch' to gh-pages / (root).")
