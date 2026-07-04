@@ -1,4 +1,4 @@
-include = ["pyproject.toml", "packages/**/*.py"]
+include = ["pyproject.toml", "packages/**/*.py", "scripts/**/*.py"]
 line-length = 120
 target-version = "{{ "py" ~ cookiecutter.min_python_version.replace(".", "") }}"
 
@@ -9,7 +9,10 @@ extend-ignore = [
 ]
 ignore = [
   "W191",  # indentation contains tabs
-  "D401"  # imperative mood
+  "D401",  # imperative mood
+  "RUF001",  # ambiguous unicode char in string (中文全角标点属正常)
+  "RUF002",  # ambiguous unicode char in docstring (中文全角标点属正常)
+  "RUF003"  # ambiguous unicode char in comment (中文全角标点属正常)
 ]
 select = [
   "E",  # pycodestyle errors
@@ -21,7 +24,8 @@ select = [
   "D",  # pydocstyle
   "UP",  # pyupgrade
   "RUF",  # Ruff-specific rules
-  "SIM"  # flake8-simplify
+  "SIM",  # flake8-simplify
+  "PLC0415"  # import should be at top-level of file
 ]
 
 [lint.isort]

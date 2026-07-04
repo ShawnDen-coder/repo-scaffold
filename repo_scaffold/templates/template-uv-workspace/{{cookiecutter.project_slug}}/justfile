@@ -15,7 +15,7 @@ default:
 # Sync workspace deps and install pre-commit hooks
 init:
     uv tool install rust-just
-    uv sync --all-groups
+    uv sync --all-packages --all-groups
     uvx pre-commit install
 
 # Run ruff fix + format + check
@@ -42,23 +42,23 @@ test:
 
 # Run tests across the configured Python version range
 test-all:
-    uv run python -c "import subprocess; mn=int('{% raw %}{{python_min_version}}{% endraw %}'.split('.')[1]); mx=int('{% raw %}{{python_max_version}}{% endraw %}'.split('.')[1]); [subprocess.check_call(['uv','run','--all-groups','--python',f'3.{m}','pytest','--cov={% raw %}{{package_name}}{% endraw %}','--cov-report=xml','--cov-report=term-missing','-v','packages/']) for m in range(mn, mx + 1)]"
+    uv run python -c "import subprocess; mn=int('{% raw %}{{python_min_version}}{% endraw %}'.split('.')[1]); mx=int('{% raw %}{{python_max_version}}{% endraw %}'.split('.')[1]); [subprocess.check_call(['uv','run','--all-packages','--all-groups','--python',f'3.{m}','pytest','--cov={% raw %}{{package_name}}{% endraw %}','--cov-report=xml','--cov-report=term-missing','-v','packages/']) for m in range(mn, mx + 1)]"
 
 # Run tests for a specific Python version
 test-version version:
-    uv run --all-groups --python {% raw %}{{version}}{% endraw %} pytest --cov={% raw %}{{package_name}}{% endraw %} --cov-report=xml --cov-report=term-missing -v packages/
+    uv run --all-packages --all-groups --python {% raw %}{{version}}{% endraw %} pytest --cov={% raw %}{{package_name}}{% endraw %} --cov-report=xml --cov-report=term-missing -v packages/
 
 # Serve docs locally
 docs:
-    uv run --group docs mkdocs serve
+    uv run --all-packages --group docs mkdocs serve
 
 # Build static docs
 docs-build:
-    uv run --group docs mkdocs build
+    uv run --all-packages --group docs mkdocs build
 
 # Deploy docs to GitHub Pages
 deploy-gh-pages:
-    uv run --group docs mkdocs gh-deploy --force
+    uv run --all-packages --group docs mkdocs gh-deploy --force
 
 # Build sdist + wheel for every workspace package
 build:
@@ -87,3 +87,7 @@ deploy-all: build publish-all
 # Export pinned deps to requirements.txt
 export-deps:
     uv export --no-hashes --output-file requirements.txt
+
+# Add a new package to the workspace (creates package dir + updates cog.toml + syncs)
+add-package name:
+    uv run python scripts/add_package.py "{% raw %}{{name}}{% endraw %}"
