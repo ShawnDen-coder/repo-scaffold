@@ -20,7 +20,9 @@ plugins:
   - mkdocstrings:
       handlers:
         python:
-          paths: ["packages/*/src"]
+          # Packages are installed (via `uv run --all-packages`), so mkdocstrings
+          # discovers every workspace package through sys.path — no per-package
+          # `paths` entries to maintain when new packages are added.
           options:
             docstring_style: "google"
             show_source: true

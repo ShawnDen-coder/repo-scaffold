@@ -45,6 +45,6 @@ jobs:
           enable-cache: true
           {% raw %}python-version: ${{ matrix.python-version }}{% endraw %}
       - name: Sync workspace deps
-        {% raw %}run: uv sync --all-groups --python ${{ matrix.python-version }}{% endraw %}
+        {% raw %}run: uv sync --all-packages --all-groups --python ${{ matrix.python-version }}{% endraw %}
       - name: Run tests
         {% raw %}run: uvx --from rust-just just test-version ${{ matrix.python-version }}{% endraw %}
