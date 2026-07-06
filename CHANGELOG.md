@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [0.20.0](https://github.com/ShawnDen-coder/repo-scaffold/compare/428c1762f0ad75b24010014b3e5d68a5267372ed..0.20.0) - 2026-07-06
+#### Features
+- sync uv-workspace template with trade-system improvements - ([428c176](https://github.com/ShawnDen-coder/repo-scaffold/commit/428c1762f0ad75b24010014b3e5d68a5267372ed)) - ShawnDeng-code
+
+- - -
+
 ## [0.19.1](https://github.com/ShawnDen-coder/repo-scaffold/compare/869e4b1ac3a0b1ee05569dbf1ebc04300147d2a0..0.19.1) - 2026-06-30
 #### Bug Fixes
 - **(gh-init)** authenticate git push with the bootstrap token - ([869e4b1](https://github.com/ShawnDen-coder/repo-scaffold/commit/869e4b1ac3a0b1ee05569dbf1ebc04300147d2a0)) - ShawnDeng-code
