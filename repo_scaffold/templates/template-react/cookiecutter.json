@@ -6,6 +6,7 @@
     "project_slug": "{{ cookiecutter.repo_name.strip().lower().replace(' ', '-').replace('_', '-') }}",
     "description": "A TanStack Start application.",
     "include_demos": ["yes", "no"],
+    "use_docker": ["yes", "no"],
     "use_github_actions": ["yes", "no"],
     "install_after_generate": "yes",
     "init_git": "yes",
@@ -16,6 +17,7 @@
         "github_username": "GitHub 用户名或组织名",
         "description": "项目简短描述",
         "include_demos": "是否包含 Demo 示例页面?",
+        "use_docker": "是否添加 Docker/Podman 容器化支持?",
         "use_github_actions": "是否添加 GitHub Actions CI 配置?"
     }
 }
