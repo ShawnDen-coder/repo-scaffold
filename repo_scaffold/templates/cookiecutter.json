@@ -9,6 +9,11 @@
       "path": "template-uv-workspace",
       "title": "uv-workspace",
       "description": "template for uv workspace python project"
+    },
+    "template-react": {
+      "path": "template-react",
+      "title": "react",
+      "description": "template for TanStack Start React project"
     }
   }
 }
