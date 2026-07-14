@@ -29,6 +29,7 @@ class ProjectCleaner:
 
     def __init__(self):
         self.include_demos = "{{cookiecutter.include_demos}}" == "yes"
+        self.use_docker = "{{cookiecutter.use_docker}}" == "yes"
         self.use_github_actions = "{{cookiecutter.use_github_actions}}" == "yes"
 
     def _safe_remove(self, path: Union[str, Path]) -> bool:
@@ -92,6 +93,18 @@ class ProjectCleaner:
         ]
         print("Removing GitHub Actions files...")
         self._remove_files(github_files)
+
+    def clean_container_files(self) -> None:
+        """Remove container related files if Docker/Podman is not used."""
+        if self.use_docker:
+            return
+
+        container_files = [
+            ".dockerignore",
+            "container",
+        ]
+        print("Removing container files...")
+        self._remove_files(container_files)
 
 
 class ProjectInitializer:
@@ -159,6 +172,7 @@ def main() -> None:
 
     print("\n📁 Cleaning up unnecessary files...")
     cleaner.clean_demo_files()
+    cleaner.clean_container_files()
     cleaner.clean_github_actions_files()
 
     print("\n🔧 Initializing project...")
