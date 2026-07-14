@@ -1,0 +1,7 @@
+{
+    "python.testing.pytestArgs": [
+        "repo_scaffold"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true
+}
