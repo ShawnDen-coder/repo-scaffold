@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [0.21.0](https://github.com/ShawnDen-coder/repo-scaffold/compare/003505693f0f0c1e312c8dfdd08ebeb3e3752707..0.21.0) - 2026-07-14
+#### Features
+- **(react-template)** add Docker/Podman containerization support - ([591257b](https://github.com/ShawnDen-coder/repo-scaffold/commit/591257bcd267c7d7f984178382d2888ea9023653)) - ShawnDen-coder
+- add TanStack Start React template with MUI and pnpm - ([0035056](https://github.com/ShawnDen-coder/repo-scaffold/commit/003505693f0f0c1e312c8dfdd08ebeb3e3752707)) - ShawnDen-coder
+#### Miscellaneous Chores
+- add tmp/ to gitignore and vscode pytest settings - ([8103e86](https://github.com/ShawnDen-coder/repo-scaffold/commit/8103e86f6a7766b852bf32391789c82a6fb8b894)) - ShawnDen-coder
+
+- - -
+
 ## [0.20.0](https://github.com/ShawnDen-coder/repo-scaffold/compare/428c1762f0ad75b24010014b3e5d68a5267372ed..0.20.0) - 2026-07-06
 #### Features
 - sync uv-workspace template with trade-system improvements - ([428c176](https://github.com/ShawnDen-coder/repo-scaffold/commit/428c1762f0ad75b24010014b3e5d68a5267372ed)) - ShawnDeng-code
