@@ -1,0 +1,42 @@
+name: 🔄 Auto Version Bump
+on:
+  push:
+    branches:
+      - master
+      - main
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  {% raw %}group: version-bump-${{ github.ref }}{% endraw %}
+  cancel-in-progress: false
+jobs:
+  release:
+    {% raw %}if: ${{ !startsWith(github.event.head_commit.message, 'chore(version):') }}{% endraw %}
+    runs-on: ubuntu-latest
+    name: Bump version and update changelog with cocogitto
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          {% raw %}token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}{% endraw %}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Cocogitto release
+        id: release
+        uses: cocogitto/cocogitto-action@v3
+        with:
+          release: true
+          git-user: 'cog-bot'
+          git-user-email: 'cog-bot@users.noreply.github.com'

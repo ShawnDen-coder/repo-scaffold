@@ -1,0 +1,24 @@
+{
+  "projectName": "{{cookiecutter.project_slug}}",
+  "mode": "file-router",
+  "typescript": true,
+  "packageManager": "pnpm",
+  "includeExamples": true,
+  "tailwind": true,
+  "addOnOptions": {},
+  "envVarValues": {},
+  "git": false,
+  "install": true,
+  "routerOnly": false,
+  "version": 1,
+  "framework": "react",
+  "chosenAddOns": [
+    "biome",
+    "tanstack-query",
+    "store",
+    "form",
+    "mui",
+    "t3env",
+    "compiler"
+  ]
+}
