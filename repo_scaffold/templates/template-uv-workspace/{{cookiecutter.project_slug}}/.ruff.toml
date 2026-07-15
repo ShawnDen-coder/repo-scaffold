@@ -1,4 +1,4 @@
-include = ["pyproject.toml", "packages/**/*.py", "scripts/**/*.py"]
+include = ["pyproject.toml", "packages/**/*.py"]
 line-length = 120
 target-version = "{{ "py" ~ cookiecutter.min_python_version.replace(".", "") }}"
 
