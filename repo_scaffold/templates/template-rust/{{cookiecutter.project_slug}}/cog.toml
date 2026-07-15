@@ -1,0 +1,30 @@
+ignore_merge_commits = true
+branch_whitelist = ["master", "main"]
+skip_ci = "[skip ci]"
+
+generate_mono_repository_global_tag = true
+generate_mono_repository_package_tags = true
+monorepo_version_separator = "-"
+
+pre_bump_hooks = ["cargo generate-lockfile", "git add Cargo.lock"]
+
+post_bump_hooks = [
+    "git push",
+    "git push --tags",
+]
+
+[changelog]
+path = "CHANGELOG.md"
+template = "remote"
+remote = "github.com"
+owner = "{{cookiecutter.github_username}}"
+repository = "{{cookiecutter.project_slug}}"
+package_template = "remote"
+
+[packages.api-server]
+path = "packages/api-server"
+public_api = true
+changelog_path = "packages/api-server/CHANGELOG.md"
+pre_bump_hooks = [
+    "cargo workspaces version --all --force '*' --no-git-commit {% raw %}{{version}}{% endraw %}",
+]

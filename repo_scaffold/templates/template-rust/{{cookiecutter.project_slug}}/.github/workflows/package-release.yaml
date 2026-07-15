@@ -1,0 +1,70 @@
+name: 🚀 Release Build & Publish
+on:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-unknown-linux-gnu
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          {% raw %}key: ${{ runner.os }}-cargo-release-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-release-{% endraw %}
+      - name: Build release binary
+        run: cargo build --release
+      - name: Upload binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: binary
+          path: target/release/{{cookiecutter.crate_name}}
+          if-no-files-found: error
+
+  publish-crates:
+    needs: build
+    runs-on: ubuntu-latest
+    if: vars.PUBLISH_TO_CRATES_IO == 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+      - name: Publish to crates.io
+        env:
+          {% raw %}CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}{% endraw %}
+        run: cargo publish --workspace
+
+  release:
+    needs: [publish-crates]
+    {% raw %}if: ${{ !failure() && !cancelled() }}{% endraw %}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: binary
+          path: binary/
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          {% raw %}tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}{% endraw %}
+          files: |
+            binary/{{cookiecutter.crate_name}}
+          generate_release_notes: true
+        env:
+          {% raw %}GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}{% endraw %}

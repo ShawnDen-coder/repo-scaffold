@@ -1,0 +1,39 @@
+[workspace]
+members = ["packages/*"]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+authors = ["{{cookiecutter.full_name}}"]
+
+[workspace.dependencies]
+axum = { version = "0.8", features = ["multipart"] }
+axum-extra = { version = "0.10", features = ["typed-header"] }
+tokio = { version = "1", features = ["full"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+uuid = { version = "1", features = ["v4", "serde"] }
+sqlx = { version = "0.8", features = ["postgres", "runtime-tokio", "macros", "uuid", "chrono", "json"] }
+thiserror = "2"
+tower = { version = "0.5", features = ["timeout"] }
+tower-http = { version = "0.6", features = ["cors", "trace", "fs"] }
+async-trait = "0.1"
+chrono = { version = "0.4", features = ["serde"] }
+dotenvy = "0.15"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "registry", "std", "fmt", "chrono"] }
+jsonwebtoken = "9"
+regex = "1"
+{% if cookiecutter.use_openapi == 'yes' %}
+utoipa = { version = "5", features = ["axum_extras", "uuid", "chrono"] }
+utoipa-swagger-ui = { version = "9", features = ["axum"] }
+{% endif %}
+{% if cookiecutter.use_opentelemetry == 'yes' %}
+opentelemetry = { version = "0.30", optional = true }
+opentelemetry_sdk = { version = "0.30", optional = true }
+opentelemetry-otlp = { version = "0.30", features = ["http-proto"], optional = true }
+opentelemetry-appender-tracing = { version = "0.30", optional = true }
+tracing-opentelemetry = { version = "0.31", optional = true }
+{% endif %}
