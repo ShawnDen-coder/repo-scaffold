@@ -1,0 +1,69 @@
+set dotenv-load := true
+set shell := ["bash", "-euc"]
+set windows-shell := ["powershell.exe", "-NoLogo", "-NoProfile", "-Command"]
+
+# Show available recipes
+default:
+    @just --list
+
+# Install dependencies
+init:
+    pnpm install
+
+# Run dev server (port 3000)
+dev:
+    pnpm dev
+
+# Generate route types
+generate-routes:
+    pnpm generate-routes
+
+# Type check
+typecheck:
+    pnpm tsc --noEmit
+
+# Run biome check (lint + format)
+lint:
+    pnpm biome check --write .
+
+# Run biome lint only
+lint-check:
+    pnpm biome lint .
+
+# Run biome format only
+format:
+    pnpm biome format --write .
+
+# Run tests
+test:
+    pnpm test
+
+# Run tests in watch mode
+test-watch:
+    pnpm vitest
+
+# Build for production
+build:
+    pnpm build
+
+# Preview production build
+preview:
+    pnpm preview
+{%- if cookiecutter.use_docker == 'yes' %}
+
+# Build container image
+container-build:
+    podman compose -f container/compose.yaml build
+
+# Start container stack
+container-up:
+    podman compose -f container/compose.yaml up -d
+
+# Stop container stack
+container-down:
+    podman compose -f container/compose.yaml down
+
+# Tail container logs
+container-logs:
+    podman compose -f container/compose.yaml logs -f
+{%- endif %}

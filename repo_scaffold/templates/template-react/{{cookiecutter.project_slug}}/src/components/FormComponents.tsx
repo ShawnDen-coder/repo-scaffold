@@ -1,6 +1,6 @@
 {% raw %}import { useStore } from '@tanstack/react-form'
 
-import { useFieldContext, useFormContext } from '#/hooks/demo.form-context'
+import { useFieldContext, useFormContext } from '#/hooks/form-context'
 
 import MuiButton from '@mui/material/Button'
 import MuiTextField from '@mui/material/TextField'
@@ -20,7 +20,7 @@ export function SubscribeButton({ label }: { label: string }) {
       {(isSubmitting) => (
         <MuiButton type="submit" variant="contained" disabled={isSubmitting}>
           {label}
-        </Button>
+        </MuiButton>
       )}
     </form.Subscribe>
   )
