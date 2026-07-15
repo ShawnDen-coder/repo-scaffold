@@ -2,7 +2,7 @@
 import { EventClient } from '@tanstack/devtools-event-client'
 import { useState, useEffect } from 'react'
 
-import { store, fullName } from './demo-store'
+import { store, fullName } from './store'
 
 type EventMap = {
   'store-devtools:state': {

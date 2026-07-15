@@ -1,9 +1,9 @@
 {% raw %}
 import { createFileRoute } from '@tanstack/react-router'
 
-import { useAppForm } from '#/hooks/demo.form'
+import { useAppForm } from '#/hooks/form'
 
-export const Route = createFileRoute('/demo/form/address')({
+export const Route = createFileRoute('/examples/form/address')({
   component: AddressForm,
 })
 
@@ -169,6 +169,7 @@ function AddressForm() {
 
           <form.AppField
             name="phone"
+            validators={{
             validators={{
               onBlur: ({ value }) => {
                 if (!value || value.trim().length === 0) {

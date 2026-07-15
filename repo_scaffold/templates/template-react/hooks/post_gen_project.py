@@ -72,12 +72,12 @@ class ProjectCleaner:
             return
 
         demo_files = [
-            Path("src") / "routes" / "demo",
-            Path("src") / "lib" / "demo-store.ts",
-            Path("src") / "lib" / "demo-store-devtools.tsx",
-            Path("src") / "components" / "demo.FormComponents.tsx",
-            Path("src") / "hooks" / "demo.form-context.ts",
-            Path("src") / "hooks" / "demo.form.ts",
+            Path("src") / "routes" / "examples",
+            Path("src") / "lib" / "store.ts",
+            Path("src") / "lib" / "store-devtools.tsx",
+            Path("src") / "components" / "FormComponents.tsx",
+            Path("src") / "hooks" / "form-context.ts",
+            Path("src") / "hooks" / "form.ts",
         ]
         print("Removing demo files...")
         self._remove_files(demo_files)

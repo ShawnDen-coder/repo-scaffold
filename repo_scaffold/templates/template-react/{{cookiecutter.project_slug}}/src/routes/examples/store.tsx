@@ -2,10 +2,10 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useStore } from '@tanstack/react-store'
 
-import { fullName, store } from '#/lib/demo-store'
+import { fullName, store } from '#/lib/store'
 
-export const Route = createFileRoute('/demo/store')({
-  component: DemoStore,
+export const Route = createFileRoute('/examples/store')({
+  component: StoreExample,
 })
 
 function FirstName() {
@@ -41,7 +41,7 @@ function FullName() {
   return <div className="demo-list-item font-medium">{fName}</div>
 }
 
-function DemoStore() {
+function StoreExample() {
   return (
     <main className="demo-page demo-center">
       <section className="demo-panel flex w-full max-w-xl flex-col gap-4">

@@ -2,11 +2,11 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 
-export const Route = createFileRoute('/demo/tanstack-query')({
-  component: TanStackQueryDemo,
+export const Route = createFileRoute('/examples/tanstack-query')({
+  component: TanStackQueryExample,
 })
 
-function TanStackQueryDemo() {
+function TanStackQueryExample() {
   const { data } = useQuery({
     queryKey: ['todos'],
     queryFn: () =>
