@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [0.22.0](https://github.com/ShawnDen-coder/repo-scaffold/compare/d5e762b6f5b6d46827d68e81a17115ac880aa965..0.22.0) - 2026-07-15
+#### Features
+- **(react-template)** add justfile, usehooks-ts, and rename demo to base样板 - ([029e326](https://github.com/ShawnDen-coder/repo-scaffold/commit/029e326fa5b8a99a29fab8381a5a3a54b94863db)) - ShawnDen-coder
+#### Miscellaneous Chores
+- **(react-template)** remove .cta.json scaffolding state file - ([d5e762b](https://github.com/ShawnDen-coder/repo-scaffold/commit/d5e762b6f5b6d46827d68e81a17115ac880aa965)) - ShawnDen-coder
+
+- - -
+
 ## [0.21.0](https://github.com/ShawnDen-coder/repo-scaffold/compare/003505693f0f0c1e312c8dfdd08ebeb3e3752707..0.21.0) - 2026-07-14
 #### Features
 - **(react-template)** add Docker/Podman containerization support - ([591257b](https://github.com/ShawnDen-coder/repo-scaffold/commit/591257bcd267c7d7f984178382d2888ea9023653)) - ShawnDen-coder
