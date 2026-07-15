@@ -1,0 +1,67 @@
+set dotenv-load := true
+set shell := ["bash", "-euc"]
+set windows-shell := ["powershell.exe", "-NoLogo", "-NoProfile", "-Command"]
+
+# Show available recipes
+default:
+    @just --list
+
+# Build the project
+init:
+    cargo build
+
+# Run dev server
+dev:
+    cargo run
+
+# Run clippy + fmt check
+lint:
+    cargo clippy -- -D warnings
+    cargo fmt --check
+
+# Run clippy fix + fmt
+lint-fix:
+    cargo clippy --fix --allow-dirty
+    cargo fmt
+
+# Run tests
+test:
+    cargo test
+
+# Run tests in watch mode
+test-watch:
+    cargo watch -x test
+
+# Build for release
+build:
+    cargo build --release
+
+# Prepare SQLx offline query metadata
+sqlx-prepare:
+    cargo sqlx prepare
+
+# Check for outdated dependencies
+outdated:
+    cargo outdated
+
+# Add a new crate to the workspace (creates package dir + updates cog.toml)
+add-package name:
+    python scripts/add_package.py "{% raw %}{{name}}{% endraw %}"
+{% if cookiecutter.use_docker == 'yes' %}
+
+# Build container image
+container-build:
+    podman compose -f container/compose.yaml build
+
+# Start container stack
+container-up:
+    podman compose -f container/compose.yaml up -d
+
+# Stop container stack
+container-down:
+    podman compose -f container/compose.yaml down
+
+# Tail container logs
+container-logs:
+    podman compose -f container/compose.yaml logs -f
+{% endif %}

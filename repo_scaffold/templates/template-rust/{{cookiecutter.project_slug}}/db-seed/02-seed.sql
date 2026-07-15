@@ -1,0 +1,2 @@
+-- Seed data for development/testing.
+-- Add your own seed data as your domains grow.

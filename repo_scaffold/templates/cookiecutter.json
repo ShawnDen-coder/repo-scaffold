@@ -14,6 +14,11 @@
       "path": "template-react",
       "title": "react",
       "description": "template for TanStack Start React project"
+    },
+    "template-rust": {
+      "path": "template-rust",
+      "title": "rust",
+      "description": "template for Axum + SQLx Rust workspace project"
     }
   }
 }

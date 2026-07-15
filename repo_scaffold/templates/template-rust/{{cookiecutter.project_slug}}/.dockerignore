@@ -1,0 +1,7 @@
+/target
+.git
+.env
+.vscode
+README.md
+LICENSE
+ERD.png

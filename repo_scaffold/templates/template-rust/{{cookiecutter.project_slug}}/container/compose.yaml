@@ -1,0 +1,27 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: {{cookiecutter.project_slug}}_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: testuser
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: testdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./db-seed:/docker-entrypoint-initdb.d
+
+  app:
+    build:
+      context: .
+      dockerfile: container/Dockerfile
+    container_name: {{cookiecutter.project_slug}}_app
+    depends_on:
+      - postgres
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=postgres://testuser:pass@{{cookiecutter.project_slug}}_postgres:5432/testdb

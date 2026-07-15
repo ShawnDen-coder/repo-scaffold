@@ -1,0 +1,37 @@
+name: 🔄 Auto Version Bump
+on:
+  push:
+    branches:
+      - master
+      - main
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  {% raw %}group: version-bump-${{ github.ref }}{% endraw %}
+  cancel-in-progress: false
+jobs:
+  release:
+    {% raw %}if: ${{ !startsWith(github.event.head_commit.message, 'chore(version):') }}{% endraw %}
+    runs-on: ubuntu-latest
+    name: Bump version and update changelog with cocogitto
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          {% raw %}token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}{% endraw %}
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install cargo-workspaces
+        run: cargo install cargo-workspaces --locked
+
+      - name: Cocogitto release
+        id: release
+        uses: cocogitto/cocogitto-action@v3
+        with:
+          release: true
+          git-user: 'cog-bot'
+          git-user-email: 'cog-bot@users.noreply.github.com'
