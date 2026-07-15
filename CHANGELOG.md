@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [0.23.0](https://github.com/ShawnDen-coder/repo-scaffold/compare/b07a539cffcd1a79a0462c9bc91fb1efab96f37b..0.23.0) - 2026-07-15
+#### Features
+- **(cli)** add add-package subcommand for workspace package management - ([9dad424](https://github.com/ShawnDen-coder/repo-scaffold/commit/9dad42451b393f7386cb6de20d375d1e7b6d2d72)) - ShawnDen-coder
+- **(rust-template)** add Axum + SQLx cargo workspace template - ([b07a539](https://github.com/ShawnDen-coder/repo-scaffold/commit/b07a539cffcd1a79a0462c9bc91fb1efab96f37b)) - ShawnDen-coder
+#### Miscellaneous Chores
+- remove deprecated scripts/add_package.py from templates - ([170bbf1](https://github.com/ShawnDen-coder/repo-scaffold/commit/170bbf1ade34133907f215259587686b58d1de6f)) - ShawnDen-coder
+
+- - -
+
 ## [0.22.0](https://github.com/ShawnDen-coder/repo-scaffold/compare/d5e762b6f5b6d46827d68e81a17115ac880aa965..0.22.0) - 2026-07-15
 #### Features
 - **(react-template)** add justfile, usehooks-ts, and rename demo to base样板 - ([029e326](https://github.com/ShawnDen-coder/repo-scaffold/commit/029e326fa5b8a99a29fab8381a5a3a54b94863db)) - ShawnDen-coder
