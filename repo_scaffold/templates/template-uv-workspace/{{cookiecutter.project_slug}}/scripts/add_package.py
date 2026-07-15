@@ -1,5 +1,9 @@
 """Add a new package to the uv workspace.
 
+.. deprecated::
+    Use ``repo-scaffold add-package <name>`` instead.
+    This script will be removed in a future release.
+
 Usage: python scripts/add_package.py <package-name>
 
 This script:

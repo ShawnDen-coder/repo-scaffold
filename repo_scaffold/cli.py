@@ -378,5 +378,27 @@ def gh_init(
         click.echo("     'Source: Deploy from a branch' to gh-pages / (root).")
 
 
+@cli.command("add-package")
+@click.argument("name")
+@click.option(
+    "--project-path",
+    "-p",
+    default=".",
+    type=click.Path(file_okay=False, dir_okay=True, exists=True, path_type=Path),
+    help="Path to the workspace project root (default: current directory)",
+)
+def add_package_cmd(name: str, project_path: Path):
+    """Add a new package to a workspace project.
+
+    Detects the project type (Rust cargo workspace or uv workspace) and creates
+    the package skeleton, updates cog.toml, and verifies the workspace compiles.
+
+    Run this inside a generated workspace project directory, or specify --project-path.
+    """
+    from repo_scaffold.add_package import add_package
+
+    add_package(project_path, name)
+
+
 if __name__ == "__main__":
     cli()
