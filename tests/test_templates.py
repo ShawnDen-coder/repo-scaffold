@@ -92,9 +92,7 @@ def test_cli_create_no_git_sets_extra_context(monkeypatch, tmp_path):
     mock_cookiecutter = Mock(side_effect=lambda **kwargs: calls.append(kwargs))
     monkeypatch.setattr("repo_scaffold.cli.cookiecutter", mock_cookiecutter)
 
-    result = CliRunner().invoke(
-        cli, ["create", "template-python", "--no-input", "--no-git", "-o", str(tmp_path)]
-    )
+    result = CliRunner().invoke(cli, ["create", "template-python", "--no-input", "--no-git", "-o", str(tmp_path)])
 
     assert result.exit_code == 0
     assert calls[0]["extra_context"]["init_git"] == "no"

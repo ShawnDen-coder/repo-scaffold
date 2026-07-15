@@ -52,6 +52,9 @@ repo-scaffold create uv-workspace -o ./my-projects
 # Pages at it. Reads GITHUB_TOKEN from the environment.
 export GITHUB_TOKEN=ghp_...
 repo-scaffold gh-init ./my-projects/my-python-project
+
+# Add a new package to a workspace project (auto-detects Rust or uv)
+repo-scaffold add-package my-new-lib -p ./my-projects/my-workspace
 ```
 
 See the [GitHub bootstrap docs](https://shawnden-coder.github.io/repo-scaffold/templates/gh-init/) for the full flag list and the secrets/variables `gh-init` knows how to set.
@@ -109,7 +112,36 @@ Currently supported project templates:
   - Cocogitto monorepo release workflow with per-package and global tags
   - Same lint / test / docs tooling as the python template
 
+- **`react`** — TanStack Start (SSR React) project
+  - TanStack Router/Query/Form/Store, MUI, Tailwind CSS
+  - Biome for lint/format, pnpm for deps, Vitest for testing
+  - Optional Docker/Podman support, GitHub Actions CI, and demo pages
+
+- **`rust`** — Axum + SQLx cargo workspace project
+  - Cargo workspace with `packages/api-server/` as initial member
+  - Domain-driven architecture (domain/infra/api/dto layers)
+  - Axum web framework + SQLx (PostgreSQL, compile-time queries, offline mode)
+  - JWT auth middleware, health check reference domain
+  - Optional Docker/Podman, GitHub Actions CI, OpenAPI/Swagger (utoipa), and OpenTelemetry support
+  - Cocogitto monorepo versioning with `cargo-workspaces`
+
 Both templates use `just` (via `rust-just`) as the task runner. Bootstrap from a clean machine with `uvx --from rust-just just init` — that recipe also installs `rust-just` as a uv tool, so every subsequent recipe can be run as plain `just <recipe>`.
+
+## Adding Packages to Workspaces
+
+The `add-package` command adds a new member to a workspace project and updates `cog.toml` for Cocogitto tracking:
+
+```bash
+# Inside a generated workspace project directory
+repo-scaffold add-package my-new-lib
+
+# Or specify the project path explicitly
+repo-scaffold add-package my-new-lib -p /path/to/project
+```
+
+The command auto-detects the project type:
+- **Rust workspace** (`Cargo.toml` with `[workspace]`): creates a crate skeleton under `packages/<name>/`, appends a `[packages.<name>]` section to `cog.toml` with `cargo workspaces version` pre-bump hooks, and runs `cargo check`.
+- **uv workspace** (`pyproject.toml` with `[tool.uv.workspace]`): runs `uv init --lib`, appends a `[packages.<name>]` section to `cog.toml` with `uv version --package` pre-bump hooks, and runs `uv sync`.
 
 ## Development Setup
 

@@ -90,4 +90,4 @@ export-deps:
 
 # Add a new package to the workspace (creates package dir + updates cog.toml + syncs)
 add-package name:
-    uv run python scripts/add_package.py "{% raw %}{{name}}{% endraw %}"
+    repo-scaffold add-package {% raw %}{{name}}{% endraw %}

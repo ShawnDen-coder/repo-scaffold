@@ -46,7 +46,7 @@ outdated:
 
 # Add a new crate to the workspace (creates package dir + updates cog.toml)
 add-package name:
-    python scripts/add_package.py "{% raw %}{{name}}{% endraw %}"
+    repo-scaffold add-package {% raw %}{{name}}{% endraw %}
 {% if cookiecutter.use_docker == 'yes' %}
 
 # Build container image

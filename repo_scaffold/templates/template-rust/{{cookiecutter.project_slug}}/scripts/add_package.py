@@ -1,5 +1,9 @@
 """Add a new crate to the cargo workspace.
 
+.. deprecated::
+    Use ``repo-scaffold add-package <name>`` instead.
+    This script will be removed in a future release.
+
 Usage: python scripts/add_package.py <crate-name>
 
 This script:
