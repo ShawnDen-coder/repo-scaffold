@@ -1,0 +1,19 @@
+{
+  "repo_name": "my-ts-sdk",
+  "full_name": "Your Name",
+  "email": "you@example.com",
+  "github_username": "your-github-username",
+  "project_slug": "{{ cookiecutter.repo_name.strip().lower().replace(' ', '-').replace('_', '-') }}",
+  "description": "A TypeScript SDK library.",
+  "use_github_actions": ["yes", "no"],
+  "install_after_generate": "yes",
+  "init_git": "yes",
+  "__prompts__": {
+    "repo_name": "项目名称 (my-ts-sdk)",
+    "full_name": "作者姓名",
+    "email": "作者邮箱",
+    "github_username": "GitHub 用户名或组织名",
+    "description": "项目简短描述",
+    "use_github_actions": "是否添加 GitHub Actions CI 配置?"
+  }
+}

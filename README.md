@@ -125,6 +125,27 @@ Currently supported project templates:
   - Optional Docker/Podman, GitHub Actions CI, OpenAPI/Swagger (utoipa), and OpenTelemetry support
   - Cocogitto monorepo versioning with `cargo-workspaces`
 
+- **`ts-sdk`** — TypeScript SDK library
+  - Vite lib mode producing dual ESM + CJS output with bundled type declarations
+  - Generic `ApiClient` with automatic token lifecycle (authenticate → cache → refresh → fallback)
+  - `AuthService` supporting four OAuth grant types with exponential-backoff retry
+  - Prettier for formatting, pnpm for deps
+  - Optional GitHub Actions CI + dual npm/GPR publish + Cocogitto version bump
+
+- **`pnpm-workspace`** — pnpm monorepo with mixed sub-package types
+  - Workspace root with `pnpm-workspace.yaml` + Prettier
+  - Initial sub-package type selection: `vue-app` / `ts-lib` / `react-app` / `ts-cli`
+  - Cocogitto monorepo versioning with `pnpm --filter` per-package hooks
+  - `repo-scaffold add-package` supports adding new sub-packages to pnpm workspaces
+  - Optional GitHub Actions CI
+
+- **`vue-project`** — standalone Vue 3 project with Router, Pinia, and Tailwind CSS
+  - Full layered component structure: `components/ui/`, `components/layout/`, `components/common/`
+  - Pages with colocated sub-components: `pages/HomePage/`, `pages/AboutPage/`
+  - Vue Router with lazy-loaded routes, Pinia stores with Composition API
+  - Tailwind CSS v4 via `@tailwindcss/vite`, Prettier, pnpm
+  - Optional GitHub Actions CI + Cocogitto version bump
+
 Both templates use `just` (via `rust-just`) as the task runner. Bootstrap from a clean machine with `uvx --from rust-just just init` — that recipe also installs `rust-just` as a uv tool, so every subsequent recipe can be run as plain `just <recipe>`.
 
 ## Adding Packages to Workspaces

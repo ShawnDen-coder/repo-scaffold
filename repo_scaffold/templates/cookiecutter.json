@@ -19,6 +19,21 @@
       "path": "template-rust",
       "title": "rust",
       "description": "template for Axum + SQLx Rust workspace project"
+    },
+    "template-pnpm-workspace": {
+      "path": "template-pnpm-workspace",
+      "title": "pnpm-workspace",
+      "description": "template for pnpm workspace monorepo (vue-app / ts-lib / react-app / ts-cli)"
+    },
+    "template-ts-sdk": {
+      "path": "template-ts-sdk",
+      "title": "ts-sdk",
+      "description": "template for TypeScript SDK library (Vite lib mode, dual ESM+CJS)"
+    },
+    "template-vue-project": {
+      "path": "template-vue-project",
+      "title": "vue-project",
+      "description": "template for Vue 3 project with Router, Pinia, and Tailwind CSS"
     }
   }
 }

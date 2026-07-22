@@ -1,0 +1,31 @@
+set dotenv-load := true
+set shell := ["bash", "-euc"]
+set windows-shell := ["powershell.exe", "-NoLogo", "-NoProfile", "-Command"]
+
+# Show available recipes
+default:
+    @just --list
+
+# Install workspace dependencies
+init:
+    pnpm install
+
+# Run Prettier format check
+lint:
+    pnpm format:check
+
+# Run Prettier with auto-fix
+format:
+    pnpm format
+
+# Build all workspace packages
+build:
+    pnpm -r run build
+
+# Type check all workspace packages
+typecheck:
+    pnpm -r run typecheck
+
+# Add a new package to the workspace (creates package dir + updates cog.toml + syncs)
+add-package name:
+    repo-scaffold add-package {% raw %}{{name}}{% endraw %}

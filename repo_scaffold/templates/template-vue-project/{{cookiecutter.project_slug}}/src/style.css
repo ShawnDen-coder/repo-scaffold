@@ -1,0 +1,142 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-ink-strong: #1f2937;
+  --color-ink-soft: #64748b;
+  --color-brand: #0f766e;
+  --color-brand-strong: #115e59;
+  --color-line: #dbe4f0;
+  --color-accent: #f59e0b;
+  --shadow-soft: 0 18px 40px rgba(15, 23, 42, 0.08);
+  --radius-brand: 0.9rem;
+  --spacing-note: 1.1rem;
+  --spacing-panel: 1.4rem;
+  --spacing-card: 1.6rem;
+  --spacing-soft: 0.65rem;
+  --spacing-offset-xs: 0.3rem;
+  --text-tree: 1.05rem;
+  --text-meta: 0.95rem;
+  --blur-shell: 18px;
+  --blur-card: 10px;
+}
+
+:root {
+  --ink-strong: #1f2937;
+  --ink: #475569;
+  --ink-soft: #64748b;
+  --surface: #f8fafc;
+  --surface-strong: #ffffff;
+  --surface-muted: #eef2ff;
+  --line: #dbe4f0;
+  --brand: #0f766e;
+  --brand-strong: #115e59;
+  --accent: #f59e0b;
+  --shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+  --radius-lg: 24px;
+  --radius-md: 18px;
+  --radius-sm: 12px;
+  --max-width: 1120px;
+  --font-sans: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-mono: 'Cascadia Code', 'SFMono-Regular', Consolas, monospace;
+
+  font-family: var(--font-sans);
+  line-height: 1.6;
+  font-weight: 400;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at top left, rgba(15, 118, 110, 0.12), transparent 32%),
+    linear-gradient(180deg, #f8fafc 0%, #eef6f6 100%);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+}
+
+button,
+a {
+  font: inherit;
+}
+
+a {
+  color: inherit;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+code {
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  background: rgba(15, 23, 42, 0.06);
+  padding: 0.16rem 0.4rem;
+  border-radius: 999px;
+}
+
+#app {
+  min-height: 100vh;
+}
+
+.container {
+  width: min(var(--max-width), calc(100% - 32px));
+  margin: 0 auto;
+}
+
+.section-title {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  line-height: 1.05;
+  color: var(--ink-strong);
+}
+
+.section-lead {
+  margin: 0;
+  max-width: 62ch;
+  color: var(--ink-soft);
+}
+
+.eyebrow {
+  margin: 0 0 0.8rem;
+  font-size: 0.86rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--brand-strong);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  background: rgba(15, 118, 110, 0.1);
+  color: var(--brand-strong);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+@media (max-width: 720px) {
+  .container {
+    width: min(var(--max-width), calc(100% - 24px));
+  }
+}

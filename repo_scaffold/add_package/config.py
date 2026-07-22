@@ -20,6 +20,7 @@ class ProjectType(Enum):
 
     RUST_WORKSPACE = "rust"
     UV_WORKSPACE = "uv"
+    PNPM_WORKSPACE = "pnpm"
 
 
 @dataclass
@@ -37,7 +38,8 @@ def detect_project_type(project_path: Path) -> ProjectType:
     Resolution order:
       1. ``Cargo.toml`` with a ``[workspace]`` section → ``RUST_WORKSPACE``
       2. ``pyproject.toml`` with a ``[tool.uv.workspace]`` section → ``UV_WORKSPACE``
-      3. Neither → raise ``click.ClickException``
+      3. ``pnpm-workspace.yaml`` → ``PNPM_WORKSPACE``
+      4. None of the above → raise ``click.ClickException``
 
     Args:
         project_path: Root directory of the workspace project.
@@ -64,6 +66,11 @@ def detect_project_type(project_path: Path) -> ProjectType:
         if "uv" in data.get("tool", {}) and "workspace" in data["tool"]["uv"]:
             return ProjectType.UV_WORKSPACE
 
+    pnpm_workspace = project_path / "pnpm-workspace.yaml"
+    if pnpm_workspace.is_file():
+        return ProjectType.PNPM_WORKSPACE
+
     raise click.ClickException(
-        "No workspace detected. Expected a Cargo.toml with [workspace] or a pyproject.toml with [tool.uv.workspace]."
+        "No workspace detected. Expected a Cargo.toml with [workspace], "
+        "a pyproject.toml with [tool.uv.workspace], or a pnpm-workspace.yaml."
     )

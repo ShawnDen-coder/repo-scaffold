@@ -1,0 +1,16 @@
+ignore_merge_commits = true
+
+[changelog]
+path = "CHANGELOG.md"
+
+[packages.{{cookiecutter.package_slug}}]
+path = "packages/{{cookiecutter.package_slug}}"
+public_api = true
+changelog_path = "packages/{{cookiecutter.package_slug}}/CHANGELOG.md"
+pre_bump_hooks = [
+    "pnpm --filter {{cookiecutter.package_slug}} version {% raw %}{{version}}{% endraw %} --no-git-tag-version",
+]
+
+[post_bump_hooks]
+"git push" = []
+"git push origin {% raw %}{{version}}{% endraw %}" = []

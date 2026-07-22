@@ -15,8 +15,10 @@ from repo_scaffold.add_package import ProjectType
 from repo_scaffold.add_package import add_package
 from repo_scaffold.add_package import detect_project_type
 from repo_scaffold.add_package.workspace import _COG_VERSION_PLACEHOLDER
+from repo_scaffold.add_package.workspace import _PNPM_COG_SECTION_TEMPLATE
 from repo_scaffold.add_package.workspace import _RUST_COG_SECTION_TEMPLATE
 from repo_scaffold.add_package.workspace import _UV_COG_SECTION_TEMPLATE
+from repo_scaffold.add_package.workspace import add_pnpm_package
 from repo_scaffold.add_package.workspace import add_rust_package
 from repo_scaffold.add_package.workspace import add_uv_package
 from repo_scaffold.cli import cli
@@ -56,6 +58,14 @@ def _write_cog_toml(path: Path) -> None:
     """Write a minimal cog.toml."""
     (path / "cog.toml").write_text(
         'ignore_merge_commits = true\n\n[changelog]\npath = "CHANGELOG.md"\n',
+        encoding="utf-8",
+    )
+
+
+def _write_pnpm_workspace(path: Path) -> None:
+    """Write a minimal pnpm-workspace.yaml."""
+    (path / "pnpm-workspace.yaml").write_text(
+        "packages:\n  - 'packages/*'\n",
         encoding="utf-8",
     )
 
@@ -105,6 +115,12 @@ def test_detect_pyproject_without_uv_workspace_raises(tmp_path: Path):
     )
     with pytest.raises(click.ClickException, match="No workspace detected"):
         detect_project_type(tmp_path)
+
+
+def test_detect_pnpm_workspace(tmp_path: Path):
+    """pnpm-workspace.yaml → PNPM_WORKSPACE."""
+    _write_pnpm_workspace(tmp_path)
+    assert detect_project_type(tmp_path) == ProjectType.PNPM_WORKSPACE
 
 
 # ---------------------------------------------------------------------------
@@ -231,6 +247,62 @@ def test_add_uv_package_rejects_existing_dir(tmp_path: Path):
 
 
 # ---------------------------------------------------------------------------
+# pnpm workspace add-package tests
+# ---------------------------------------------------------------------------
+
+
+def test_add_pnpm_package_creates_skeleton(tmp_path: Path):
+    """add_pnpm_package creates package.json + vite.config.ts + src/index.ts and appends to cog.toml."""
+    _write_pnpm_workspace(tmp_path)
+    _write_cog_toml(tmp_path)
+    config = AddPackageConfig(
+        project_path=tmp_path,
+        name="my-lib",
+        project_type=ProjectType.PNPM_WORKSPACE,
+    )
+
+    with patch("repo_scaffold.add_package.workspace.subprocess.check_call"):
+        add_pnpm_package(config)
+
+    # Verify package.json
+    package_json = tmp_path / "packages" / "my-lib" / "package.json"
+    assert package_json.is_file()
+    content = package_json.read_text(encoding="utf-8")
+    assert '"my-lib"' in content
+
+    # Verify vite.config.ts
+    vite_config = tmp_path / "packages" / "my-lib" / "vite.config.ts"
+    assert vite_config.is_file()
+
+    # Verify src/index.ts
+    index_ts = tmp_path / "packages" / "my-lib" / "src" / "index.ts"
+    assert index_ts.is_file()
+
+    # Verify cog.toml section
+    cog = tmp_path / "cog.toml"
+    cog_content = cog.read_text(encoding="utf-8")
+    assert "[packages.my-lib]" in cog_content
+    assert 'path = "packages/my-lib"' in cog_content
+    assert "pnpm --filter my-lib version" in cog_content
+
+
+def test_add_pnpm_package_rejects_existing_dir(tmp_path: Path):
+    """add_pnpm_package raises when the package directory already exists."""
+    _write_pnpm_workspace(tmp_path)
+    pkg_dir = tmp_path / "packages" / "existing-lib"
+    pkg_dir.mkdir(parents=True)
+
+    config = AddPackageConfig(
+        project_path=tmp_path,
+        name="existing-lib",
+        project_type=ProjectType.PNPM_WORKSPACE,
+    )
+
+    with pytest.raises(click.ClickException, match="already exists"):
+        add_pnpm_package(config)
+
+
+# ---------------------------------------------------------------------------
 # cog.toml section content tests
 # ---------------------------------------------------------------------------
 
@@ -253,6 +325,17 @@ def test_cog_toml_section_uv_has_correct_hooks():
     assert 'path = "packages/test-lib"' in section
     assert "public_api = true" in section
     assert "uv version --package test-lib {{version}}" in section
+    # The {{version}} must be the literal cocogitto placeholder
+    assert "{{version}}" in section
+
+
+def test_cog_toml_section_pnpm_has_correct_hooks():
+    """Pnpm cog.toml section uses pnpm --filter version hook with {{version}} placeholder."""
+    section = _PNPM_COG_SECTION_TEMPLATE.format(name="test-lib", version_placeholder=_COG_VERSION_PLACEHOLDER)
+    assert "[packages.test-lib]" in section
+    assert 'path = "packages/test-lib"' in section
+    assert "public_api = true" in section
+    assert "pnpm --filter test-lib version {{version}}" in section
     # The {{version}} must be the literal cocogitto placeholder
     assert "{{version}}" in section
 
@@ -332,3 +415,14 @@ def test_cli_add_package_uv_workspace(tmp_path: Path):
         result = CliRunner().invoke(cli, ["add-package", "my-lib", "-p", str(tmp_path)])
         assert result.exit_code == 0
         mock_uv.assert_called_once()
+
+
+def test_cli_add_package_pnpm_workspace(tmp_path: Path):
+    """CLI delegates to add_pnpm_package for a pnpm workspace."""
+    _write_pnpm_workspace(tmp_path)
+    _write_cog_toml(tmp_path)
+
+    with patch("repo_scaffold.add_package.add_pnpm_package") as mock_pnpm:
+        result = CliRunner().invoke(cli, ["add-package", "my-lib", "-p", str(tmp_path)])
+        assert result.exit_code == 0
+        mock_pnpm.assert_called_once()
