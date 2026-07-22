@@ -1,0 +1,19 @@
+{
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+  extends: [
+    "config:best-practices",
+  ],
+  enabledManagers: ["npm", "github-actions"],
+  packageRules: [
+    {
+      matchManagers: ["npm"],
+      matchDepTypes: ["devDependencies"],
+      automerge: true,
+    },
+    {
+      matchManagers: ["github-actions"],
+      matchUpdateTypes: ["minor", "patch"],
+      automerge: true,
+    },
+  ],
+}

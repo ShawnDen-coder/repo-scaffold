@@ -6,6 +6,7 @@ import tomllib
 from pathlib import Path
 from unittest.mock import Mock
 
+import json5
 from click.testing import CliRunner
 from cookiecutter.main import cookiecutter
 
@@ -670,3 +671,128 @@ def test_pnpm_templates_workflows_contain_setup_steps(tmp_path):
         assert "pnpm/action-setup@v4" in ci
         assert "{% include" not in ci
         assert "_shared" not in ci
+
+
+# ---------------------------------------------------------------------------
+# Renovate configuration tests
+# ---------------------------------------------------------------------------
+
+
+def _parse_renovate_config(project_dir: Path) -> dict:
+    """Parse the rendered renovate.json5 from a generated project."""
+    renovate_path = project_dir / ".github" / "renovate.json5"
+    assert renovate_path.is_file(), f"renovate.json5 not found in {project_dir}"
+    return json5.loads(renovate_path.read_text(encoding="utf-8"))
+
+
+def test_python_templates_renovate_config_present(tmp_path):
+    """Python and uv-workspace templates render with Renovate config for pep621 + github-actions."""
+    for template_name in ("template-python", "template-uv-workspace"):
+        project_dir = _render_template(
+            template_name,
+            tmp_path / template_name,
+            {"install_after_generate": "no"},
+            accept_hooks=True,
+        )
+        config = _parse_renovate_config(project_dir)
+        assert "pep621" in config.get("enabledManagers", [])
+        assert "github-actions" in config.get("enabledManagers", [])
+        assert "config:best-practices" in config.get("extends", [])
+
+
+def test_pnpm_templates_renovate_config_present(tmp_path):
+    """pnpm-based templates render with Renovate config for npm + github-actions."""
+    for template_name, extra in (
+        ("template-ts-sdk", {}),
+        ("template-pnpm-workspace", {"initial_package_type": "ts-lib"}),
+        ("template-react", {}),
+        ("template-vue-project", {}),
+    ):
+        project_dir = _render_template(
+            template_name,
+            tmp_path / template_name,
+            {"install_after_generate": "no", **extra},
+            accept_hooks=True,
+        )
+        config = _parse_renovate_config(project_dir)
+        assert "npm" in config.get("enabledManagers", []), f"{template_name} missing npm manager"
+        assert "github-actions" in config.get("enabledManagers", []), f"{template_name} missing github-actions manager"
+
+
+def test_ts_sdk_uses_js_lib_preset(tmp_path):
+    """ts-sdk template uses config:js-lib preset (preserves semver ranges for prod deps)."""
+    project_dir = _render_template(
+        "template-ts-sdk",
+        tmp_path,
+        {"install_after_generate": "no"},
+        accept_hooks=True,
+    )
+    config = _parse_renovate_config(project_dir)
+    assert "config:js-lib" in config.get("extends", [])
+
+
+def test_vue_project_uses_js_app_preset(tmp_path):
+    """vue-project template uses config:js-app preset (pins all except peer deps)."""
+    project_dir = _render_template(
+        "template-vue-project",
+        tmp_path,
+        {"install_after_generate": "no"},
+        accept_hooks=True,
+    )
+    config = _parse_renovate_config(project_dir)
+    assert "config:js-app" in config.get("extends", [])
+
+
+def test_rust_template_renovate_config_present(tmp_path):
+    """Rust template renders with Renovate config for cargo + github-actions."""
+    project_dir = _render_template(
+        "template-rust",
+        tmp_path,
+        {"install_after_generate": "no"},
+        accept_hooks=True,
+    )
+    config = _parse_renovate_config(project_dir)
+    assert "cargo" in config.get("enabledManagers", [])
+    assert "github-actions" in config.get("enabledManagers", [])
+    assert "config:best-practices" in config.get("extends", [])
+
+
+def test_renovate_config_removed_without_github_actions(tmp_path):
+    """use_github_actions=no removes Renovate config along with .github/ directory."""
+    for template_name, extra in (
+        ("template-python", {}),
+        ("template-ts-sdk", {}),
+        ("template-vue-project", {}),
+    ):
+        project_dir = _render_template(
+            template_name,
+            tmp_path / template_name,
+            {"use_github_actions": "no", "install_after_generate": "no", **extra},
+            accept_hooks=True,
+        )
+        assert not (project_dir / ".github").exists(), (
+            f"{template_name} .github/ should be removed when use_github_actions=no"
+        )
+
+
+def test_renovate_config_has_automerge_rules(tmp_path):
+    """All template Renovate configs include automerge rules for dev deps and minor/patch actions."""
+    for template_name, extra in (
+        ("template-python", {}),
+        ("template-react", {}),
+        ("template-rust", {}),
+    ):
+        project_dir = _render_template(
+            template_name,
+            tmp_path / template_name,
+            {"install_after_generate": "no", **extra},
+            accept_hooks=True,
+        )
+        config = _parse_renovate_config(project_dir)
+        rules = config.get("packageRules", [])
+        # At least one rule should enable automerge
+        assert any(rule.get("automerge") is True for rule in rules), f"{template_name} has no automerge rules"
+        # At least one rule should target github-actions
+        assert any("github-actions" in rule.get("matchManagers", []) for rule in rules), (
+            f"{template_name} has no github-actions automerge rule"
+        )
