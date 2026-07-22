@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [0.24.0](https://github.com/ShawnDen-coder/repo-scaffold/compare/bb157459990fbc7d395056559a24c6afe0ef7ac1..0.24.0) - 2026-07-22
+#### Features
+- **(templates)** add ts-sdk, pnpm-workspace, and vue-project templates + modularize pnpm workflows - ([bb15745](https://github.com/ShawnDen-coder/repo-scaffold/commit/bb157459990fbc7d395056559a24c6afe0ef7ac1)) - colyerdeng
+- add Renovate dependency update config to all templates - ([6208059](https://github.com/ShawnDen-coder/repo-scaffold/commit/620805911ed934cfbc7897f86e795ae571286993)) - colyerdeng
+
+- - -
+
 ## [0.23.0](https://github.com/ShawnDen-coder/repo-scaffold/compare/b07a539cffcd1a79a0462c9bc91fb1efab96f37b..0.23.0) - 2026-07-15
 #### Features
 - **(cli)** add add-package subcommand for workspace package management - ([9dad424](https://github.com/ShawnDen-coder/repo-scaffold/commit/9dad42451b393f7386cb6de20d375d1e7b6d2d72)) - ShawnDen-coder
