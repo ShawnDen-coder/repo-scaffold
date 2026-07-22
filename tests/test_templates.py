@@ -25,6 +25,9 @@ def test_template_registry_entries_exist():
 
     assert "template-python" in templates
     assert "template-uv-workspace" in templates
+    assert "template-pnpm-workspace" in templates
+    assert "template-ts-sdk" in templates
+    assert "template-vue-project" in templates
 
     titles = [info["title"] for info in templates.values()]
     assert len(titles) == len(set(titles))
@@ -43,6 +46,9 @@ def test_cli_list_includes_registered_templates():
     assert result.exit_code == 0
     assert "python" in result.output
     assert "uv-workspace" in result.output
+    assert "pnpm-workspace" in result.output
+    assert "ts-sdk" in result.output
+    assert "vue-project" in result.output
 
 
 def test_template_question_defaults_are_user_friendly():
@@ -401,3 +407,266 @@ def test_workspace_post_gen_hook_rejects_invalid_module_name():
         assert exc.code == 1
     else:
         raise AssertionError("Expected invalid module name to exit")
+
+
+# ---------------------------------------------------------------------------
+# ts-sdk template tests
+# ---------------------------------------------------------------------------
+
+
+def test_template_ts_sdk_renders(tmp_path):
+    """Test ts-sdk template renders expected files."""
+    project_dir = _render_template(
+        "template-ts-sdk",
+        tmp_path,
+        {"install_after_generate": "no"},
+        accept_hooks=True,
+    )
+
+    assert (project_dir / "package.json").is_file()
+    assert (project_dir / "vite.config.ts").is_file()
+    assert (project_dir / "tsconfig.json").is_file()
+    assert (project_dir / ".prettierrc.json").is_file()
+    assert (project_dir / "src" / "index.ts").is_file()
+    assert (project_dir / "src" / "client.ts").is_file()
+    assert (project_dir / "src" / "auth.ts").is_file()
+    assert (project_dir / "src" / "logger.ts").is_file()
+    assert (project_dir / "src" / "types" / "index.ts").is_file()
+    assert (project_dir / ".github" / "workflows" / "ci.yaml").is_file()
+    assert (project_dir / "cog.toml").is_file()
+
+    _assert_no_unrendered_markers(project_dir)
+
+
+def test_template_ts_sdk_can_render_without_github_actions(tmp_path):
+    """Test ts-sdk template can omit GitHub Actions."""
+    project_dir = _render_template(
+        "template-ts-sdk",
+        tmp_path,
+        {"use_github_actions": "no", "install_after_generate": "no"},
+        accept_hooks=True,
+    )
+
+    assert not (project_dir / ".github").exists()
+    assert not (project_dir / "cog.toml").exists()
+    _assert_no_unrendered_markers(project_dir)
+
+
+# ---------------------------------------------------------------------------
+# pnpm-workspace template tests
+# ---------------------------------------------------------------------------
+
+
+def test_template_pnpm_workspace_renders_vue_app(tmp_path):
+    """Test pnpm-workspace template renders with vue-app sub-package."""
+    project_dir = _render_template(
+        "template-pnpm-workspace",
+        tmp_path,
+        {"initial_package_type": "vue-app", "install_after_generate": "no"},
+        accept_hooks=True,
+    )
+
+    # Root files
+    assert (project_dir / "package.json").is_file()
+    assert (project_dir / "pnpm-workspace.yaml").is_file()
+    assert (project_dir / "justfile").is_file()
+    assert (project_dir / ".prettierrc.json").is_file()
+
+    # Sub-package: vue-app variant selected
+    package_dir = project_dir / "packages" / "my-pnpm-workspace-core"
+    assert (package_dir / "package.json").is_file()
+    assert (package_dir / "index.html").is_file()
+    assert (package_dir / "src" / "main.ts").is_file()
+    assert (package_dir / "src" / "App.vue").is_file()
+    assert (package_dir / "vite.config.ts").is_file()
+
+    # Other variants removed
+    assert not (project_dir / "packages" / "_vue-app").exists()
+    assert not (project_dir / "packages" / "_ts-lib").exists()
+    assert not (project_dir / "packages" / "_react-app").exists()
+    assert not (project_dir / "packages" / "_ts-cli").exists()
+
+    _assert_no_unrendered_markers(project_dir)
+
+
+def test_template_pnpm_workspace_renders_ts_lib(tmp_path):
+    """Test pnpm-workspace template renders with ts-lib sub-package."""
+    project_dir = _render_template(
+        "template-pnpm-workspace",
+        tmp_path,
+        {"initial_package_type": "ts-lib", "install_after_generate": "no"},
+        accept_hooks=True,
+    )
+
+    package_dir = project_dir / "packages" / "my-pnpm-workspace-core"
+    assert (package_dir / "package.json").is_file()
+    assert (package_dir / "vite.config.ts").is_file()
+    assert (package_dir / "tsconfig.json").is_file()
+    assert (package_dir / "src" / "index.ts").is_file()
+
+    # vue-app specific files should NOT be present
+    assert not (package_dir / "index.html").exists()
+    assert not (package_dir / "src" / "App.vue").exists()
+
+    # All variant dirs removed
+    for variant in ("_vue-app", "_ts-lib", "_react-app", "_ts-cli"):
+        assert not (project_dir / "packages" / variant).exists()
+
+    _assert_no_unrendered_markers(project_dir)
+
+
+def test_template_pnpm_workspace_renders_react_app(tmp_path):
+    """Test pnpm-workspace template renders with react-app sub-package."""
+    project_dir = _render_template(
+        "template-pnpm-workspace",
+        tmp_path,
+        {"initial_package_type": "react-app", "install_after_generate": "no"},
+        accept_hooks=True,
+    )
+
+    package_dir = project_dir / "packages" / "my-pnpm-workspace-core"
+    assert (package_dir / "package.json").is_file()
+    assert (package_dir / "index.html").is_file()
+    assert (package_dir / "src" / "main.tsx").is_file()
+    assert (package_dir / "src" / "App.tsx").is_file()
+
+    # vue-app specific files should NOT be present
+    assert not (package_dir / "src" / "App.vue").exists()
+
+    _assert_no_unrendered_markers(project_dir)
+
+
+def test_template_pnpm_workspace_can_render_without_github_actions(tmp_path):
+    """Test pnpm-workspace template can omit GitHub Actions."""
+    project_dir = _render_template(
+        "template-pnpm-workspace",
+        tmp_path,
+        {
+            "use_github_actions": "no",
+            "initial_package_type": "ts-lib",
+            "install_after_generate": "no",
+        },
+        accept_hooks=True,
+    )
+
+    assert not (project_dir / ".github").exists()
+    assert not (project_dir / "cog.toml").exists()
+    _assert_no_unrendered_markers(project_dir)
+
+
+# ---------------------------------------------------------------------------
+# vue-project template tests
+# ---------------------------------------------------------------------------
+
+
+def _assert_shared_fragments_removed(project_dir: Path) -> None:
+    """Shared workflow fragments under ``_shared/`` are cleaned up by the hook."""
+    assert not (project_dir / "_shared").exists()
+
+
+def test_template_vue_project_renders(tmp_path):
+    """Test vue-project template renders expected files with full layered structure."""
+    project_dir = _render_template(
+        "template-vue-project",
+        tmp_path,
+        {"install_after_generate": "no"},
+        accept_hooks=True,
+    )
+
+    # Root files
+    assert (project_dir / "package.json").is_file()
+    assert (project_dir / "index.html").is_file()
+    assert (project_dir / "vite.config.ts").is_file()
+    assert (project_dir / "tsconfig.json").is_file()
+    assert (project_dir / "tsconfig.app.json").is_file()
+    assert (project_dir / "tsconfig.node.json").is_file()
+    assert (project_dir / ".prettierrc.json").is_file()
+
+    # src/ entry points
+    assert (project_dir / "src" / "main.ts").is_file()
+    assert (project_dir / "src" / "App.vue").is_file()
+    assert (project_dir / "src" / "style.css").is_file()
+
+    # router + stores
+    assert (project_dir / "src" / "router" / "index.ts").is_file()
+    assert (project_dir / "src" / "router" / "router.ts").is_file()
+    assert (project_dir / "src" / "stores" / "index.ts").is_file()
+    assert (project_dir / "src" / "stores" / "app.ts").is_file()
+
+    # components layered structure
+    assert (project_dir / "src" / "components" / "ui" / "AppButton.vue").is_file()
+    assert (project_dir / "src" / "components" / "ui" / "AppCard.vue").is_file()
+    assert (project_dir / "src" / "components" / "layout" / "AppHeader.vue").is_file()
+    assert (project_dir / "src" / "components" / "layout" / "AppFooter.vue").is_file()
+    assert (project_dir / "src" / "components" / "common" / "EmptyState.vue").is_file()
+    assert (project_dir / "src" / "components" / "common" / "FolderTree.vue").is_file()
+
+    # pages
+    assert (project_dir / "src" / "pages" / "HomePage" / "index.vue").is_file()
+    assert (project_dir / "src" / "pages" / "HomePage" / "HeroSection.vue").is_file()
+    assert (project_dir / "src" / "pages" / "HomePage" / "StructureHighlights.vue").is_file()
+    assert (project_dir / "src" / "pages" / "AboutPage" / "index.vue").is_file()
+
+    # GitHub Actions + cog
+    assert (project_dir / ".github" / "workflows" / "ci.yaml").is_file()
+    assert (project_dir / ".github" / "workflows" / "version-bump.yaml").is_file()
+    assert (project_dir / "cog.toml").is_file()
+
+    # _shared/ fragments cleaned up by hook
+    _assert_shared_fragments_removed(project_dir)
+    _assert_no_unrendered_markers(project_dir)
+
+
+def test_template_vue_project_can_render_without_github_actions(tmp_path):
+    """Test vue-project template can omit GitHub Actions."""
+    project_dir = _render_template(
+        "template-vue-project",
+        tmp_path,
+        {"use_github_actions": "no", "install_after_generate": "no"},
+        accept_hooks=True,
+    )
+
+    assert not (project_dir / ".github").exists()
+    assert not (project_dir / "cog.toml").exists()
+    _assert_shared_fragments_removed(project_dir)
+    _assert_no_unrendered_markers(project_dir)
+
+
+# ---------------------------------------------------------------------------
+# shared workflow fragment tests (pnpm templates)
+# ---------------------------------------------------------------------------
+
+
+def test_pnpm_templates_clean_shared_fragments(tmp_path):
+    """All pnpm templates must remove the _shared/ directory after rendering."""
+    for template_name, extra in (
+        ("template-ts-sdk", {}),
+        ("template-pnpm-workspace", {"initial_package_type": "ts-lib"}),
+        ("template-react", {}),
+    ):
+        extra_context = {"install_after_generate": "no", **extra}
+        project_dir = _render_template(
+            template_name,
+            tmp_path / template_name,
+            extra_context,
+            accept_hooks=True,
+        )
+        assert not (project_dir / "_shared").exists(), template_name
+
+
+def test_pnpm_templates_workflows_contain_setup_steps(tmp_path):
+    """Rendered workflows contain the pnpm-setup steps, not the include directive."""
+    for template_name, extra in (
+        ("template-ts-sdk", {}),
+        ("template-pnpm-workspace", {"initial_package_type": "ts-lib"}),
+    ):
+        project_dir = _render_template(
+            template_name,
+            tmp_path / template_name,
+            {"install_after_generate": "no", **extra},
+            accept_hooks=True,
+        )
+        ci = (project_dir / ".github" / "workflows" / "ci.yaml").read_text(encoding="utf-8")
+        assert "pnpm/action-setup@v4" in ci
+        assert "{% include" not in ci
+        assert "_shared" not in ci

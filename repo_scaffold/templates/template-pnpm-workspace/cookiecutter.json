@@ -1,0 +1,24 @@
+{
+  "repo_name": "my-pnpm-workspace",
+  "full_name": "Your Name",
+  "email": "you@example.com",
+  "github_username": "your-github-username",
+  "project_slug": "{{ cookiecutter.repo_name.strip().lower().replace(' ', '-').replace('_', '-') }}",
+  "package_name": "{{ cookiecutter.project_slug }}-core",
+  "package_slug": "{{ cookiecutter.package_name.strip().lower().replace(' ', '-').replace('_', '-') }}",
+  "description": "A pnpm workspace monorepo.",
+  "initial_package_type": ["vue-app", "ts-lib", "react-app", "ts-cli"],
+  "use_github_actions": ["yes", "no"],
+  "install_after_generate": "yes",
+  "init_git": "yes",
+  "__prompts__": {
+    "repo_name": "工作区仓库名称 (my-pnpm-workspace)",
+    "full_name": "作者姓名",
+    "email": "作者邮箱",
+    "github_username": "GitHub 用户名或组织名",
+    "package_name": "初始子包名称 (如 my-project-core)",
+    "description": "项目简短描述",
+    "initial_package_type": "初始子包类型",
+    "use_github_actions": "是否添加 GitHub Actions CI 配置?"
+  }
+}

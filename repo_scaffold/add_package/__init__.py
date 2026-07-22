@@ -18,6 +18,7 @@ from pathlib import Path
 from .config import AddPackageConfig
 from .config import ProjectType
 from .config import detect_project_type
+from .workspace import add_pnpm_package
 from .workspace import add_rust_package
 from .workspace import add_uv_package
 
@@ -26,6 +27,7 @@ __all__ = [
     "AddPackageConfig",
     "ProjectType",
     "add_package",
+    "add_pnpm_package",
     "add_rust_package",
     "add_uv_package",
     "detect_project_type",
@@ -51,5 +53,7 @@ def add_package(project_path: Path, name: str) -> None:
     )
     if project_type == ProjectType.RUST_WORKSPACE:
         add_rust_package(config)
+    elif project_type == ProjectType.PNPM_WORKSPACE:
+        add_pnpm_package(config)
     else:
         add_uv_package(config)

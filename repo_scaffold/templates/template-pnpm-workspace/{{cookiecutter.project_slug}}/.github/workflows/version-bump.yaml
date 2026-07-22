@@ -1,0 +1,28 @@
+name: Version Bump
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  version-bump:
+    runs-on: ubuntu-latest
+    if: "!startsWith(github.event.head_commit.message, 'chore(version):')"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+{% include '_shared/steps/pnpm-setup.yaml' %}
+
+      - name: Cocogitto bump
+        uses: cocogitto/cocogitto-action@v3
+        with:
+          release: true

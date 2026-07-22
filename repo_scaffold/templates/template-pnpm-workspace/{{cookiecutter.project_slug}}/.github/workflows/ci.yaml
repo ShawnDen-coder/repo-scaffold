@@ -1,0 +1,23 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+{% include '_shared/steps/pnpm-setup.yaml' %}
+
+      - name: Lint
+        run: pnpm format:check
+
+      - name: Build
+        run: pnpm -r run build

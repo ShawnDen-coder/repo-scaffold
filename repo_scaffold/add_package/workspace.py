@@ -157,6 +157,145 @@ def add_uv_package(config: AddPackageConfig) -> None:
 
 
 # ---------------------------------------------------------------------------
+# pnpm workspace
+# ---------------------------------------------------------------------------
+
+_PNPM_PACKAGE_JSON_TEMPLATE = """\
+{{
+  "name": "{name}",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {{
+    ".": {{
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }}
+  }},
+  "files": ["dist"],
+  "scripts": {{
+    "build": "vite build",
+    "typecheck": "tsc --noEmit"
+  }},
+  "devDependencies": {{
+    "typescript": "~5.9.3",
+    "vite": "^7.3.1",
+    "vite-plugin-dts": "^4.5.4"
+  }}
+}}
+"""
+
+_PNPM_VITE_CONFIG_TEMPLATE = """\
+import {{ defineConfig }} from 'vite'
+import {{ resolve }} from 'path'
+import dts from 'vite-plugin-dts'
+
+export default defineConfig({{
+  publicDir: false,
+  build: {{
+    lib: {{
+      entry: resolve(__dirname, 'src/index.ts'),
+      name: '{name}',
+      formats: ['es', 'cjs'],
+      fileName: (format) => `index.${{format === 'es' ? 'mjs' : 'cjs'}}`,
+    }},
+  }},
+  plugins: [dts({{ rollupTypes: true }})],
+  resolve: {{
+    alias: [{{ find: /^@(.+)$/, replacement: new URL('./src/$1', import.meta.url).pathname }}],
+  }},
+}})
+"""
+
+_PNPM_TSCONFIG_TEMPLATE = """\
+{{
+  "compilerOptions": {{
+    "target": "ES2022",
+    "useDefineForClassFields": true,
+    "module": "ESNext",
+    "lib": ["ES2022"],
+    "types": ["vite/client"],
+    "baseUrl": ".",
+    "paths": {{ "@*": ["src/*", "src/*/index"] }},
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "erasableSyntaxOnly": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedSideEffectImports": true
+  }},
+  "include": ["src"]
+}}
+"""
+
+_PNPM_INDEX_TS_TEMPLATE = """\
+// {name} entry point
+export const version = '0.1.0'
+"""
+
+_PNPM_COG_SECTION_TEMPLATE = """\
+
+[packages.{name}]
+path = "packages/{name}"
+public_api = true
+changelog_path = "packages/{name}/CHANGELOG.md"
+pre_bump_hooks = [
+    "pnpm --filter {name} version {version_placeholder} --no-git-tag-version",
+]
+"""
+
+
+def add_pnpm_package(config: AddPackageConfig) -> None:
+    """Add a new package to a pnpm workspace.
+
+    Steps:
+      1. Validate ``packages/<name>`` does not already exist.
+      2. Create ``packages/<name>/package.json``, ``vite.config.ts``,
+         ``tsconfig.json``, and ``src/index.ts``.
+      3. Append a ``[packages.<name>]`` section to ``cog.toml``.
+      4. Run ``pnpm install`` to update the lockfile.
+    """
+    name = config.name
+    project_path = config.project_path
+    pkg_dir = project_path / "packages" / name
+
+    if pkg_dir.exists():
+        raise click.ClickException(f"❌ {pkg_dir.relative_to(project_path)} already exists")
+
+    # 1. Create package skeleton
+    click.echo(f"Creating package '{name}' …")
+    pkg_dir.mkdir(parents=True, exist_ok=True)
+    src_dir = pkg_dir / "src"
+    src_dir.mkdir(exist_ok=True)
+
+    (pkg_dir / "package.json").write_text(_PNPM_PACKAGE_JSON_TEMPLATE.format(name=name), encoding="utf-8")
+    (pkg_dir / "vite.config.ts").write_text(_PNPM_VITE_CONFIG_TEMPLATE.format(name=name), encoding="utf-8")
+    (pkg_dir / "tsconfig.json").write_text(_PNPM_TSCONFIG_TEMPLATE.format(), encoding="utf-8")
+    (src_dir / "index.ts").write_text(_PNPM_INDEX_TS_TEMPLATE.format(name=name), encoding="utf-8")
+
+    # 2. Append cog.toml section
+    _append_cog_section(project_path, name, _PNPM_COG_SECTION_TEMPLATE)
+
+    # 3. Sync workspace
+    click.echo("Syncing workspace …")
+    subprocess.check_call(
+        ["pnpm", "install"],
+        cwd=str(project_path),
+    )
+
+    click.echo(f"✅ Package '{name}' added.")
+
+
+# ---------------------------------------------------------------------------
 # Shared helpers
 # ---------------------------------------------------------------------------
 

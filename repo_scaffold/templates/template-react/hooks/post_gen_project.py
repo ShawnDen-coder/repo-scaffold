@@ -94,6 +94,13 @@ class ProjectCleaner:
         print("Removing GitHub Actions files...")
         self._remove_files(github_files)
 
+    def clean_shared_fragments(self) -> None:
+        """Remove the _shared/ directory used for workflow fragment includes."""
+        shared_dir = Path("_shared")
+        if shared_dir.is_dir():
+            print("Removing shared workflow fragments...")
+            self._safe_remove(shared_dir)
+
     def clean_container_files(self) -> None:
         """Remove container related files if Docker/Podman is not used."""
         if self.use_docker:
@@ -173,6 +180,7 @@ def main() -> None:
     print("\n📁 Cleaning up unnecessary files...")
     cleaner.clean_demo_files()
     cleaner.clean_container_files()
+    cleaner.clean_shared_fragments()
     cleaner.clean_github_actions_files()
 
     print("\n🔧 Initializing project...")
