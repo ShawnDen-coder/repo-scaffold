@@ -1,0 +1,29 @@
+{
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+  extends: [
+    "config:best-practices",
+  ],
+  enabledManagers: ["npm", "github-actions"],
+  packageRules: [
+    {
+      matchManagers: ["npm"],
+      matchDepTypes: ["devDependencies"],
+      automerge: true,
+    },
+    {
+      matchManagers: ["npm"],
+      matchPackagePatterns: ["^@tanstack/"],
+      groupName: "tanstack packages",
+    },
+    {
+      matchManagers: ["npm"],
+      matchPackagePatterns: ["^@emotion/", "^@mui/"],
+      groupName: "mui packages",
+    },
+    {
+      matchManagers: ["github-actions"],
+      matchUpdateTypes: ["minor", "patch"],
+      automerge: true,
+    },
+  ],
+}
