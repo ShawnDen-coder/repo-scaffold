@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [0.25.0](https://github.com/ShawnDen-coder/repo-scaffold/compare/25e676146dd7d28b9bf1e5acddbaf88d0e0e0efb..0.25.0) - 2026-07-29
+#### Features
+- **(uv-workspace)** sync template with trade-system best practices - ([25e6761](https://github.com/ShawnDen-coder/repo-scaffold/commit/25e676146dd7d28b9bf1e5acddbaf88d0e0e0efb)) - colyerdeng
+
+- - -
+
 ## [0.24.0](https://github.com/ShawnDen-coder/repo-scaffold/compare/bb157459990fbc7d395056559a24c6afe0ef7ac1..0.24.0) - 2026-07-22
 #### Features
 - **(templates)** add ts-sdk, pnpm-workspace, and vue-project templates + modularize pnpm workflows - ([bb15745](https://github.com/ShawnDen-coder/repo-scaffold/commit/bb157459990fbc7d395056559a24c6afe0ef7ac1)) - colyerdeng
