@@ -12,11 +12,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
-      - name: Build distributions
-        run: uvx --from rust-just just build
+      - name: Build changed distributions
+        run: uvx --from rust-just just build-changed
       - uses: actions/upload-artifact@v4
         with:
           name: dist

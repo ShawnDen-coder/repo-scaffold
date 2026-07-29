@@ -64,6 +64,31 @@ deploy-gh-pages:
 build:
     uv build --all-packages
 
+# Build only packages that have a new version tag (for CI)
+build-changed:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    # Get the commit this workflow is running on
+    commit=$(git rev-parse HEAD)
+    built=0
+    for pkg_dir in packages/*/; do
+        pkg=$(basename "$pkg_dir")
+        # Read version from pyproject.toml
+        ver=$(grep '^version' "$pkg_dir/pyproject.toml" | head -1 | sed 's/version.*=.*"\(.*\)"/\1/')
+        tag="${pkg}-${ver}"
+        # Only build if the tag exists AND points to the current commit
+        if tag_commit=$(git rev-parse "refs/tags/${tag}^{commit}" 2>/dev/null) && [ "$tag_commit" = "$commit" ]; then
+            echo "✅ ${pkg} ${ver} has new tag at this commit, building..."
+            uv build --package "$pkg"
+            built=$((built + 1))
+        else
+            echo "⏭️  ${pkg} ${ver} tag not at this commit, skipping"
+        fi
+    done
+    if [ "$built" -eq 0 ]; then
+        echo "No changed packages to build"
+    fi
+
 # Publish to public PyPI (skip packages whose version already exists)
 publish-pypi:
     uv publish --check-url https://pypi.org/simple/

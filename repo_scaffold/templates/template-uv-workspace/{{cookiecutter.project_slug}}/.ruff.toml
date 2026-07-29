@@ -1,4 +1,4 @@
-include = ["pyproject.toml", "packages/**/*.py"]
+include = ["pyproject.toml", "packages/**/*.py", "scripts/**/*.py"]
 line-length = 120
 target-version = "{{ "py" ~ cookiecutter.min_python_version.replace(".", "") }}"
 
@@ -34,3 +34,9 @@ lines-after-imports = 2
 
 [lint.pydocstyle]
 convention = "google"
+
+[lint.per-file-ignores]
+"scripts/**/*.py" = [
+  "PLC0415",  # in-function imports are normal in scripts (conditional deps, delayed heavy imports)
+  "D103",     # scripts don't need docstrings on every function
+]
