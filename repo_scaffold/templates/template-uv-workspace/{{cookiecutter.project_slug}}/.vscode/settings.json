@@ -1,3 +1,11 @@
 {
   "python.envFile": "${workspaceFolder}/.env",
+  "code-runner.executorMap": {
+    "python": "uv run --all-packages --env-file .env python",
+  },
+  "python.testing.pytestArgs": [
+    "."
+  ],
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true,
 }

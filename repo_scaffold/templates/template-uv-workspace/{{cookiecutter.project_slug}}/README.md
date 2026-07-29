@@ -8,6 +8,10 @@
 
 This repository is a uv workspace. Packages live under `packages/`.
 
+| Package | Description |
+|---------|-------------|
+| `{{cookiecutter.package_slug}}` | {{cookiecutter.description}} |
+
 ### Development
 
 ```bash
