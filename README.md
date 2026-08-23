@@ -105,6 +105,9 @@ permissions, Python versions, and optional container checks. Workflow
 references are pinned to a repo-scaffold release and can be upgraded by
 Renovate.
 
+See [Shared Workflow Contracts](docs/workflows.md) for supported inputs,
+secrets, versioning, and migration guidance.
+
 ## Available Templates
 
 Currently supported project templates:

@@ -16,6 +16,7 @@ nav:
       - uv-workspace: templates/uv-workspace.md
       - CI/CD pipeline: templates/ci-cd.md
       - GitHub bootstrap: templates/gh-init.md
+  - Shared Workflow Contracts: workflows.md
   - API Reference: reference/
 plugins:
   - search
