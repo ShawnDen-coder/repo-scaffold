@@ -6,75 +6,11 @@ on:
 permissions:
   contents: write
   id-token: write
-
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v5
-        with:
-          enable-cache: true
-      - name: Build distributions
-        run: uvx --from rust-just just build
-      - uses: actions/upload-artifact@v4
-        with:
-          name: dist
-          path: dist/
-          if-no-files-found: error
-
-  publish-pypi:
-    needs: build
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: dist
-          path: dist/
-      - uses: astral-sh/setup-uv@v5
-      - name: Publish to PyPI
-        env:
-          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_TOKEN }}
-        run: uv publish
-
-  publish-private-pypi:
-    needs: build
-    runs-on: ubuntu-latest
-    env:
-      PYPI_SERVER_USERNAME: ${{ secrets.PYPI_SERVER_USERNAME }}
-      PYPI_SERVER_PASSWORD: ${{ secrets.PYPI_SERVER_PASSWORD }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with:
-          name: dist
-          path: dist/
-      - uses: astral-sh/setup-uv@v5
-      - name: Publish to private PyPI server
-        run: uvx --from rust-just just publish-pypi-server
-
   release:
-    needs: [publish-pypi, publish-private-pypi]
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with:
-          name: dist
-          path: dist/
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ github.ref_name }}
-          name: Release ${{ github.ref_name }}
-          files: |
-            dist/*.tar.gz
-            dist/*.whl
-          generate_release_notes: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+    uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-python-release.yaml@0.27.0
+    with:
+      tag: ${{ github.ref_name }}
+      workspace: false
+      deploy-docs: false
+    secrets: inherit
