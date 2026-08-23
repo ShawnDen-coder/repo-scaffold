@@ -1,17 +1,51 @@
 name: 🚀 Release Build & Publish
 on:
-  push:
-    tags:
-      - '[0-9]+.[0-9]+.[0-9]+'
+  workflow_call:
+    inputs:
+      tag:
+        description: Existing release tag to build and publish
+        required: true
+        type: string
+      deploy_docs:
+        description: Deploy documentation for this release
+        required: false
+        type: boolean
+        default: true
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing release tag to build and publish
+        required: true
+        type: string
+      deploy_docs:
+        description: Deploy documentation for this release
+        required: false
+        type: boolean
+        default: false
 permissions:
   contents: write
   id-token: write
+concurrency:
+  group: release
+  cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          {% raw %}ref: ${{ inputs.tag }}{% endraw %}
+          fetch-depth: 0
+      - name: Validate release tag
+        shell: bash
+        env:
+          {% raw %}RELEASE_TAG: ${{ inputs.tag }}{% endraw %}
+        run: |
+          if [[ ! "$RELEASE_TAG" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Invalid release tag: $RELEASE_TAG" >&2
+            exit 1
+          fi
       - uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
@@ -49,6 +83,8 @@ jobs:
       PYPI_SERVER_PASSWORD: ${{ secrets.PYPI_SERVER_PASSWORD }}{% endraw %}
     steps:
       - uses: actions/checkout@v4
+        with:
+          {% raw %}ref: ${{ inputs.tag }}{% endraw %}
       - uses: actions/download-artifact@v4
         with:
           name: dist
@@ -59,12 +95,19 @@ jobs:
 
   release:
     needs: [publish-pypi, publish-private-pypi]
-    {% raw %}if: ${{ !failure() && !cancelled() }}{% endraw %}
+    if: >-
+      {% raw %}${{
+        always() &&
+        needs.publish-private-pypi.result == 'success' &&
+        (needs.publish-pypi.result == 'success' || needs.publish-pypi.result == 'skipped')
+      }}{% endraw %}
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          {% raw %}ref: ${{ inputs.tag }}{% endraw %}
       - uses: actions/download-artifact@v4
         with:
           name: dist
@@ -72,11 +115,29 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          {% raw %}tag_name: ${{ github.ref_name }}
-          name: Release ${{ github.ref_name }}{% endraw %}
+          {% raw %}tag_name: ${{ inputs.tag }}
+          name: Release ${{ inputs.tag }}{% endraw %}
           files: |
             dist/*.tar.gz
             dist/*.whl
           generate_release_notes: true
         env:
-          {% raw %}GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}{% endraw %}
+          {% raw %}GITHUB_TOKEN: ${{ github.token }}{% endraw %}
+
+  docs:
+    needs: release
+    {% raw %}if: ${{ always() && needs.release.result == 'success' && inputs.deploy_docs }}{% endraw %}
+    uses: ./.github/workflows/docs-deploy.yaml
+    with:
+      {% raw %}tag: ${{ inputs.tag }}{% endraw %}
+    secrets: inherit
+
+{%- if cookiecutter.use_podman == 'yes' %}
+  container:
+    needs: release
+    {% raw %}if: ${{ always() && needs.release.result == 'success' }}{% endraw %}
+    uses: ./.github/workflows/container-release.yaml
+    with:
+      {% raw %}tag: ${{ inputs.tag }}{% endraw %}
+    secrets: inherit
+{%- endif %}
