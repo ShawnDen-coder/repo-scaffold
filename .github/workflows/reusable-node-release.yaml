@@ -1,0 +1,122 @@
+name: Reusable Node Release
+
+on:
+  workflow_call:
+    inputs:
+      tag:
+        description: Existing release tag
+        required: true
+        type: string
+      build-command:
+        description: Command used to build the package
+        required: false
+        type: string
+        default: pnpm build
+      publish-npm:
+        description: Publish the package to npm
+        required: false
+        type: boolean
+        default: false
+      publish-gpr:
+        description: Publish the package to GitHub Packages
+        required: false
+        type: boolean
+        default: false
+      github-package-name:
+        description: Optional scoped name used for GitHub Packages
+        required: false
+        type: string
+        default: ""
+    secrets:
+      NPM_TOKEN:
+        required: false
+      PERSONAL_ACCESS_TOKEN:
+        required: false
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag }}
+      - uses: pnpm/action-setup@v4
+        with:
+          version: latest
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build
+        run: ${{ inputs.build-command }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: |
+            dist/
+            package.json
+          if-no-files-found: error
+
+  publish-npm:
+    if: inputs.publish-npm
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: .
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          registry-url: https://registry.npmjs.org
+      - name: Publish to npm
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  publish-gpr:
+    if: inputs.publish-gpr
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: .
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          registry-url: https://npm.pkg.github.com
+      - name: Scope package name for GitHub Packages
+        if: inputs.github-package-name != ''
+        run: npm pkg set name="${{ inputs.github-package-name }}"
+      - name: Publish to GitHub Packages
+        run: npm publish --access public --registry https://npm.pkg.github.com
+        env:
+          NODE_AUTH_TOKEN: ${{ github.token }}
+
+  release:
+    if: always() && needs.build.result == 'success'
+    needs: [build, publish-npm, publish-gpr]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: .
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.tag }}
+          name: Release ${{ inputs.tag }}
+          files: dist/**
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
