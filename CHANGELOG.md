@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [0.29.0](https://github.com/ShawnDen-coder/repo-scaffold/compare/e69529406d6cee05f1bfe5b8eed7c3344ed7e089..0.29.0) - 2026-08-23
+#### Features
+- **(workflows)** configure container release inputs - ([e695294](https://github.com/ShawnDen-coder/repo-scaffold/commit/e69529406d6cee05f1bfe5b8eed7c3344ed7e089)) - ShawnDeng-code
+
+- - -
+
 ## [0.28.0](https://github.com/ShawnDen-coder/repo-scaffold/compare/e890d8ed0d365423ffaf196b1521b574f2fff75b..0.28.0) - 2026-08-23
 #### Features
 - **(workflows)** support release artifacts in docs deploy - ([e890d8e](https://github.com/ShawnDen-coder/repo-scaffold/commit/e890d8ed0d365423ffaf196b1521b574f2fff75b)) - ShawnDeng-code
