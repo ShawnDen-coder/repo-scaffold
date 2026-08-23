@@ -259,7 +259,10 @@ def test_template_python_renders_reusable_container_release(tmp_path):
     assert "test-container: true" in ci
     assert "publish-container: ${{ inputs.publish_container }}" in package_release
     assert "workflow_call:" in container_release
-    assert "uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-container-release.yaml@0.29.5" in container_release
+    assert (
+        "uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-container-release.yaml@0.29.5"
+        in container_release
+    )
     assert "containerfile: ./container/Dockerfile" in container_release
     assert "push-latest: ${{ inputs.push_latest }}" in container_release
     assert "PYPI_SERVER_PASSWORD: ${{ secrets.PYPI_SERVER_PASSWORD }}" in container_release
