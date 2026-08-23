@@ -23,6 +23,6 @@ jobs:
 {% include '_shared/steps/pnpm-setup.yaml' %}
 
       - name: Cocogitto bump
-        uses: cocogitto/cocogitto-action@v3
+        uses: cocogitto/cocogitto-action@v4
         with:
           release: true
