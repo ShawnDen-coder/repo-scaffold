@@ -18,8 +18,10 @@
     },
     {
       matchManagers: ["github-actions"],
-      matchPackageNames: ["ShawnDen-coder/repo-scaffold"],
+      matchDepNames: ["ShawnDen-coder/repo-scaffold"],
       matchUpdateTypes: ["major", "minor", "patch"],
+      groupName: "repo-scaffold workflows",
+      pinDigests: false,
       automerge: false,
       labels: ["dependencies", "github-actions"],
     },

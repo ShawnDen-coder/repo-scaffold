@@ -25,5 +25,12 @@
       matchUpdateTypes: ["minor", "patch"],
       automerge: true,
     },
+    {
+      matchManagers: ["github-actions"],
+      matchDepNames: ["ShawnDen-coder/repo-scaffold"],
+      groupName: "repo-scaffold workflows",
+      pinDigests: false,
+      automerge: false,
+    },
   ],
 }
