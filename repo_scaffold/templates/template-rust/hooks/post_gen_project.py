@@ -71,6 +71,7 @@ class ProjectCleaner:
         docker_files = [
             ".dockerignore",
             "container",
+            ".github/workflows/container-release.yaml",
         ]
         print("Removing Docker files...")
         self._remove_files(docker_files)

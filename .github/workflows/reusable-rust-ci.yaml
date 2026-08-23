@@ -8,6 +8,16 @@ on:
         required: false
         type: string
         default: stable
+      test-container:
+        description: Build the project container after Rust tests pass
+        required: false
+        type: boolean
+        default: false
+      containerfile:
+        description: Path to the container build file
+        required: false
+        type: string
+        default: ./container/Dockerfile
 
 permissions:
   contents: read
@@ -53,3 +63,21 @@ jobs:
         run: cargo build
       - name: Test
         run: cargo test
+
+  container-build-test:
+    if: inputs.test-container
+    needs: ci
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Verify container definition
+        run: test -f "${{ inputs.containerfile }}"
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Test container build
+        uses: redhat-actions/buildah-build@v2
+        with:
+          image: ${{ github.event.repository.name }}-test
+          tags: test-${{ github.sha }}
+          containerfiles: ${{ inputs.containerfile }}
+          platforms: linux/amd64,linux/arm64

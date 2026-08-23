@@ -7,7 +7,7 @@ for example:
 ```yaml
 jobs:
   ci:
-    uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-python-ci.yaml@0.27.0
+    uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-python-ci.yaml@0.29.5
 ```
 
 ## Design
@@ -70,7 +70,9 @@ Python CI accepts a JSON `python-versions` matrix, a `workspace` flag, and an
 optional `test-container` flag with `containerfile`. Python release accepts a
 release `tag`, `workspace`, `deploy-docs`, and `publish-container`. Node release
 accepts `tag`, build and publish flags, and an optional GitHub Packages name.
-Rust release accepts `tag`, `crate-name`, and `publish-crates`.
+Rust CI accepts an optional `test-container` flag with `containerfile`. Rust
+release accepts `tag`, `crate-name`, `publish-crates`, and optional container
+publishing inputs.
 
 Secrets are passed by the caller and are never stored in template manifests.
 Only grant package or contents write permission to the release workflows that

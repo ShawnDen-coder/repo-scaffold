@@ -811,6 +811,29 @@ def test_rust_template_renovate_config_present(tmp_path):
     assert "config:best-practices" in config.get("extends", [])
 
 
+def test_rust_template_uses_reusable_container_workflows(tmp_path):
+    """Docker-enabled Rust projects delegate CI and releases centrally."""
+    project_dir = _render_template(
+        "template-rust",
+        tmp_path,
+        {"use_docker": "yes", "install_after_generate": "no"},
+        accept_hooks=True,
+    )
+    workflow_dir = project_dir / ".github" / "workflows"
+    ci = (workflow_dir / "ci.yaml").read_text(encoding="utf-8")
+    package_release = (workflow_dir / "package-release.yaml").read_text(encoding="utf-8")
+    container_release = (workflow_dir / "container-release.yaml").read_text(encoding="utf-8")
+
+    assert "reusable-rust-ci.yaml@0.29.5" in ci
+    assert "test-container: true" in ci
+    assert "reusable-rust-release.yaml@0.29.5" in package_release
+    assert "publish-container: true" in package_release
+    assert "reusable-container-release.yaml@0.29.5" in container_release
+    _assert_no_unrendered_markers(project_dir)
+    _assert_workflows_have_github_expressions(project_dir)
+    _assert_version_bump_avoids_self_trigger(project_dir)
+
+
 def test_renovate_config_removed_without_github_actions(tmp_path):
     """use_github_actions=no removes Renovate config along with .github/ directory."""
     for template_name, extra in (
