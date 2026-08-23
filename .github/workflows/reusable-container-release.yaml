@@ -7,6 +7,16 @@ on:
         description: Existing release tag to build
         required: true
         type: string
+      containerfile:
+        description: Path to the container build file
+        required: false
+        default: ./container/Dockerfile
+        type: string
+      push-latest:
+        description: Also update the latest image tag
+        required: false
+        default: true
+        type: boolean
     secrets:
       PYPI_SERVER_USERNAME:
         required: false
@@ -47,8 +57,8 @@ jobs:
         uses: redhat-actions/buildah-build@v2
         with:
           image: ${{ github.repository }}
-          tags: latest ${{ github.sha }} ${{ inputs.tag }}
-          containerfiles: ./container/Dockerfile
+          tags: ${{ inputs.push-latest && 'latest ' || '' }}${{ github.sha }} ${{ inputs.tag }}
+          containerfiles: ${{ inputs.containerfile }}
           platforms: linux/amd64,linux/arm64
           build-args: |
             PYPI_SERVER_USERNAME=${{ secrets.PYPI_SERVER_USERNAME }}
