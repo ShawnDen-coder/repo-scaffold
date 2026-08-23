@@ -8,16 +8,8 @@ on:
 
 jobs:
   ci:
-    runs-on: ubuntu-latest
+    uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-node-ci.yaml@0.27.0
+    with:
+      lint-command: pnpm format:check
+      build-command: pnpm build
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-{% include '_shared/steps/pnpm-setup.yaml' %}
-
-      - name: Lint
-        run: pnpm format:check
-
-      - name: Build
-        run: pnpm build

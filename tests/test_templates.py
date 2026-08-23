@@ -705,8 +705,8 @@ def test_pnpm_templates_clean_shared_fragments(tmp_path):
         assert not (project_dir / "_shared").exists(), template_name
 
 
-def test_pnpm_templates_workflows_contain_setup_steps(tmp_path):
-    """Rendered workflows contain the pnpm-setup steps, not the include directive."""
+def test_pnpm_templates_workflows_call_shared_ci(tmp_path):
+    """Rendered workflows delegate pnpm setup and commands to shared CI."""
     for template_name, extra in (
         ("template-ts-sdk", {}),
         ("template-pnpm-workspace", {"initial_package_type": "ts-lib"}),
@@ -718,7 +718,9 @@ def test_pnpm_templates_workflows_contain_setup_steps(tmp_path):
             accept_hooks=True,
         )
         ci = (project_dir / ".github" / "workflows" / "ci.yaml").read_text(encoding="utf-8")
-        assert "pnpm/action-setup@v4" in ci
+        assert "uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-node-ci.yaml@0.27.0" in ci
+        assert "lint-command:" in ci
+        assert "build-command:" in ci
         assert "{% include" not in ci
         assert "_shared" not in ci
 

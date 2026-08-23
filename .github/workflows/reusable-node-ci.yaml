@@ -1,0 +1,51 @@
+name: Reusable Node CI
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        description: Node.js version used by the workflow
+        required: false
+        type: string
+        default: "22"
+      lint-command:
+        description: Command used for lint or format verification
+        required: true
+        type: string
+      build-command:
+        description: Command used to build the project
+        required: true
+        type: string
+      test-command:
+        description: Optional command used to run tests
+        required: false
+        type: string
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Lint
+        run: ${{ inputs.lint-command }}
+      - name: Build
+        run: ${{ inputs.build-command }}
+      - name: Test
+        if: inputs.test-command != ''
+        run: ${{ inputs.test-command }}
