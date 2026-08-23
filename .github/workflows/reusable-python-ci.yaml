@@ -18,6 +18,11 @@ on:
         required: false
         type: boolean
         default: false
+      containerfile:
+        description: Path to the container definition used for the build check
+        required: false
+        type: string
+        default: ./container/Dockerfile
     secrets:
       PYPI_SERVER_USERNAME:
         required: false
@@ -82,7 +87,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Verify container definition
-        run: test -f ./container/Dockerfile
+        run: test -f "${{ inputs.containerfile }}"
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Test container build
@@ -90,7 +95,7 @@ jobs:
         with:
           image: ${{ github.event.repository.name }}-test
           tags: test-${{ github.sha }}
-          containerfiles: ./container/Dockerfile
+          containerfiles: ${{ inputs.containerfile }}
           platforms: linux/amd64,linux/arm64
           build-args: |-
             PYPI_SERVER_USERNAME=${{ secrets.PYPI_SERVER_USERNAME }}
