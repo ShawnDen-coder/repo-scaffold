@@ -11,6 +11,12 @@
       pinDigests: false,
     },
     {
+      // Cookiecutter placeholders are not valid package names until rendered.
+      matchManagers: ["pep621"],
+      matchFileNames: ["repo_scaffold/templates/**/pyproject.toml"],
+      enabled: false,
+    },
+    {
       matchManagers: ["pep621"],
       matchDepTypes: ["dev", "optional-dependencies"],
       automerge: true,
