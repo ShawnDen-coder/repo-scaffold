@@ -1,0 +1,84 @@
+name: Reusable Rust Release
+
+on:
+  workflow_call:
+    inputs:
+      tag:
+        description: Existing release tag
+        required: true
+        type: string
+      crate-name:
+        description: Release binary name
+        required: true
+        type: string
+      publish-crates:
+        description: Publish the Cargo workspace to crates.io
+        required: false
+        type: boolean
+        default: false
+    secrets:
+      CARGO_REGISTRY_TOKEN:
+        required: false
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag }}
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-unknown-linux-gnu
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-release-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-release-
+      - name: Build release binary
+        run: cargo build --release
+      - uses: actions/upload-artifact@v4
+        with:
+          name: binary
+          path: target/release/${{ inputs.crate-name }}
+          if-no-files-found: error
+
+  publish-crates:
+    if: inputs.publish-crates
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag }}
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Publish to crates.io
+        run: cargo publish --workspace
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+
+  release:
+    if: always() && needs.build.result == 'success'
+    needs: [build, publish-crates]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: binary
+          path: binary/
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.tag }}
+          name: Release ${{ inputs.tag }}
+          files: binary/${{ inputs.crate-name }}
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ github.token }}

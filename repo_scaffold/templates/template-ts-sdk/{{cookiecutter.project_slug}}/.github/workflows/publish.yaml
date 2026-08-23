@@ -2,84 +2,22 @@ name: Publish
 
 on:
   push:
-    tags:
-      - 'v*'
+    tags: ['v*']
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version tag to publish (e.g. 1.0.1)'
+        description: Version tag to publish (without the v prefix)
         required: true
-
-permissions:
-  packages: write
+        type: string
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: {% raw %}${{ inputs.version && format('v{0}', inputs.version) || github.ref }}{% endraw %}
-
-      - uses: pnpm/action-setup@v4
-        with:
-          version: latest
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Build
-        run: pnpm build
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: dist
-          path: |
-            dist/
-            package.json
-
-  publish-npm:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: dist
-          path: .
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          registry-url: 'https://registry.npmjs.org'
-
-      - name: Publish to npm
-        run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: {% raw %}${{ secrets.NPM_TOKEN }}{% endraw %}
-
-  publish-gpr:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: dist
-          path: .
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          registry-url: 'https://npm.pkg.github.com'
-
-      - name: Scope package name for GitHub Packages
-        run: npm pkg set name='@{{cookiecutter.github_username}}/{{cookiecutter.project_slug}}'
-
-      - name: Publish to GitHub Packages
-        run: npm publish --access public --registry https://npm.pkg.github.com
-        env:
-          NODE_AUTH_TOKEN: {% raw %}${{ secrets.GITHUB_TOKEN }}{% endraw %}
+  release:
+    uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-node-release.yaml@0.27.0
+    with:
+      {% raw %}tag: ${{ inputs.version && format('v{0}', inputs.version) || github.ref_name }}{% endraw %}
+      publish-npm: true
+      publish-gpr: true
+      github-package-name: '@{{cookiecutter.github_username}}/{{cookiecutter.project_slug}}'
+    secrets:
+      {% raw %}NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}{% endraw %}
