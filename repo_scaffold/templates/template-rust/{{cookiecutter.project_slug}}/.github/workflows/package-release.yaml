@@ -6,10 +6,12 @@ on:
 
 jobs:
   release:
-    uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-rust-release.yaml@0.27.0
+    uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-rust-release.yaml@0.29.5
     with:
       {% raw %}tag: ${{ github.ref_name }}{% endraw %}
       crate-name: {{ cookiecutter.crate_name }}
       publish-crates: true
+      publish-container: {{ 'true' if cookiecutter.use_docker == 'yes' else 'false' }}
+      containerfile: ./container/Dockerfile
     secrets:
       {% raw %}CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}{% endraw %}

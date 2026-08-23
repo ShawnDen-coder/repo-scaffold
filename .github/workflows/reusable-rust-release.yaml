@@ -16,6 +16,21 @@ on:
         required: false
         type: boolean
         default: false
+      publish-container:
+        description: Build and publish the project container to GHCR
+        required: false
+        type: boolean
+        default: false
+      containerfile:
+        description: Path to the container build file
+        required: false
+        type: string
+        default: ./container/Dockerfile
+      push-latest:
+        description: Also update the latest image tag
+        required: false
+        type: boolean
+        default: true
     secrets:
       CARGO_REGISTRY_TOKEN:
         required: false
@@ -82,3 +97,12 @@ jobs:
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ github.token }}
+
+  container:
+    needs: release
+    if: always() && needs.release.result == 'success' && inputs.publish-container
+    uses: ./.github/workflows/reusable-container-release.yaml
+    with:
+      tag: ${{ inputs.tag }}
+      containerfile: ${{ inputs.containerfile }}
+      push-latest: ${{ inputs.push-latest }}
