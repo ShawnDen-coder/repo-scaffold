@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [0.26.0](https://github.com/ShawnDen-coder/repo-scaffold/compare/7861927d52d8f9fe98a997211be35db244dbf6e7..0.26.0) - 2026-08-23
+#### Features
+- **(python-template)** adopt reusable release workflows - ([c3d84c9](https://github.com/ShawnDen-coder/repo-scaffold/commit/c3d84c93f5486ae6fa97fbbb0c6c32548bf0e667)) - ShawnDeng-code
+- **(uv-workspace)** adopt reusable release workflows - ([7861927](https://github.com/ShawnDen-coder/repo-scaffold/commit/7861927d52d8f9fe98a997211be35db244dbf6e7)) - ShawnDeng-code
+
+- - -
+
 ## [0.25.0](https://github.com/ShawnDen-coder/repo-scaffold/compare/25e676146dd7d28b9bf1e5acddbaf88d0e0e0efb..0.25.0) - 2026-07-29
 #### Features
 - **(uv-workspace)** sync template with trade-system best practices - ([25e6761](https://github.com/ShawnDen-coder/repo-scaffold/commit/25e676146dd7d28b9bf1e5acddbaf88d0e0e0efb)) - colyerdeng
