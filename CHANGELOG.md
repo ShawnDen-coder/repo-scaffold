@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [0.29.3](https://github.com/ShawnDen-coder/repo-scaffold/compare/2cdbbb4f288b19b020025d9b97db01471e761b1e..0.29.3) - 2026-08-23
+#### Bug Fixes
+- **(renovate)** keep GitHub Action version tags - ([2cdbbb4](https://github.com/ShawnDen-coder/repo-scaffold/commit/2cdbbb4f288b19b020025d9b97db01471e761b1e)) - ShawnDeng-code
+
+- - -
+
 ## [0.29.2](https://github.com/ShawnDen-coder/repo-scaffold/compare/d277ca68f46bb1b54368d167f85a55846ab1c224..0.29.2) - 2026-08-23
 #### Bug Fixes
 - **(renovate)** preserve workflow version tags - ([d277ca6](https://github.com/ShawnDen-coder/repo-scaffold/commit/d277ca68f46bb1b54368d167f85a55846ab1c224)) - ShawnDeng-code
