@@ -4,6 +4,25 @@ All notable changes to this project will be documented in this file.
 See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [0.27.0](https://github.com/ShawnDen-coder/repo-scaffold/compare/36848d198a99417a49a57f227adfb26aa0e5fd2f..0.27.0) - 2026-08-23
+#### Bug Fixes
+- **(workflows)** use local callers in repository ci - ([d997620](https://github.com/ShawnDen-coder/repo-scaffold/commit/d9976206d0abc924a78a45521b7bd5417d6b9884)) - ShawnDeng-code
+#### Documentation
+- **(workflows)** explain shared workflow design - ([5bf28ff](https://github.com/ShawnDen-coder/repo-scaffold/commit/5bf28ff1f98f1c46f67913762b995d7094b198ee)) - ShawnDeng-code
+#### Features
+- **(workflows)** centralize node and rust releases - ([3dfa251](https://github.com/ShawnDen-coder/repo-scaffold/commit/3dfa251310b2e0d3cd1b623a946735fa83e75586)) - ShawnDeng-code
+- **(workflows)** centralize rust ci - ([affa71c](https://github.com/ShawnDen-coder/repo-scaffold/commit/affa71ca7a818bc855f8d167120580cb685cfab5)) - ShawnDeng-code
+- **(workflows)** centralize node ci - ([377fcdf](https://github.com/ShawnDen-coder/repo-scaffold/commit/377fcdf987f0315c193df9f88e6168d162b83531)) - ShawnDeng-code
+- **(workflows)** centralize python releases - ([86c2359](https://github.com/ShawnDen-coder/repo-scaffold/commit/86c2359fee13b59c71da50b239313841ac249270)) - ShawnDeng-code
+- **(workflows)** centralize docs deployment - ([9c24e0e](https://github.com/ShawnDen-coder/repo-scaffold/commit/9c24e0ecd6d5a90207e0926fb67aa49ae11ba87a)) - ShawnDeng-code
+- **(workflows)** centralize python ci - ([36848d1](https://github.com/ShawnDen-coder/repo-scaffold/commit/36848d198a99417a49a57f227adfb26aa0e5fd2f)) - ShawnDeng-code
+#### Miscellaneous Chores
+- **(version)** prepare 0.27.0 - ([e78c0d3](https://github.com/ShawnDen-coder/repo-scaffold/commit/e78c0d39f0beaafecdf7c626e8fdfc44f122f4a7)) - ShawnDeng-code
+#### Refactoring
+- **(workflows)** use shared workflows internally - ([7f72af3](https://github.com/ShawnDen-coder/repo-scaffold/commit/7f72af3e2ccdd9e78df2c073a05a4f0c85b2e725)) - ShawnDeng-code
+
+- - -
+
 ## [0.26.0](https://github.com/ShawnDen-coder/repo-scaffold/compare/7861927d52d8f9fe98a997211be35db244dbf6e7..0.26.0) - 2026-08-23
 #### Features
 - **(python-template)** adopt reusable release workflows - ([c3d84c9](https://github.com/ShawnDen-coder/repo-scaffold/commit/c3d84c93f5486ae6fa97fbbb0c6c32548bf0e667)) - ShawnDeng-code
