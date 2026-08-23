@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [0.28.0](https://github.com/ShawnDen-coder/repo-scaffold/compare/e890d8ed0d365423ffaf196b1521b574f2fff75b..0.28.0) - 2026-08-23
+#### Features
+- **(workflows)** support release artifacts in docs deploy - ([e890d8e](https://github.com/ShawnDen-coder/repo-scaffold/commit/e890d8ed0d365423ffaf196b1521b574f2fff75b)) - ShawnDeng-code
+
+- - -
+
 ## [0.27.1](https://github.com/ShawnDen-coder/repo-scaffold/compare/42dc9ab555d41e969c6470dcc8e421c327f1e273..0.27.1) - 2026-08-23
 #### Bug Fixes
 - **(workflows)** restore bootstrap release pipelines - ([42dc9ab](https://github.com/ShawnDen-coder/repo-scaffold/commit/42dc9ab555d41e969c6470dcc8e421c327f1e273)) - ShawnDeng-code
