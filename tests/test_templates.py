@@ -223,9 +223,41 @@ def test_template_python_renders_with_justfile(tmp_path):
     assert (project_dir / "pyproject.toml").is_file()
     assert (project_dir / "justfile").is_file()
     assert (project_dir / ".github" / "workflows" / "ci-tests.yaml").is_file()
+    workflow_dir = project_dir / ".github" / "workflows"
+    version_bump = (workflow_dir / "version-bump.yaml").read_text(encoding="utf-8")
+    package_release = (workflow_dir / "package-release.yaml").read_text(encoding="utf-8")
+    docs_deploy = (workflow_dir / "docs-deploy.yaml").read_text(encoding="utf-8")
+    assert "uses: ./.github/workflows/package-release.yaml" in version_bump
+    assert "tag: ${{ needs.release.outputs.tag }}" in version_bump
+    assert "workflow_call:" in package_release
+    assert "ref: ${{ inputs.tag }}" in package_release
+    assert "needs.publish-private-pypi.result == 'success'" in package_release
+    assert "uses: ./.github/workflows/docs-deploy.yaml" in package_release
+    assert "GITHUB_TOKEN: ${{ github.token }}" in package_release
+    assert "workflow_call:" in docs_deploy
+    assert "ref: ${{ inputs.tag }}" in docs_deploy
     with (project_dir / "pyproject.toml").open("rb") as f:
         pyproject = tomllib.load(f)
     assert pyproject["project"]["urls"]["Repository"].startswith("https://github.com/")
+    _assert_static_project_valid(project_dir)
+
+
+def test_template_python_renders_reusable_container_release(tmp_path):
+    """Podman-enabled Python projects wire the container release workflow."""
+    project_dir = _render_template(
+        "template-python",
+        tmp_path,
+        {"use_podman": "yes", "install_after_generate": "no"},
+        accept_hooks=True,
+    )
+
+    workflow_dir = project_dir / ".github" / "workflows"
+    package_release = (workflow_dir / "package-release.yaml").read_text(encoding="utf-8")
+    container_release = (workflow_dir / "container-release.yaml").read_text(encoding="utf-8")
+    assert "uses: ./.github/workflows/container-release.yaml" in package_release
+    assert "workflow_call:" in container_release
+    assert "ref: ${{ inputs.tag }}" in container_release
+    assert "password: ${{ github.token }}" in container_release
     _assert_static_project_valid(project_dir)
 
 

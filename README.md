@@ -104,7 +104,7 @@ Currently supported project templates:
   - `pyproject.toml` + `uv` for dependency management
   - `pytest` + coverage, `ruff` for lint & format
   - Optional Click CLI, Podman compose files, GitHub Actions, MkDocs Material docs
-  - Cocogitto release workflow that bumps version, writes `CHANGELOG.md`, tags, and triggers PyPI publish
+  - Reusable Cocogitto release workflow that bumps version, builds the selected tag, publishes to configured PyPI indexes, creates a GitHub Release, and deploys docs; optional Podman projects also publish a GHCR image
 
 - **`uv-workspace`** — uv workspace monorepo
   - Workspace-aware `pyproject.toml` with one initial member under `packages/`
