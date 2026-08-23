@@ -64,7 +64,7 @@ jobs:
             PYPI_SERVER_USERNAME=${{ secrets.PYPI_SERVER_USERNAME }}
             PYPI_SERVER_PASSWORD=${{ secrets.PYPI_SERVER_PASSWORD }}
       - name: Push to registry
-        uses: redhat-actions/push-to-registry@v2
+        uses: redhat-actions/push-to-registry@v3
         with:
           image: ${{ steps.build-image.outputs.image }}
           tags: ${{ steps.build-image.outputs.tags }}
