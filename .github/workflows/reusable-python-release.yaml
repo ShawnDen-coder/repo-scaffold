@@ -157,7 +157,9 @@ jobs:
     uses: ./.github/workflows/reusable-docs-deploy.yaml
     with:
       tag: ${{ inputs.tag }}
-    secrets: inherit
+    secrets:
+      PYPI_SERVER_USERNAME: ${{ secrets.PYPI_SERVER_USERNAME }}
+      PYPI_SERVER_PASSWORD: ${{ secrets.PYPI_SERVER_PASSWORD }}
 
   container:
     needs: release
@@ -167,4 +169,6 @@ jobs:
       tag: ${{ inputs.tag }}
       containerfile: ${{ inputs.containerfile }}
       push-latest: ${{ inputs.push-latest }}
-    secrets: inherit
+    secrets:
+      PYPI_SERVER_USERNAME: ${{ secrets.PYPI_SERVER_USERNAME }}
+      PYPI_SERVER_PASSWORD: ${{ secrets.PYPI_SERVER_PASSWORD }}
