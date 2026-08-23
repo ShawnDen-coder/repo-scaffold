@@ -6,6 +6,10 @@
   enabledManagers: ["cargo", "github-actions"],
   packageRules: [
     {
+      matchManagers: ["github-actions"],
+      pinDigests: false,
+    },
+    {
       matchManagers: ["cargo"],
       matchUpdateTypes: ["minor", "patch"],
       automerge: true,
@@ -13,6 +17,7 @@
     {
       matchManagers: ["github-actions"],
       matchUpdateTypes: ["minor", "patch"],
+      pinDigests: false,
       automerge: true,
     },
     {

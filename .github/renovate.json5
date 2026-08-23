@@ -7,6 +7,10 @@
   enabledManagers: ["pep621", "github-actions"],
   packageRules: [
     {
+      matchManagers: ["github-actions"],
+      pinDigests: false,
+    },
+    {
       matchManagers: ["pep621"],
       matchDepTypes: ["dev", "optional-dependencies"],
       automerge: true,
@@ -14,6 +18,7 @@
     {
       matchManagers: ["github-actions"],
       matchUpdateTypes: ["minor", "patch"],
+      pinDigests: false,
       automerge: true,
     },
     {
