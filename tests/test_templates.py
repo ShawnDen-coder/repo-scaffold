@@ -233,10 +233,8 @@ def test_template_python_renders_with_justfile(tmp_path):
     assert "uses: ./.github/workflows/package-release.yaml" in version_bump
     assert "tag: ${{ needs.release.outputs.tag }}" in version_bump
     assert "workflow_call:" in package_release
-    assert "ref: ${{ inputs.tag }}" in package_release
-    assert "needs.publish-private-pypi.result == 'success'" in package_release
-    assert "uses: ./.github/workflows/docs-deploy.yaml" in package_release
-    assert "GITHUB_TOKEN: ${{ github.token }}" in package_release
+    assert "uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-python-release.yaml@0.27.0" in package_release
+    assert "workspace: false" in package_release
     assert "workflow_call:" in docs_deploy
     assert "uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-docs-deploy.yaml@0.27.0" in docs_deploy
     with (project_dir / "pyproject.toml").open("rb") as f:
@@ -259,7 +257,7 @@ def test_template_python_renders_reusable_container_release(tmp_path):
     package_release = (workflow_dir / "package-release.yaml").read_text(encoding="utf-8")
     container_release = (workflow_dir / "container-release.yaml").read_text(encoding="utf-8")
     assert "test-container: true" in ci
-    assert "uses: ./.github/workflows/container-release.yaml" in package_release
+    assert "publish-container: ${{ inputs.publish_container }}" in package_release
     assert "workflow_call:" in container_release
     assert "ref: ${{ inputs.tag }}" in container_release
     assert "password: ${{ github.token }}" in container_release
@@ -303,10 +301,8 @@ def test_template_uv_workspace_renders(tmp_path):
     assert "uses: ./.github/workflows/package-release.yaml" in version_bump
     assert "tag: ${{ needs.release.outputs.tag }}" in version_bump
     assert "workflow_call:" in package_release
-    assert "ref: ${{ inputs.tag }}" in package_release
-    assert "needs.publish-private-pypi.result == 'success'" in package_release
-    assert "uses: ./.github/workflows/docs-deploy.yaml" in package_release
-    assert "GITHUB_TOKEN: ${{ github.token }}" in package_release
+    assert "uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-python-release.yaml@0.27.0" in package_release
+    assert "workspace: true" in package_release
     assert "workflow_call:" in docs_deploy
     assert "uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-docs-deploy.yaml@0.27.0" in docs_deploy
 
