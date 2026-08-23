@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [0.29.4](https://github.com/ShawnDen-coder/repo-scaffold/compare/ec06f703c49cfd420dbf49ec31077d6adc5835b7..0.29.4) - 2026-08-23
+#### Bug Fixes
+- **(renovate)** ignore template package metadata - ([ec06f70](https://github.com/ShawnDen-coder/repo-scaffold/commit/ec06f703c49cfd420dbf49ec31077d6adc5835b7)) - ShawnDeng-code
+
+- - -
+
 ## [0.29.3](https://github.com/ShawnDen-coder/repo-scaffold/compare/2cdbbb4f288b19b020025d9b97db01471e761b1e..0.29.3) - 2026-08-23
 #### Bug Fixes
 - **(renovate)** keep GitHub Action version tags - ([2cdbbb4](https://github.com/ShawnDen-coder/repo-scaffold/commit/2cdbbb4f288b19b020025d9b97db01471e761b1e)) - ShawnDeng-code
