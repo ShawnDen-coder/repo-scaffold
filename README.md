@@ -110,6 +110,7 @@ Currently supported project templates:
   - Workspace-aware `pyproject.toml` with one initial member under `packages/`
   - Shared `dev` / `docs` dependency groups
   - Cocogitto monorepo release workflow with per-package and global tags
+  - Reusable, tag-pinned release pipeline that builds only changed packages, publishes to configured indexes, creates a GitHub Release, and deploys docs
   - Same lint / test / docs tooling as the python template
 
 - **`react`** — TanStack Start (SSR React) project
@@ -185,5 +186,7 @@ This project (and the templates it generates) uses Cocogitto driven by conventio
 
 - Push a `feat:` / `fix:` / breaking-change commit to `master` and the `version-bump` workflow runs `cog bump --auto`, updating `CHANGELOG.md`, bumping `pyproject.toml` via `uv version`, committing, and tagging.
 - The release workflow then builds and publishes the tagged version.
+- Generated `uv-workspace` projects pass the resolved global tag into a reusable release workflow. The workflow validates and checks out that tag, builds only packages tagged at the release commit, publishes private packages by default, optionally publishes to public PyPI when `PUBLISH_TO_PUBLIC_PYPI=true`, creates the GitHub Release, and deploys documentation.
+- To retry a workspace release or docs deployment, run the corresponding workflow manually and provide an existing SemVer tag such as `1.2.3`.
 
 See `cog.toml` for hook and changelog configuration.

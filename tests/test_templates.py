@@ -256,6 +256,20 @@ def test_template_uv_workspace_renders(tmp_path):
     assert (package_dir / "src" / "my_uv_workspace_core" / "__init__.py").is_file()
     assert (package_dir / "tests" / "test_import.py").is_file()
 
+    workflow_dir = project_dir / ".github" / "workflows"
+    version_bump = (workflow_dir / "version-bump.yaml").read_text(encoding="utf-8")
+    package_release = (workflow_dir / "package-release.yaml").read_text(encoding="utf-8")
+    docs_deploy = (workflow_dir / "docs-deploy.yaml").read_text(encoding="utf-8")
+    assert "uses: ./.github/workflows/package-release.yaml" in version_bump
+    assert "tag: ${{ needs.release.outputs.tag }}" in version_bump
+    assert "workflow_call:" in package_release
+    assert "ref: ${{ inputs.tag }}" in package_release
+    assert "needs.publish-private-pypi.result == 'success'" in package_release
+    assert "uses: ./.github/workflows/docs-deploy.yaml" in package_release
+    assert "GITHUB_TOKEN: ${{ github.token }}" in package_release
+    assert "workflow_call:" in docs_deploy
+    assert "ref: ${{ inputs.tag }}" in docs_deploy
+
     with (project_dir / "pyproject.toml").open("rb") as f:
         pyproject = tomllib.load(f)
     assert pyproject["tool"]["uv"]["package"] is False
