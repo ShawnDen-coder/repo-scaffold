@@ -34,10 +34,11 @@ on:
         default: false
 jobs:
   release:
-    uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-python-release.yaml@0.27.0
+    uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-python-release.yaml@0.29.5
     with:
       {% raw %}tag: ${{ inputs.tag }}
       workspace: false
       deploy-docs: ${{ inputs.deploy_docs }}
-      publish-container: ${{ inputs.publish_container }}{% endraw %}
+      publish-container: ${{ inputs.publish_container }}
+      containerfile: ./container/Dockerfile{% endraw %}
     secrets: inherit

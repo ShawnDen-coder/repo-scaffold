@@ -1,4 +1,4 @@
-name: 🐳 Docker Release
+name: 🐳 Container Release
 on:
   workflow_call:
     inputs:
@@ -6,54 +6,34 @@ on:
         description: Existing release tag to build
         required: true
         type: string
+      push_latest:
+        description: Also update the latest image tag
+        required: false
+        default: true
+        type: boolean
+    secrets:
+      PYPI_SERVER_USERNAME:
+        required: false
+      PYPI_SERVER_PASSWORD:
+        required: false
   workflow_dispatch:
     inputs:
       tag:
         description: Existing release tag to build
         required: true
         type: string
-permissions:
-  contents: read
-  packages: write
+      push_latest:
+        description: Also update the latest image tag
+        required: false
+        default: true
+        type: boolean
 jobs:
-  push_to_registry:
-    name: Push container image
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          {% raw %}ref: ${{ inputs.tag }}{% endraw %}
-      - name: Validate release tag
-        shell: bash
-        env:
-          {% raw %}RELEASE_TAG: ${{ inputs.tag }}{% endraw %}
-        run: |
-          if [[ ! "$RELEASE_TAG" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "Invalid release tag: $RELEASE_TAG" >&2
-            exit 1
-          fi
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-      - name: Log in to GitHub Container Registry
-        uses: redhat-actions/podman-login@v1
-        with:
-          registry: ghcr.io
-          {% raw %}username: ${{ github.actor }}
-          password: ${{ github.token }}{% endraw %}
-      - name: Build image
-        id: build-image
-        uses: redhat-actions/buildah-build@v2
-        with:
-          {% raw %}image: ${{ github.repository }}
-          tags: latest ${{ github.sha }} ${{ inputs.tag }}{% endraw %}
-          containerfiles: ./container/Dockerfile
-          platforms: linux/amd64,linux/arm64
-          build-args: |
-            {% raw %}PYPI_SERVER_USERNAME=${{ secrets.PYPI_SERVER_USERNAME }}
-            PYPI_SERVER_PASSWORD=${{ secrets.PYPI_SERVER_PASSWORD }}{% endraw %}
-      - name: Push to registry
-        uses: redhat-actions/push-to-registry@v2
-        with:
-          {% raw %}image: ${{ steps.build-image.outputs.image }}
-          tags: ${{ steps.build-image.outputs.tags }}{% endraw %}
-          registry: ghcr.io
+  release:
+    uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-container-release.yaml@0.29.5
+    with:
+      {% raw %}tag: ${{ inputs.tag }}
+      containerfile: ./container/Dockerfile
+      push-latest: ${{ inputs.push_latest }}{% endraw %}
+    secrets:
+      {% raw %}PYPI_SERVER_USERNAME: ${{ secrets.PYPI_SERVER_USERNAME }}
+      PYPI_SERVER_PASSWORD: ${{ secrets.PYPI_SERVER_PASSWORD }}{% endraw %}
