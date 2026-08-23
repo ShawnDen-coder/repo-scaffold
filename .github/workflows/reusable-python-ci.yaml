@@ -89,7 +89,7 @@ jobs:
       - name: Verify container definition
         run: test -f "${{ inputs.containerfile }}"
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v4
       - name: Test container build
         uses: redhat-actions/buildah-build@v2
         with:
