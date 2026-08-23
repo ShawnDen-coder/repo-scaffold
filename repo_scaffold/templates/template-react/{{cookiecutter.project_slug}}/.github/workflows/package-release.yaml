@@ -6,7 +6,7 @@ on:
 
 jobs:
   release:
-    uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-node-release.yaml@0.27.0
+    uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-node-release.yaml@0.29.4
     with:
       {% raw %}tag: ${{ github.ref_name }}{% endraw %}
       publish-npm: false
