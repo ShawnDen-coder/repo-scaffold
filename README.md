@@ -96,6 +96,15 @@ Common opt-outs:
 - `repo-scaffold gh-init . --no-push` — create the repo and set secrets without pushing (Pages setup is skipped, since it needs the pushed branch).
 - `repo-scaffold gh-init . --no-pages` — push, but don't create `gh-pages` or configure Pages (you can set it later in repo Settings → Pages).
 
+## Shared GitHub Actions
+
+Python and uv-workspace projects use a thin caller workflow backed by the
+versioned `reusable-python-ci.yaml` workflow in this repository. CI behavior is
+maintained centrally while generated repositories keep control of triggers,
+permissions, Python versions, and optional container checks. Workflow
+references are pinned to a repo-scaffold release and can be upgraded by
+Renovate.
+
 ## Available Templates
 
 Currently supported project templates:

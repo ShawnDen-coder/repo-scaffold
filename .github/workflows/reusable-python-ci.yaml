@@ -1,0 +1,97 @@
+name: Reusable Python CI
+
+on:
+  workflow_call:
+    inputs:
+      python-versions:
+        description: JSON array of Python versions used by the test matrix
+        required: false
+        type: string
+        default: '["3.12"]'
+      workspace:
+        description: Sync all uv workspace packages and dependency groups
+        required: false
+        type: boolean
+        default: false
+      test-container:
+        description: Build the project container for amd64 and arm64
+        required: false
+        type: boolean
+        default: false
+    secrets:
+      PYPI_SERVER_USERNAME:
+        required: false
+      PYPI_SERVER_PASSWORD:
+        required: false
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    env:
+      UV_INDEX_HOMELAB_USERNAME: ${{ secrets.PYPI_SERVER_USERNAME }}
+      UV_INDEX_HOMELAB_PASSWORD: ${{ secrets.PYPI_SERVER_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - name: Install development environment
+        run: uvx --from rust-just just init
+      - name: Run lint checks
+        run: uvx --from rust-just just lint
+      - name: Run pre-commit hooks
+        run: uvx --from rust-just just lint-pre-commit
+
+  test:
+    needs: lint
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ${{ fromJSON(inputs.python-versions) }}
+    env:
+      UV_INDEX_HOMELAB_USERNAME: ${{ secrets.PYPI_SERVER_USERNAME }}
+      UV_INDEX_HOMELAB_PASSWORD: ${{ secrets.PYPI_SERVER_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          python-version: ${{ matrix.python-version }}
+      - name: Sync dependencies
+        shell: bash
+        env:
+          WORKSPACE: ${{ inputs.workspace }}
+          PYTHON_VERSION: ${{ matrix.python-version }}
+        run: |
+          if [[ "$WORKSPACE" == "true" ]]; then
+            uv sync --all-packages --all-groups --python "$PYTHON_VERSION"
+          else
+            uv sync --all-extras --python "$PYTHON_VERSION"
+          fi
+      - name: Run tests
+        run: uvx --from rust-just just test-version "${{ matrix.python-version }}"
+
+  container-build-test:
+    if: inputs.test-container
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify container definition
+        run: test -f ./container/Dockerfile
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Test container build
+        uses: redhat-actions/buildah-build@v2
+        with:
+          image: ${{ github.event.repository.name }}-test
+          tags: test-${{ github.sha }}
+          containerfiles: ./container/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          build-args: |-
+            PYPI_SERVER_USERNAME=${{ secrets.PYPI_SERVER_USERNAME }}
+            PYPI_SERVER_PASSWORD=${{ secrets.PYPI_SERVER_PASSWORD }}
