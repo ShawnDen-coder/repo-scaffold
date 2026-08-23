@@ -105,8 +105,14 @@ permissions, Python versions, and optional container checks. Workflow
 references are pinned to a repo-scaffold release and can be upgraded by
 Renovate.
 
-See [Shared Workflow Contracts](docs/workflows.md) for supported inputs,
+See [Shared Workflow Contracts](https://github.com/ShawnDen-coder/repo-scaffold/blob/main/docs/workflows.md) for supported inputs,
 secrets, versioning, and migration guidance.
+
+The maintenance model is intentionally layered: templates generate thin caller
+workflows, this repository publishes the reusable workflow implementation, and
+Renovate proposes version upgrades in each consumer repository. CI/CD logic is
+therefore fixed centrally, while triggers, permissions, and project-specific
+options remain visible in the consumer.
 
 ## Available Templates
 
