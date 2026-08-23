@@ -10,6 +10,37 @@ jobs:
     uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-python-ci.yaml@0.27.0
 ```
 
+## Design
+
+The system deliberately separates workflow invocation from workflow
+implementation:
+
+```mermaid
+flowchart LR
+    T[Generated template] --> C[Thin caller workflow]
+    C --> R[Versioned reusable workflow]
+    R --> P[CI / package / deploy]
+    N[Renovate] --> C
+    N -->|upgrade PR| C
+```
+
+Templates own repository-specific policy: trigger events, permissions,
+toolchain versions, profile flags, and secrets mapping. The reusable workflow
+owns repeatable implementation: setup, caching, linting, testing, publishing,
+and release creation. Renovate upgrades the pinned reusable-workflow tag and
+lets the repository validate the change through its normal pull request.
+
+This keeps workflow fixes centralized without silently changing every consumer.
+It also gives each repository an ordinary Git history and rollback point.
+
+## Consumer lifecycle
+
+1. `repo-scaffold create` renders a thin caller with a released workflow tag.
+2. A workflow implementation fix is released from this repository.
+3. Renovate detects the new tag and opens an upgrade pull request.
+4. The consumer runs its own CI and merges or rejects the upgrade.
+5. A breaking contract change uses a new major version and requires a caller update.
+
 ## Profiles
 
 | Profile | CI workflow | Release workflow |
