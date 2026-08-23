@@ -11,7 +11,7 @@ on:
         type: string
 jobs:
   deploy:
-    uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-docs-deploy.yaml@0.27.0
+    uses: ./.github/workflows/reusable-docs-deploy.yaml
     with:
       tag: ${{ inputs.tag || github.ref_name }}
     secrets: inherit
