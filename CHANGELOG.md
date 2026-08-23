@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [0.29.1](https://github.com/ShawnDen-coder/repo-scaffold/compare/0c132317170578efe7843e8b56f17080ffbbd053..0.29.1) - 2026-08-23
+#### Bug Fixes
+- **(workflows)** preserve package write permission - ([0c13231](https://github.com/ShawnDen-coder/repo-scaffold/commit/0c132317170578efe7843e8b56f17080ffbbd053)) - ShawnDeng-code
+
+- - -
+
 ## [0.29.0](https://github.com/ShawnDen-coder/repo-scaffold/compare/e69529406d6cee05f1bfe5b8eed7c3344ed7e089..0.29.0) - 2026-08-23
 #### Features
 - **(workflows)** configure container release inputs - ([e695294](https://github.com/ShawnDen-coder/repo-scaffold/commit/e69529406d6cee05f1bfe5b8eed7c3344ed7e089)) - ShawnDeng-code
