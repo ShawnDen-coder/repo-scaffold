@@ -1,6 +1,7 @@
 """Template registry and rendering tests."""
 
 import json
+import re
 import subprocess
 import tomllib
 from pathlib import Path
@@ -723,7 +724,12 @@ def test_pnpm_templates_workflows_call_shared_ci(tmp_path):
             accept_hooks=True,
         )
         ci = (project_dir / ".github" / "workflows" / "ci.yaml").read_text(encoding="utf-8")
-        assert "uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-node-ci.yaml@0.27.0" in ci
+        assert re.search(
+            r"^\s*uses: ShawnDen-coder/repo-scaffold/\.github/workflows/"
+            r"reusable-node-ci\.yaml@\d+\.\d+\.\d+\s*$",
+            ci,
+            re.MULTILINE,
+        )
         assert "lint-command:" in ci
         assert "build-command:" in ci
         assert "{% include" not in ci
