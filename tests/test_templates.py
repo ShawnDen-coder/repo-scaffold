@@ -238,7 +238,7 @@ def test_template_python_renders_with_justfile(tmp_path):
     assert "uses: ./.github/workflows/docs-deploy.yaml" in package_release
     assert "GITHUB_TOKEN: ${{ github.token }}" in package_release
     assert "workflow_call:" in docs_deploy
-    assert "ref: ${{ inputs.tag }}" in docs_deploy
+    assert "uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-docs-deploy.yaml@0.27.0" in docs_deploy
     with (project_dir / "pyproject.toml").open("rb") as f:
         pyproject = tomllib.load(f)
     assert pyproject["project"]["urls"]["Repository"].startswith("https://github.com/")
@@ -308,7 +308,7 @@ def test_template_uv_workspace_renders(tmp_path):
     assert "uses: ./.github/workflows/docs-deploy.yaml" in package_release
     assert "GITHUB_TOKEN: ${{ github.token }}" in package_release
     assert "workflow_call:" in docs_deploy
-    assert "ref: ${{ inputs.tag }}" in docs_deploy
+    assert "uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-docs-deploy.yaml@0.27.0" in docs_deploy
 
     with (project_dir / "pyproject.toml").open("rb") as f:
         pyproject = tomllib.load(f)
