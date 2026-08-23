@@ -60,4 +60,7 @@ jobs:
     with:
       {% raw %}tag: ${{ needs.release.outputs.tag }}{% endraw %}
       deploy_docs: true
+{%- if cookiecutter.use_podman == 'yes' %}
+      publish_container: true
+{%- endif %}
     secrets: inherit
