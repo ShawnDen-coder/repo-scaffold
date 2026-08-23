@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
   ci:
-    uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-python-ci.yaml@0.27.0
+    uses: ./.github/workflows/reusable-python-ci.yaml
     with:
       python-versions: '["3.12"]'
       workspace: false

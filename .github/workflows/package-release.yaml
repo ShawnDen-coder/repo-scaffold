@@ -8,7 +8,7 @@ permissions:
   id-token: write
 jobs:
   release:
-    uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-python-release.yaml@0.27.0
+    uses: ./.github/workflows/reusable-python-release.yaml
     with:
       tag: ${{ github.ref_name }}
       workspace: false
