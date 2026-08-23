@@ -9,9 +9,33 @@ on:
         description: Existing release tag to deploy
         required: true
         type: string
+permissions:
+  contents: write
+concurrency:
+  group: pages
+  cancel-in-progress: false
 jobs:
   deploy:
-    uses: ./.github/workflows/reusable-docs-deploy.yaml
-    with:
-      tag: ${{ inputs.tag || github.ref_name }}
-    secrets: inherit
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+      UV_INDEX_HOMELAB_USERNAME: ${{ secrets.PYPI_SERVER_USERNAME }}
+      UV_INDEX_HOMELAB_PASSWORD: ${{ secrets.PYPI_SERVER_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag || github.ref_name }}
+      - name: Validate release tag
+        shell: bash
+        env:
+          RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
+        run: |
+          if [[ ! "$RELEASE_TAG" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Invalid release tag: $RELEASE_TAG" >&2
+            exit 1
+          fi
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - name: Build and deploy documentation
+        run: uvx --from rust-just just deploy-gh-pages
