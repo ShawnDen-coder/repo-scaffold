@@ -14,7 +14,7 @@ on:
         type: string
 jobs:
   deploy:
-    uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-docs-deploy.yaml@0.29.5
+    uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-docs-deploy.yaml@0.30.0
     with:
       {% raw %}tag: ${{ inputs.tag }}{% endraw %}
     secrets:
