@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [0.30.0](https://github.com/ShawnDen-coder/repo-scaffold/compare/a8429d3428327df51da735ef8f03151ac2ecbb03..0.30.0) - 2026-08-23
+#### Bug Fixes
+- **(tests)** satisfy Ruff line length - ([0f18f42](https://github.com/ShawnDen-coder/repo-scaffold/commit/0f18f4298c9a0d696dcd720cc4b4ce02d4e072c4)) - ShawnDeng-code
+- **(workflows)** forward nested package credentials - ([e54d1ef](https://github.com/ShawnDen-coder/repo-scaffold/commit/e54d1efb1a2828bd54d22215b669fe806044e0eb)) - ShawnDeng-code
+#### Features
+- **(templates)** adopt corrected Python workflows - ([805e996](https://github.com/ShawnDen-coder/repo-scaffold/commit/805e9964b57a65bbd6f48dcaf94bd464ed56764f)) - ShawnDeng-code
+- **(workflows)** centralize Rust container pipelines - ([6ef87a9](https://github.com/ShawnDen-coder/repo-scaffold/commit/6ef87a9caed74eab325b78a52253c6bab1f177a7)) - ShawnDeng-code
+#### Miscellaneous Chores
+- **(deps)** update actions/checkout action to v7 - ([3de88ff](https://github.com/ShawnDen-coder/repo-scaffold/commit/3de88ff36c228e1d1fa73d9fd2e4951dd3d36fff)) - renovate[bot]
+- **(deps)** update astral-sh/setup-uv action to v10 - ([130cf74](https://github.com/ShawnDen-coder/repo-scaffold/commit/130cf741e20d1fd8c4eee21f17783ebd3d7b00ef)) - renovate[bot]
+- **(deps)** lock file maintenance - ([a8429d3](https://github.com/ShawnDen-coder/repo-scaffold/commit/a8429d3428327df51da735ef8f03151ac2ecbb03)) - renovate[bot]
+
+- - -
+
 ## [0.29.4](https://github.com/ShawnDen-coder/repo-scaffold/compare/ec06f703c49cfd420dbf49ec31077d6adc5835b7..0.29.4) - 2026-08-23
 #### Bug Fixes
 - **(renovate)** ignore template package metadata - ([ec06f70](https://github.com/ShawnDen-coder/repo-scaffold/commit/ec06f703c49cfd420dbf49ec31077d6adc5835b7)) - ShawnDeng-code
