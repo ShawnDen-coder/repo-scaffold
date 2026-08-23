@@ -228,15 +228,15 @@ def test_template_python_renders_with_justfile(tmp_path):
     version_bump = (workflow_dir / "version-bump.yaml").read_text(encoding="utf-8")
     package_release = (workflow_dir / "package-release.yaml").read_text(encoding="utf-8")
     docs_deploy = (workflow_dir / "docs-deploy.yaml").read_text(encoding="utf-8")
-    assert "uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-python-ci.yaml@0.27.0" in ci
+    assert "uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-python-ci.yaml@0.29.5" in ci
     assert "workspace: false" in ci
     assert "uses: ./.github/workflows/package-release.yaml" in version_bump
     assert "tag: ${{ needs.release.outputs.tag }}" in version_bump
     assert "workflow_call:" in package_release
-    assert "uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-python-release.yaml@0.27.0" in package_release
+    assert "uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-python-release.yaml@0.29.5" in package_release
     assert "workspace: false" in package_release
     assert "workflow_call:" in docs_deploy
-    assert "uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-docs-deploy.yaml@0.27.0" in docs_deploy
+    assert "uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-docs-deploy.yaml@0.29.5" in docs_deploy
     with (project_dir / "pyproject.toml").open("rb") as f:
         pyproject = tomllib.load(f)
     assert pyproject["project"]["urls"]["Repository"].startswith("https://github.com/")
@@ -259,8 +259,10 @@ def test_template_python_renders_reusable_container_release(tmp_path):
     assert "test-container: true" in ci
     assert "publish-container: ${{ inputs.publish_container }}" in package_release
     assert "workflow_call:" in container_release
-    assert "ref: ${{ inputs.tag }}" in container_release
-    assert "password: ${{ github.token }}" in container_release
+    assert "uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-container-release.yaml@0.29.5" in container_release
+    assert "containerfile: ./container/Dockerfile" in container_release
+    assert "push-latest: ${{ inputs.push_latest }}" in container_release
+    assert "PYPI_SERVER_PASSWORD: ${{ secrets.PYPI_SERVER_PASSWORD }}" in container_release
     _assert_static_project_valid(project_dir)
 
 
@@ -296,15 +298,15 @@ def test_template_uv_workspace_renders(tmp_path):
     version_bump = (workflow_dir / "version-bump.yaml").read_text(encoding="utf-8")
     package_release = (workflow_dir / "package-release.yaml").read_text(encoding="utf-8")
     docs_deploy = (workflow_dir / "docs-deploy.yaml").read_text(encoding="utf-8")
-    assert "uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-python-ci.yaml@0.27.0" in ci
+    assert "uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-python-ci.yaml@0.29.5" in ci
     assert "workspace: true" in ci
     assert "uses: ./.github/workflows/package-release.yaml" in version_bump
     assert "tag: ${{ needs.release.outputs.tag }}" in version_bump
     assert "workflow_call:" in package_release
-    assert "uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-python-release.yaml@0.27.0" in package_release
+    assert "uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-python-release.yaml@0.29.5" in package_release
     assert "workspace: true" in package_release
     assert "workflow_call:" in docs_deploy
-    assert "uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-docs-deploy.yaml@0.27.0" in docs_deploy
+    assert "uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-docs-deploy.yaml@0.29.5" in docs_deploy
 
     with (project_dir / "pyproject.toml").open("rb") as f:
         pyproject = tomllib.load(f)
