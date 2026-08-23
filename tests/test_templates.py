@@ -224,9 +224,12 @@ def test_template_python_renders_with_justfile(tmp_path):
     assert (project_dir / "justfile").is_file()
     assert (project_dir / ".github" / "workflows" / "ci-tests.yaml").is_file()
     workflow_dir = project_dir / ".github" / "workflows"
+    ci = (workflow_dir / "ci-tests.yaml").read_text(encoding="utf-8")
     version_bump = (workflow_dir / "version-bump.yaml").read_text(encoding="utf-8")
     package_release = (workflow_dir / "package-release.yaml").read_text(encoding="utf-8")
     docs_deploy = (workflow_dir / "docs-deploy.yaml").read_text(encoding="utf-8")
+    assert "uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-python-ci.yaml@0.27.0" in ci
+    assert "workspace: false" in ci
     assert "uses: ./.github/workflows/package-release.yaml" in version_bump
     assert "tag: ${{ needs.release.outputs.tag }}" in version_bump
     assert "workflow_call:" in package_release
@@ -252,8 +255,10 @@ def test_template_python_renders_reusable_container_release(tmp_path):
     )
 
     workflow_dir = project_dir / ".github" / "workflows"
+    ci = (workflow_dir / "ci-tests.yaml").read_text(encoding="utf-8")
     package_release = (workflow_dir / "package-release.yaml").read_text(encoding="utf-8")
     container_release = (workflow_dir / "container-release.yaml").read_text(encoding="utf-8")
+    assert "test-container: true" in ci
     assert "uses: ./.github/workflows/container-release.yaml" in package_release
     assert "workflow_call:" in container_release
     assert "ref: ${{ inputs.tag }}" in container_release
@@ -289,9 +294,12 @@ def test_template_uv_workspace_renders(tmp_path):
     assert (package_dir / "tests" / "test_import.py").is_file()
 
     workflow_dir = project_dir / ".github" / "workflows"
+    ci = (workflow_dir / "ci-tests.yaml").read_text(encoding="utf-8")
     version_bump = (workflow_dir / "version-bump.yaml").read_text(encoding="utf-8")
     package_release = (workflow_dir / "package-release.yaml").read_text(encoding="utf-8")
     docs_deploy = (workflow_dir / "docs-deploy.yaml").read_text(encoding="utf-8")
+    assert "uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-python-ci.yaml@0.27.0" in ci
+    assert "workspace: true" in ci
     assert "uses: ./.github/workflows/package-release.yaml" in version_bump
     assert "tag: ${{ needs.release.outputs.tag }}" in version_bump
     assert "workflow_call:" in package_release
