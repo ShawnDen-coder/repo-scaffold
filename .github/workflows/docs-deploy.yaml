@@ -4,22 +4,14 @@ on:
     tags:
       - '[0-9]+.[0-9]+.[0-9]+'
   workflow_dispatch:
-permissions:
-  contents: write
-concurrency:
-  group: pages
-  cancel-in-progress: false
+    inputs:
+      tag:
+        description: Existing release tag to deploy
+        required: true
+        type: string
 jobs:
   deploy:
-    runs-on: ubuntu-latest
-    env:
-      GITHUB_TOKEN: ${{ github.token }}
-      UV_INDEX_HOMELAB_USERNAME: ${{ secrets.PYPI_SERVER_USERNAME }}
-      UV_INDEX_HOMELAB_PASSWORD: ${{ secrets.PYPI_SERVER_PASSWORD }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v5
-        with:
-          enable-cache: true
-      - name: Build and deploy documentation
-        run: uvx --from rust-just just deploy-gh-pages
+    uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-docs-deploy.yaml@0.27.0
+    with:
+      tag: ${{ inputs.tag || github.ref_name }}
+    secrets: inherit

@@ -16,5 +16,12 @@
       matchUpdateTypes: ["minor", "patch"],
       automerge: true,
     },
+    {
+      matchManagers: ["github-actions"],
+      matchPackageNames: ["ShawnDen-coder/repo-scaffold"],
+      matchUpdateTypes: ["major", "minor", "patch"],
+      automerge: false,
+      labels: ["dependencies", "github-actions"],
+    },
   ],
 }
