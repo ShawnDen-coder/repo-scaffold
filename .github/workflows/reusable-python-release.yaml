@@ -22,6 +22,16 @@ on:
         required: false
         type: boolean
         default: false
+      containerfile:
+        description: Path to the container build file
+        required: false
+        default: ./container/Dockerfile
+        type: string
+      push-latest:
+        description: Also update the latest image tag
+        required: false
+        default: true
+        type: boolean
     secrets:
       PYPI_TOKEN:
         required: false
@@ -154,4 +164,6 @@ jobs:
     uses: ./.github/workflows/reusable-container-release.yaml
     with:
       tag: ${{ inputs.tag }}
+      containerfile: ${{ inputs.containerfile }}
+      push-latest: ${{ inputs.push-latest }}
     secrets: inherit
