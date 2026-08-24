@@ -1,0 +1,13 @@
+name: Version Bump
+
+on:
+  push:
+    branches: [{{cookiecutter.default_branch}}]
+  workflow_dispatch:
+
+jobs:
+  version-bump:
+    uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-version-bump.yaml@0.31.0
+    with:
+      node-version: '{{cookiecutter.node_version}}'
+      pnpm-version: 10.12.4

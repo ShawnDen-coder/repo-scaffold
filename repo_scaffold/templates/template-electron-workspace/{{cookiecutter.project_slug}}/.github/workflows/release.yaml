@@ -1,0 +1,33 @@
+name: Electron Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing tag to package
+        required: true
+        type: string
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
+
+jobs:
+  release:
+    uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-electron-release.yaml@0.31.0
+    with:
+      tag: {% raw %}${{ inputs.tag || github.ref_name }}{% endraw %}
+      node-version: '{{cookiecutter.node_version}}'
+      pnpm-version: 10.12.4
+      build-command: pnpm build
+      package-command: pnpm electron:package
+      artifact-path: release/**
+      product-name: '{{cookiecutter.project_slug}}'
+    secrets:
+      MAC_CSC_LINK: {% raw %}${{ secrets.MAC_CSC_LINK }}{% endraw %}
+      MAC_CSC_KEY_PASSWORD: {% raw %}${{ secrets.MAC_CSC_KEY_PASSWORD }}{% endraw %}
+      APPLE_API_KEY: {% raw %}${{ secrets.APPLE_API_KEY }}{% endraw %}
+      APPLE_API_KEY_ID: {% raw %}${{ secrets.APPLE_API_KEY_ID }}{% endraw %}
+      APPLE_API_ISSUER: {% raw %}${{ secrets.APPLE_API_ISSUER }}{% endraw %}
+      APPLE_TEAM_ID: {% raw %}${{ secrets.APPLE_TEAM_ID }}{% endraw %}
+      WIN_CSC_LINK: {% raw %}${{ secrets.WIN_CSC_LINK }}{% endraw %}
+      WIN_CSC_KEY_PASSWORD: {% raw %}${{ secrets.WIN_CSC_KEY_PASSWORD }}{% endraw %}

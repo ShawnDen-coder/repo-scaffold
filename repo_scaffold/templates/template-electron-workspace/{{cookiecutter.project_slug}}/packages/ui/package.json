@@ -1,0 +1,10 @@
+{
+  "name": "@{{cookiecutter.project_slug}}/ui",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "exports": { "types": "./src/index.tsx", "import": "./src/index.tsx" },
+  "scripts": { "build": "tsc", "typecheck": "tsc --noEmit", "test": "node --test" },
+  "dependencies": { "react": "^18.3.1", "react-dom": "^18.3.1", "@{{cookiecutter.project_slug}}/shared": "workspace:*" },
+  "devDependencies": { "typescript": "^5.6.3" }
+}

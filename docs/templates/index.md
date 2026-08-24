@@ -6,10 +6,11 @@
 | --- | --- | --- |
 | [`python`](python.md) | Single-package | One library/CLI/service in one repository. |
 | [`uv-workspace`](uv-workspace.md) | uv workspace monorepo | Multiple related packages versioned together with per-package release tags. |
+| [`electron-workspace`](electron-workspace.md) | pnpm application monorepo | Web + Electron + shared TypeScript packages. |
 
 ## Shared infrastructure
 
-Both templates start from the same baseline so that switching between them is mostly a layout decision, not a tooling decision.
+Templates share the same baseline conventions where practical; each ecosystem uses its native package manager and release workflow.
 
 ### Package manager — [uv](https://docs.astral.sh/uv/)
 
