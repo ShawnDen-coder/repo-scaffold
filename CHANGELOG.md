@@ -4,6 +4,28 @@ All notable changes to this project will be documented in this file.
 See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [0.31.0](https://github.com/ShawnDen-coder/repo-scaffold/compare/a53fcdac37a1bc2ea53a9aaf8ada7ffe68492241..0.31.0) - 2026-08-24
+#### Bug Fixes
+- **(release)** let CI own project version - ([e3c1d41](https://github.com/ShawnDen-coder/repo-scaffold/commit/e3c1d417d3515674f2252105c57cb20593ac32f3)) - ShawnDeng-code
+- **(tests)** avoid hardcoded workflow version - ([3e87d44](https://github.com/ShawnDen-coder/repo-scaffold/commit/3e87d440de02e5241cf5e3ed4609cdf622f5837a)) - ShawnDeng-code
+#### Features
+- **(templates)** add generic electron workspace - ([7ab37d8](https://github.com/ShawnDen-coder/repo-scaffold/commit/7ab37d88b2d1118882528291996766f3415b0f05)) - ShawnDeng-code
+#### Miscellaneous Chores
+- **(deps)** update shawnden-coder/repo-scaffold action to v0.29.4 - ([e6e7a42](https://github.com/ShawnDen-coder/repo-scaffold/commit/e6e7a420112ec6b6c346d7ce01f267c5eec40953)) - renovate[bot]
+- **(deps)** update docker/login-action action to v4 - ([ae0390d](https://github.com/ShawnDen-coder/repo-scaffold/commit/ae0390d0f0d896a925932aa5f471ee6a3c671def)) - renovate[bot]
+- **(deps)** update docker/build-push-action action to v7 - ([e6c1527](https://github.com/ShawnDen-coder/repo-scaffold/commit/e6c152728674b5973b3a8dd631eeee629de20e58)) - renovate[bot]
+- **(deps)** update docker/setup-qemu-action action to v4 - ([1b65be1](https://github.com/ShawnDen-coder/repo-scaffold/commit/1b65be14f38c32fe2d3aafa848d418ba98d6ca5d)) - renovate[bot]
+- **(deps)** update github artifact actions - ([89d4cc2](https://github.com/ShawnDen-coder/repo-scaffold/commit/89d4cc2aa3c4ae95f6d30c6c0ba6f37a785d6e31)) - renovate[bot]
+- **(deps)** update actions/setup-node action to v7 - ([d7c210b](https://github.com/ShawnDen-coder/repo-scaffold/commit/d7c210b32d28f90a97a7746b4468664754f852d2)) - renovate[bot]
+- **(deps)** update actions/cache action to v6 - ([5f3e353](https://github.com/ShawnDen-coder/repo-scaffold/commit/5f3e35351ff0567bdce41477105dff701c38f83f)) - renovate[bot]
+- **(deps)** update pnpm/action-setup action to v6 - ([2869c7e](https://github.com/ShawnDen-coder/repo-scaffold/commit/2869c7ece724e67199dbaaaf6965fb3591ec60bf)) - renovate[bot]
+- **(deps)** update redhat-actions/buildah-build action to v3 - ([9dcf035](https://github.com/ShawnDen-coder/repo-scaffold/commit/9dcf035e3d106ff2c0949ade650fef95dfb6ab7d)) - renovate[bot]
+- **(deps)** update redhat-actions/podman-login action to v2 - ([89374b5](https://github.com/ShawnDen-coder/repo-scaffold/commit/89374b58c3da7859e8a180287c2fcc50c9b6be61)) - renovate[bot]
+- **(deps)** update redhat-actions/push-to-registry action to v3 - ([849ab5f](https://github.com/ShawnDen-coder/repo-scaffold/commit/849ab5fda4a84ed4dd43dca577af6bfc9d6f66c5)) - renovate[bot]
+- **(deps)** update softprops/action-gh-release action to v3 - ([a53fcda](https://github.com/ShawnDen-coder/repo-scaffold/commit/a53fcdac37a1bc2ea53a9aaf8ada7ffe68492241)) - renovate[bot]
+
+- - -
+
 ## [0.30.0](https://github.com/ShawnDen-coder/repo-scaffold/compare/a8429d3428327df51da735ef8f03151ac2ecbb03..0.30.0) - 2026-08-23
 #### Bug Fixes
 - **(tests)** satisfy Ruff line length - ([0f18f42](https://github.com/ShawnDen-coder/repo-scaffold/commit/0f18f4298c9a0d696dcd720cc4b4ce02d4e072c4)) - ShawnDeng-code
