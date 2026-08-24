@@ -1,0 +1,37 @@
+{
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+  extends: [
+    "config:js-app",
+  ],
+  // js-app preset: pin application dependencies while preserving peer dependencies.
+  enabledManagers: ["npm", "github-actions"],
+  packageRules: [
+    {
+      matchManagers: ["github-actions"],
+      pinDigests: false,
+    },
+    {
+      matchManagers: ["npm"],
+      matchDepTypes: ["devDependencies"],
+      automerge: true,
+    },
+    {
+      matchManagers: ["npm"],
+      matchPackageNames: ["electron", "electron-builder", "electron-updater"],
+      groupName: "electron packages",
+    },
+    {
+      matchManagers: ["github-actions"],
+      matchUpdateTypes: ["minor", "patch"],
+      pinDigests: false,
+      automerge: true,
+    },
+    {
+      matchManagers: ["github-actions"],
+      matchDepNames: ["ShawnDen-coder/repo-scaffold"],
+      groupName: "repo-scaffold workflows",
+      pinDigests: false,
+      automerge: false,
+    },
+  ],
+}

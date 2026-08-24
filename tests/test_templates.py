@@ -16,6 +16,12 @@ from repo_scaffold.cli import get_package_path
 from repo_scaffold.cli import load_templates
 
 
+def _repo_scaffold_version() -> str:
+    """Read the package version used by generated central workflow references."""
+    with (Path(__file__).parents[1] / "pyproject.toml").open("rb") as f:
+        return tomllib.load(f)["project"]["version"]
+
+
 def _load_cookiecutter_config(template_name: str) -> dict:
     config_path = Path(get_package_path(f"templates/{template_name}/cookiecutter.json"))
     return json.loads(config_path.read_text(encoding="utf-8"))
@@ -28,6 +34,7 @@ def test_template_registry_entries_exist():
     assert "template-python" in templates
     assert "template-uv-workspace" in templates
     assert "template-pnpm-workspace" in templates
+    assert "template-electron-workspace" in templates
     assert "template-ts-sdk" in templates
     assert "template-vue-project" in templates
 
@@ -49,6 +56,7 @@ def test_cli_list_includes_registered_templates():
     assert "python" in result.output
     assert "uv-workspace" in result.output
     assert "pnpm-workspace" in result.output
+    assert "electron-workspace" in result.output
     assert "ts-sdk" in result.output
     assert "vue-project" in result.output
 
@@ -229,15 +237,16 @@ def test_template_python_renders_with_justfile(tmp_path):
     version_bump = (workflow_dir / "version-bump.yaml").read_text(encoding="utf-8")
     package_release = (workflow_dir / "package-release.yaml").read_text(encoding="utf-8")
     docs_deploy = (workflow_dir / "docs-deploy.yaml").read_text(encoding="utf-8")
-    assert "uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-python-ci.yaml@0.29.5" in ci
+    version = _repo_scaffold_version()
+    assert f"uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-python-ci.yaml@{version}" in ci
     assert "workspace: false" in ci
     assert "uses: ./.github/workflows/package-release.yaml" in version_bump
     assert "tag: ${{ needs.release.outputs.tag }}" in version_bump
     assert "workflow_call:" in package_release
-    assert "uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-python-release.yaml@0.29.5" in package_release
+    assert f"uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-python-release.yaml@{version}" in package_release
     assert "workspace: false" in package_release
     assert "workflow_call:" in docs_deploy
-    assert "uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-docs-deploy.yaml@0.29.5" in docs_deploy
+    assert f"uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-docs-deploy.yaml@{version}" in docs_deploy
     with (project_dir / "pyproject.toml").open("rb") as f:
         pyproject = tomllib.load(f)
     assert pyproject["project"]["urls"]["Repository"].startswith("https://github.com/")
@@ -257,11 +266,12 @@ def test_template_python_renders_reusable_container_release(tmp_path):
     ci = (workflow_dir / "ci-tests.yaml").read_text(encoding="utf-8")
     package_release = (workflow_dir / "package-release.yaml").read_text(encoding="utf-8")
     container_release = (workflow_dir / "container-release.yaml").read_text(encoding="utf-8")
+    version = _repo_scaffold_version()
     assert "test-container: true" in ci
     assert "publish-container: ${{ inputs.publish_container }}" in package_release
     assert "workflow_call:" in container_release
     assert (
-        "uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-container-release.yaml@0.29.5"
+        f"uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-container-release.yaml@{version}"
         in container_release
     )
     assert "containerfile: ./container/Dockerfile" in container_release
@@ -302,15 +312,16 @@ def test_template_uv_workspace_renders(tmp_path):
     version_bump = (workflow_dir / "version-bump.yaml").read_text(encoding="utf-8")
     package_release = (workflow_dir / "package-release.yaml").read_text(encoding="utf-8")
     docs_deploy = (workflow_dir / "docs-deploy.yaml").read_text(encoding="utf-8")
-    assert "uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-python-ci.yaml@0.29.5" in ci
+    version = _repo_scaffold_version()
+    assert f"uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-python-ci.yaml@{version}" in ci
     assert "workspace: true" in ci
     assert "uses: ./.github/workflows/package-release.yaml" in version_bump
     assert "tag: ${{ needs.release.outputs.tag }}" in version_bump
     assert "workflow_call:" in package_release
-    assert "uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-python-release.yaml@0.29.5" in package_release
+    assert f"uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-python-release.yaml@{version}" in package_release
     assert "workspace: true" in package_release
     assert "workflow_call:" in docs_deploy
-    assert "uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-docs-deploy.yaml@0.29.5" in docs_deploy
+    assert f"uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-docs-deploy.yaml@{version}" in docs_deploy
 
     with (project_dir / "pyproject.toml").open("rb") as f:
         pyproject = tomllib.load(f)
@@ -611,6 +622,65 @@ def test_template_pnpm_workspace_can_render_without_github_actions(tmp_path):
     _assert_no_unrendered_markers(project_dir)
 
 
+def test_template_electron_workspace_renders_web_desktop_and_shared_packages(tmp_path):
+    """The Electron workspace template renders the intended app/package boundaries."""
+    project_dir = _render_template(
+        "template-electron-workspace",
+        tmp_path,
+        {"install_after_generate": "no"},
+        accept_hooks=True,
+    )
+
+    assert (project_dir / "pnpm-workspace.yaml").is_file()
+    assert (project_dir / "justfile").is_file()
+    assert (project_dir / "cog.toml").is_file()
+    assert (project_dir / "apps" / "web" / "package.json").is_file()
+    assert (project_dir / "apps" / "desktop" / "main.cjs").is_file()
+    assert (project_dir / "packages" / "shared" / "src" / "index.ts").is_file()
+    assert (project_dir / "packages" / "ui" / "src" / "index.tsx").is_file()
+
+    workflow = project_dir / ".github" / "workflows" / "ci.yaml"
+    assert workflow.is_file()
+    assert "reusable-electron-ci.yaml" in workflow.read_text(encoding="utf-8")
+    assert (project_dir / ".github" / "workflows" / "version-bump.yaml").is_file()
+    assert (project_dir / ".github" / "workflows" / "release.yaml").is_file()
+    renovate = json5.loads((project_dir / ".github" / "renovate.json5").read_text(encoding="utf-8"))
+    assert renovate["$schema"].endswith("renovate-schema.json")
+    assert renovate["enabledManagers"] == ["npm", "github-actions"]
+    assert any(rule.get("groupName") == "electron packages" for rule in renovate["packageRules"])
+    assert (project_dir / "electron-builder.yml").is_file()
+    _assert_no_unrendered_markers(project_dir)
+
+
+def test_template_electron_workspace_can_omit_devops_files(tmp_path):
+    """Optional GitHub automation is removed when explicitly disabled."""
+    project_dir = _render_template(
+        "template-electron-workspace",
+        tmp_path,
+        {"use_github_actions": "no", "install_after_generate": "no"},
+        accept_hooks=True,
+    )
+
+    assert not (project_dir / ".github").exists()
+    assert not (project_dir / "renovate.json5").exists()
+    assert not (project_dir / "cog.toml").exists()
+
+
+def test_template_electron_workspace_supports_master_default_branch(tmp_path):
+    """CI and release triggers follow the selected default branch."""
+    project_dir = _render_template(
+        "template-electron-workspace",
+        tmp_path,
+        {"default_branch": "master", "install_after_generate": "no"},
+        accept_hooks=True,
+    )
+
+    ci = (project_dir / ".github" / "workflows" / "ci.yaml").read_text(encoding="utf-8")
+    version_bump = (project_dir / ".github" / "workflows" / "version-bump.yaml").read_text(encoding="utf-8")
+    assert "branches: [master]" in ci
+    assert "branches: [master]" in version_bump
+
+
 # ---------------------------------------------------------------------------
 # vue-project template tests
 # ---------------------------------------------------------------------------
@@ -833,11 +903,12 @@ def test_rust_template_uses_reusable_container_workflows(tmp_path):
     package_release = (workflow_dir / "package-release.yaml").read_text(encoding="utf-8")
     container_release = (workflow_dir / "container-release.yaml").read_text(encoding="utf-8")
 
-    assert "reusable-rust-ci.yaml@0.29.5" in ci
+    version = _repo_scaffold_version()
+    assert f"reusable-rust-ci.yaml@{version}" in ci
     assert "test-container: true" in ci
-    assert "reusable-rust-release.yaml@0.29.5" in package_release
+    assert f"reusable-rust-release.yaml@{version}" in package_release
     assert "publish-container: true" in package_release
-    assert "reusable-container-release.yaml@0.29.5" in container_release
+    assert f"reusable-container-release.yaml@{version}" in container_release
     _assert_no_unrendered_markers(project_dir)
     _assert_workflows_have_github_expressions(project_dir)
     _assert_version_bump_avoids_self_trigger(project_dir)

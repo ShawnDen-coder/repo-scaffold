@@ -1,0 +1,22 @@
+{
+  "name": "{{cookiecutter.project_slug}}",
+  "private": true,
+  "main": "apps/desktop/main.cjs",
+  "description": "{{cookiecutter.description}}",
+  "packageManager": "pnpm@10.12.4",
+  "scripts": {
+    "dev": "pnpm --filter @{{cookiecutter.project_slug}}/web dev",
+    "dev:desktop": "pnpm --parallel --filter @{{cookiecutter.project_slug}}/web --filter @{{cookiecutter.project_slug}}/desktop dev",
+    "build": "pnpm -r build",
+    "electron:package": "pnpm build && electron-builder --config electron-builder.yml",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check"
+  },
+  "devDependencies": { "electron-builder": "^25.1.8", "prettier": "^3.8.1" },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/{{cookiecutter.github_username}}/{{cookiecutter.project_slug}}.git"
+  }
+}

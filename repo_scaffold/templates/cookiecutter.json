@@ -25,6 +25,11 @@
       "title": "pnpm-workspace",
       "description": "template for pnpm workspace monorepo (vue-app / ts-lib / react-app / ts-cli)"
     },
+    "template-electron-workspace": {
+      "path": "template-electron-workspace",
+      "title": "electron-workspace",
+      "description": "template for pnpm Web + Electron monorepo"
+    },
     "template-ts-sdk": {
       "path": "template-ts-sdk",
       "title": "ts-sdk",

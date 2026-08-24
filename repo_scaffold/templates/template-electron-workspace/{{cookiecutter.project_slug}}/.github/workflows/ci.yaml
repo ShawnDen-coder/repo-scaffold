@@ -1,0 +1,17 @@
+name: CI
+
+on:
+  push:
+    branches: [{{cookiecutter.default_branch}}]
+  pull_request:
+    branches: [{{cookiecutter.default_branch}}]
+
+jobs:
+  ci:
+    uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-electron-ci.yaml@0.31.0
+    with:
+      node-version: '{{cookiecutter.node_version}}'
+      pnpm-version: 10.12.4
+      lint-command: pnpm format:check
+      build-command: pnpm build
+      test-command: pnpm test

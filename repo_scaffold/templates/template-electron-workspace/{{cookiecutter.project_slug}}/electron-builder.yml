@@ -1,0 +1,11 @@
+appId: com.example.{{cookiecutter.project_slug}}
+productName: {{cookiecutter.project_slug}}
+directories:
+  output: release
+files:
+  - apps/desktop/**
+  - apps/web/dist/**
+  - packages/ui/dist/**
+  - packages/shared/dist/**
+  - package.json
+asar: true

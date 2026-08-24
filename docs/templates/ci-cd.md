@@ -1,6 +1,16 @@
 # CI/CD pipeline
 
-Every generated project ships a self-contained GitHub Actions pipeline that wires test → version bump → publish → docs → (optional) container release together. Both templates use the same five-workflow skeleton; the `python` template adds a sixth workflow when Podman is enabled.
+Python and uv-workspace templates ship a GitHub Actions pipeline that wires test → version bump → publish → docs → (optional) container release together. The `electron-workspace` template uses a separate centralized pipeline for quality checks, version bumping, and unsigned cross-platform Electron artifacts.
+
+## Electron workspace pipeline
+
+The generated Electron project keeps only thin caller workflows:
+
+- `ci.yaml` calls `reusable-electron-ci.yaml` for format checks, builds, and tests.
+- `version-bump.yaml` calls `reusable-version-bump.yaml` for Cocogitto releases.
+- `release.yaml` calls `reusable-electron-release.yaml` on a SemVer tag or manual dispatch.
+
+The release workflow packages Windows, macOS, and Linux artifacts and uploads them to GitHub Releases. Code signing, notarization, and certificate management are intentionally outside the current template scope.
 
 This page documents what each workflow does, how they trigger one another, and what secrets / variables you need to configure on the repository.
 

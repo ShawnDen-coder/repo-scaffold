@@ -8,7 +8,7 @@ on:
 
 jobs:
   ci:
-    uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-rust-ci.yaml@0.29.5
+    uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-rust-ci.yaml@0.31.0
     with:
       rust-toolchain: stable
       test-container: {{ 'true' if cookiecutter.use_docker == 'yes' else 'false' }}
