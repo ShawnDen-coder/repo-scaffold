@@ -7,7 +7,7 @@ for example:
 ```yaml
 jobs:
   ci:
-    uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-python-ci.yaml@0.31.0
+    uses: ShawnDen-coder/repo-scaffold/.github/workflows/reusable-python-ci.yaml@0.29.5
 ```
 
 ## Design
