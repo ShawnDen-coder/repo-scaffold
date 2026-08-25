@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [{{cookiecutter.default_branch}}]
+    branches: [master]
   pull_request:
-    branches: [{{cookiecutter.default_branch}}]
+    branches: [master]
 
 jobs:
   ci:

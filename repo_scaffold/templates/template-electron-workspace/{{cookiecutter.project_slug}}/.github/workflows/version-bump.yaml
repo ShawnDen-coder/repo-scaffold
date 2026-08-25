@@ -2,7 +2,7 @@ name: Version Bump
 
 on:
   push:
-    branches: [{{cookiecutter.default_branch}}]
+    branches: [master]
   workflow_dispatch:
 
 jobs:

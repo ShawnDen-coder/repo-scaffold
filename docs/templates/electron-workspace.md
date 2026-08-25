@@ -15,7 +15,7 @@ packages/shared   与框架无关的类型和工具
 
 - `pnpm-workspace.yaml`：统一管理 `apps/*` 和 `packages/*`。
 - `packageManager`：固定 pnpm 主版本，减少本地和 CI 的差异。
-- `default_branch`：生成时选择 `main` 或 `master`，CI 和版本工作流会使用同一个分支。
+- 默认分支固定为 `master`，CI 和版本工作流使用同一个分支。
 - `justfile`：统一封装安装、格式检查、类型检查、测试、构建和本地启动命令。
 - `cog.toml`：使用 Conventional Commits 计算版本、更新 Changelog，并推送版本标签。
 - GitHub Actions：调用仓库提供的 `reusable-electron-ci.yaml`、`reusable-electron-release.yaml` 和 `reusable-version-bump.yaml`，统一执行质量检查、跨平台打包和版本发布。
