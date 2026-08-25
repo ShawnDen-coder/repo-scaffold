@@ -31,7 +31,7 @@ def init_git() -> None:
     if not INIT_GIT or (Path.cwd() / ".git").exists():
         return
     try:
-        subprocess.run(["git", "init", "-b", "main"], check=True, capture_output=True)
+        subprocess.run(["git", "init", "-b", "master"], check=True, capture_output=True)
     except FileNotFoundError:
         print("Warning: git not found; skipped git initialization.")
     except subprocess.CalledProcessError:
@@ -41,11 +41,15 @@ def init_git() -> None:
 def install() -> None:
     if not INSTALL_AFTER_GENERATE:
         return
-    try:
-        subprocess.run(["pnpm", "install"], check=True)
-    except FileNotFoundError:
-        print("Error: pnpm not found. Install pnpm first: https://pnpm.io/installation")
-        sys.exit(1)
+    pnpm = shutil.which("pnpm")
+    if pnpm is None:
+        print(
+            "Warning: pnpm not found; skipped dependency installation. "
+            "Install pnpm and run pnpm install in the generated project: "
+            "https://pnpm.io/installation"
+        )
+        return
+    subprocess.run([pnpm, "install"], check=True)
 
 
 def main() -> None:

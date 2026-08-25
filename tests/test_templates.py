@@ -657,12 +657,12 @@ def test_template_electron_workspace_can_omit_devops_files(tmp_path):
     assert not (project_dir / "cog.toml").exists()
 
 
-def test_template_electron_workspace_supports_master_default_branch(tmp_path):
-    """CI and release triggers follow the selected default branch."""
+def test_template_electron_workspace_uses_master_default_branch(tmp_path):
+    """CI and release triggers use the fixed master default branch."""
     project_dir = _render_template(
         "template-electron-workspace",
         tmp_path,
-        {"default_branch": "master", "install_after_generate": "no"},
+        {"install_after_generate": "no"},
         accept_hooks=True,
     )
 
@@ -670,6 +670,32 @@ def test_template_electron_workspace_supports_master_default_branch(tmp_path):
     version_bump = (project_dir / ".github" / "workflows" / "version-bump.yaml").read_text(encoding="utf-8")
     assert "branches: [master]" in ci
     assert "branches: [master]" in version_bump
+
+
+def test_template_electron_workspace_does_not_prompt_for_default_branch():
+    """The Electron template keeps master as an implementation default."""
+    config = _load_cookiecutter_config("template-electron-workspace")
+
+    assert "default_branch" not in config
+    assert "default_branch" not in config["__prompts__"]
+
+
+def test_template_electron_workspace_hook_resolves_pnpm_command(monkeypatch):
+    """The hook executes the resolved pnpm shim so Windows pnpm.cmd works."""
+    hook_path = Path(get_package_path("templates/template-electron-workspace/hooks/post_gen_project.py"))
+    source = hook_path.read_text(encoding="utf-8")
+    source = source.replace('"{{cookiecutter.install_after_generate}}"', '"yes"')
+
+    namespace = {"__name__": "hook_under_test"}
+    exec(compile(source, str(hook_path), "exec"), namespace)
+    pnpm_path = r"C:\Users\example\AppData\Roaming\npm\pnpm.CMD"
+    calls = []
+    monkeypatch.setattr(namespace["shutil"], "which", lambda command: pnpm_path)
+    monkeypatch.setattr(namespace["subprocess"], "run", lambda command, check: calls.append((command, check)))
+
+    namespace["install"]()
+
+    assert calls == [([pnpm_path, "install"], True)]
 
 
 # ---------------------------------------------------------------------------

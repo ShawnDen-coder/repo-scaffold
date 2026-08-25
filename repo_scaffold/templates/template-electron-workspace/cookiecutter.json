@@ -6,7 +6,6 @@
   "project_slug": "{{ cookiecutter.repo_name.strip().lower().replace(' ', '-').replace('_', '-') }}",
   "description": "A pnpm Web and Electron workspace.",
   "node_version": "22",
-  "default_branch": ["main", "master"],
   "use_github_actions": ["yes", "no"],
   "install_after_generate": "yes",
   "init_git": "yes",
@@ -17,7 +16,6 @@
     "github_username": "GitHub 用户名或组织名",
     "description": "项目简短描述",
     "node_version": "Node.js 主版本",
-    "default_branch": "默认分支",
     "use_github_actions": "是否添加 GitHub Actions CI 配置?"
   }
 }
