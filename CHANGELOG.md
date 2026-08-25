@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [0.31.1](https://github.com/ShawnDen-coder/repo-scaffold/compare/6191eb585ded086b23e0b5c30ae60e6c7b8d5dd7..0.31.1) - 2026-08-25
+#### Bug Fixes
+- **(electron)** resolve pnpm Windows shim - ([6191eb5](https://github.com/ShawnDen-coder/repo-scaffold/commit/6191eb585ded086b23e0b5c30ae60e6c7b8d5dd7)) - colyerdeng
+
+- - -
+
 ## [0.31.0](https://github.com/ShawnDen-coder/repo-scaffold/compare/a53fcdac37a1bc2ea53a9aaf8ada7ffe68492241..0.31.0) - 2026-08-24
 #### Bug Fixes
 - **(release)** let CI own project version - ([e3c1d41](https://github.com/ShawnDen-coder/repo-scaffold/commit/e3c1d417d3515674f2252105c57cb20593ac32f3)) - ShawnDeng-code
