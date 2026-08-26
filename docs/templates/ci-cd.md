@@ -98,7 +98,7 @@ This catches Dockerfile / dependency regressions on PRs, before they would other
 ```
 ┌─────────────────────────────────────────────────┐
 │ release (cocogitto/cocogitto-action@v3)         │
-│   - cog bump --auto                             │
+│   - cog bump --auto (or explicit --version)      │
 │   - run pre_bump_hooks (uv version, uv lock)    │
 │   - update CHANGELOG.md                         │
 │   - commit + tag (cog-bot identity)             │
@@ -106,7 +106,7 @@ This catches Dockerfile / dependency regressions on PRs, before they would other
 └─────────────────────────────────────────────────┘
 ```
 
-Triggers on every push to `master` / `main` (and `workflow_dispatch`).
+Triggers on every push to `master` / `main` (and `workflow_dispatch`). A manual dispatch may provide `release-version` (for example `1.0.0`) to run `cog bump --version` explicitly; this is the GitOps path for the initial 0.x → 1.0.0 transition.
 
 **Skip guard**
 

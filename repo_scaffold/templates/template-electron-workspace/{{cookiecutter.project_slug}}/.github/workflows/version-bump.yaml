@@ -4,6 +4,11 @@ on:
   push:
     branches: [master]
   workflow_dispatch:
+    inputs:
+      release-version:
+        description: Explicit release version, for example 1.0.0
+        required: false
+        type: string
 
 jobs:
   version-bump:
