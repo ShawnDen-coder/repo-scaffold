@@ -153,7 +153,7 @@ Currently supported project templates:
 
 - **`pnpm-workspace`** — pnpm monorepo with mixed sub-package types
   - Workspace root with `pnpm-workspace.yaml` + Prettier
-  - Initial sub-package type selection: `vue-app` / `ts-lib` / `react-app` / `ts-cli`
+  - Initial sub-package type selection: `vue-app` / `ts-lib` / `react-app` / `ts-cli` / `react-lib` / `node-service`
   - Cocogitto monorepo versioning with `pnpm --filter` per-package hooks
   - `repo-scaffold add-member --type ts-lib|ts-cli|react-app|vue-app|react-lib|node-service` adds a typed member to pnpm workspaces
   - Optional GitHub Actions CI

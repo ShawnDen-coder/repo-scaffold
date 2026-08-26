@@ -7,7 +7,7 @@
   "package_name": "{{ cookiecutter.project_slug }}-core",
   "package_slug": "{{ cookiecutter.package_name.strip().lower().replace(' ', '-').replace('_', '-') }}",
   "description": "A pnpm workspace monorepo.",
-  "initial_package_type": ["vue-app", "ts-lib", "react-app", "ts-cli"],
+  "initial_package_type": ["vue-app", "ts-lib", "react-app", "ts-cli", "react-lib", "node-service"],
   "use_github_actions": ["yes", "no"],
   "install_after_generate": "yes",
   "init_git": "yes",

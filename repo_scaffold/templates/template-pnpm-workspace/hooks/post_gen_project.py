@@ -5,16 +5,10 @@ import shutil
 import subprocess
 import sys
 from pathlib import Path
-from typing import List, Union
 
-
-# Mapping from cookiecutter choice to variant directory name
-_VARIANT_DIRS = {
-    "vue-app": "_vue-app",
-    "ts-lib": "_ts-lib",
-    "react-app": "_react-app",
-    "ts-cli": "_ts-cli",
-}
+from repo_scaffold.workspace_member import WorkspaceEcosystem
+from repo_scaffold.workspace_member import add_member
+from repo_scaffold.workspace_member import build_member_spec
 
 
 class ProjectValidator:
@@ -46,37 +40,6 @@ class ProjectCleaner:
 
     def __init__(self):
         self.use_github_actions = "{{cookiecutter.use_github_actions}}" == "yes"
-        self.initial_package_type = "{{cookiecutter.initial_package_type}}"
-
-    def _safe_remove(self, path: Union[str, Path]) -> bool:
-        """Safely remove a file or directory.
-
-        Args:
-            path: Path to remove
-
-        Returns:
-            bool: True if removed successfully, False otherwise
-        """
-        try:
-            path = Path(path)
-            if not path.exists():
-                return False
-
-            if path.is_file():
-                path.unlink()
-                print(f"Removed file: {path}")
-            elif path.is_dir():
-                shutil.rmtree(path)
-                print(f"Removed directory: {path}")
-            return True
-        except Exception as e:
-            print(f"Warning: Failed to remove {path}: {e}")
-            return False
-
-    def _remove_files(self, files: List[Union[str, Path]]) -> None:
-        """Remove multiple files or directories."""
-        for file_path in files:
-            self._safe_remove(file_path)
 
     def clean_github_actions_files(self) -> None:
         """Remove GitHub Actions files if not needed."""
@@ -88,52 +51,38 @@ class ProjectCleaner:
             "cog.toml",
         ]
         print("Removing GitHub Actions files...")
-        self._remove_files(github_files)
+        for file_path in github_files:
+            path = Path(file_path)
+            if path.exists():
+                if path.is_dir():
+                    shutil.rmtree(path)
+                else:
+                    path.unlink()
+                print(f"Removed: {path}")
 
     def clean_shared_fragments(self) -> None:
         """Remove the _shared/ directory used for workflow fragment includes."""
         shared_dir = Path("_shared")
         if shared_dir.is_dir():
             print("Removing shared workflow fragments...")
-            self._safe_remove(shared_dir)
+            shutil.rmtree(shared_dir)
+            print(f"Removed: {shared_dir}")
 
-    def select_sub_package_variant(self) -> None:
-        """Keep only the chosen sub-package variant and rename it to the package slug.
 
-        The template includes all four variant directories under packages/:
-          _vue-app, _ts-lib, _react-app, _ts-cli
-
-        This method:
-          1. Renames the chosen variant to the user's package_slug
-          2. Removes the other variant directories
-        """
-        chosen = self.initial_package_type
-        chosen_dir = _VARIANT_DIRS.get(chosen)
-        if not chosen_dir:
-            print(f"Warning: Unknown initial_package_type '{chosen}', skipping variant cleanup.")
-            return
-
-        packages_dir = Path("packages")
-        if not packages_dir.is_dir():
-            print("Warning: packages/ directory not found, skipping variant cleanup.")
-            return
-
-        # Rename the chosen variant to the package slug
-        variant_path = packages_dir / chosen_dir
-        target_path = packages_dir / "{{cookiecutter.package_slug}}"
-
-        if variant_path.is_dir():
-            print(f"Renaming packages/{chosen_dir} → packages/{{cookiecutter.package_slug}}...")
-            shutil.move(str(variant_path), str(target_path))
-        else:
-            print(f"Warning: Variant directory packages/{chosen_dir} not found.")
-
-        # Remove all other variant directories
-        for variant_name in _VARIANT_DIRS.values():
-            variant_path = packages_dir / variant_name
-            if variant_path.is_dir():
-                print(f"Removing unused variant: packages/{variant_name}")
-                self._safe_remove(variant_path)
+def create_initial_member() -> None:
+    """Generate the initial package through the shared member provider."""
+    spec = build_member_spec(
+        project_path=Path.cwd(),
+        name="{{cookiecutter.package_slug}}",
+        ecosystem=WorkspaceEcosystem.PNPM,
+        member_type="{{cookiecutter.initial_package_type}}",
+        location="packages",
+        private=True,
+        public_api=True,
+        no_install=True,
+        no_verify=True,
+    )
+    add_member(spec)
 
 
 class ProjectInitializer:
@@ -202,8 +151,8 @@ def main() -> None:
 
     cleaner = ProjectCleaner()
 
-    print("\n📁 Selecting sub-package variant...")
-    cleaner.select_sub_package_variant()
+    print("\n📦 Creating initial workspace member...")
+    create_initial_member()
 
     print("\n📁 Cleaning up unnecessary files...")
     cleaner.clean_shared_fragments()

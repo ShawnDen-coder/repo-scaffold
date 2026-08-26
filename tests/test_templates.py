@@ -549,12 +549,9 @@ def test_template_pnpm_workspace_renders_vue_app(tmp_path):
     assert (package_dir / "src" / "main.ts").is_file()
     assert (package_dir / "src" / "App.vue").is_file()
     assert (package_dir / "vite.config.ts").is_file()
-
-    # Other variants removed
-    assert not (project_dir / "packages" / "_vue-app").exists()
-    assert not (project_dir / "packages" / "_ts-lib").exists()
-    assert not (project_dir / "packages" / "_react-app").exists()
-    assert not (project_dir / "packages" / "_ts-cli").exists()
+    cog = (project_dir / "cog.toml").read_text(encoding="utf-8")
+    assert "[packages.my-pnpm-workspace-core]" in cog
+    assert "pnpm --filter my-pnpm-workspace-core version {{version}}" in cog
 
     _assert_no_unrendered_markers(project_dir)
 
@@ -570,17 +567,12 @@ def test_template_pnpm_workspace_renders_ts_lib(tmp_path):
 
     package_dir = project_dir / "packages" / "my-pnpm-workspace-core"
     assert (package_dir / "package.json").is_file()
-    assert (package_dir / "vite.config.ts").is_file()
     assert (package_dir / "tsconfig.json").is_file()
     assert (package_dir / "src" / "index.ts").is_file()
 
     # vue-app specific files should NOT be present
     assert not (package_dir / "index.html").exists()
     assert not (package_dir / "src" / "App.vue").exists()
-
-    # All variant dirs removed
-    for variant in ("_vue-app", "_ts-lib", "_react-app", "_ts-cli"):
-        assert not (project_dir / "packages" / variant).exists()
 
     _assert_no_unrendered_markers(project_dir)
 
