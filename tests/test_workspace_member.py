@@ -12,6 +12,7 @@ from repo_scaffold.cli import cli
 from repo_scaffold.workspace_member import WorkspaceEcosystem
 from repo_scaffold.workspace_member import add_member
 from repo_scaffold.workspace_member import build_member_spec
+from repo_scaffold.workspace_member.providers import pnpm as pnpm_provider
 
 
 def _write_pnpm_workspace(path: Path) -> None:
@@ -315,3 +316,49 @@ def test_cli_add_member_generates_react_lib_and_node_service(tmp_path: Path):
     assert service_manifest["scripts"]["dev"] == "tsx watch src/server.ts"
     assert (service_dir / "src" / "app.ts").is_file()
     assert (service_dir / "tests" / "app.test.ts").is_file()
+
+def test_pnpm_member_rolls_back_on_verification_failure(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    """Restore workspace metadata and remove the member when verification fails."""
+    _write_pnpm_workspace(tmp_path)
+    workspace_before = (tmp_path / "pnpm-workspace.yaml").read_bytes()
+    cog_before = (tmp_path / "cog.toml").read_bytes()
+    spec = build_member_spec(
+        project_path=tmp_path,
+        name="broken-member",
+        ecosystem=WorkspaceEcosystem.PNPM,
+        member_type="ts-lib",
+        no_install=True,
+        no_verify=False,
+    )
+
+    def fail_verification(_spec):
+        raise RuntimeError("verification failed")
+
+    monkeypatch.setattr(pnpm_provider, "_verify", fail_verification)
+    with pytest.raises(RuntimeError, match="verification failed"):
+        add_member(spec)
+
+    assert not (tmp_path / "packages" / "broken-member").exists()
+    assert (tmp_path / "pnpm-workspace.yaml").read_bytes() == workspace_before
+    assert (tmp_path / "cog.toml").read_bytes() == cog_before
+
+
+def test_generated_member_contracts_include_runtime_test_requirements(tmp_path: Path):
+    """Keep browser test environments and library build entries self-contained."""
+    _write_pnpm_workspace(tmp_path)
+    for name, member_type in (("react", "react-app"), ("vue", "vue-app"), ("ui", "react-lib")):
+        spec = build_member_spec(
+            project_path=tmp_path,
+            name=name,
+            ecosystem=WorkspaceEcosystem.PNPM,
+            member_type=member_type,
+            no_install=True,
+            no_verify=True,
+        )
+        add_member(spec)
+
+    react_manifest = json.loads((tmp_path / "apps/react/package.json").read_text(encoding="utf-8"))
+    vue_manifest = json.loads((tmp_path / "apps/vue/package.json").read_text(encoding="utf-8"))
+    assert "jsdom" in react_manifest["devDependencies"]
+    assert "happy-dom" in vue_manifest["devDependencies"]
+    assert 'src/index.tsx' in (tmp_path / "packages/ui/vite.config.ts").read_text(encoding="utf-8")

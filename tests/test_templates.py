@@ -486,6 +486,7 @@ def test_template_ts_sdk_renders(tmp_path):
 
     assert (project_dir / "package.json").is_file()
     assert (project_dir / "vite.config.ts").is_file()
+    assert (project_dir / ".github" / "workflows" / "ci.yaml").is_file()
     assert (project_dir / "tsconfig.json").is_file()
     assert (project_dir / ".prettierrc.json").is_file()
     assert (project_dir / "src" / "index.ts").is_file()
@@ -735,6 +736,7 @@ def test_template_vue_project_renders(tmp_path):
     assert (project_dir / "package.json").is_file()
     assert (project_dir / "index.html").is_file()
     assert (project_dir / "vite.config.ts").is_file()
+    assert (project_dir / ".github" / "workflows" / "ci.yaml").is_file()
     assert (project_dir / "tsconfig.json").is_file()
     assert (project_dir / "tsconfig.app.json").is_file()
     assert (project_dir / "tsconfig.node.json").is_file()
@@ -1000,6 +1002,7 @@ def test_template_ts_cli_renders_unified_toolchain(tmp_path):
     assert manifest["scripts"]["test"] == "vitest run"
     assert (project_dir / "biome.json").is_file()
     assert (project_dir / "vite.config.ts").is_file()
+    assert (project_dir / ".github" / "workflows" / "ci.yaml").is_file()
     assert (project_dir / "tests" / "program.test.ts").is_file()
     assert (project_dir / "cog.toml").is_file()
     assert not (project_dir / "CHANGELOG.md").exists()
