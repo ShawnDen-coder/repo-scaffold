@@ -189,6 +189,8 @@ def _assert_version_bump_avoids_self_trigger(project_dir: Path) -> None:
 
     text = version_bump.read_text(encoding="utf-8")
     assert "!startsWith(github.event.head_commit.message, 'chore(version):')" in text
+    assert "release-version:" in text
+    assert "cog bump --version \"$RELEASE_VERSION\"" in text
 
 
 def _assert_cog_does_not_require_existing_tag(project_dir: Path) -> None:
