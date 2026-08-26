@@ -180,7 +180,7 @@ repo-scaffold add-member my-new-lib --type ts-lib -p /path/to/project
 ```
 
 
-Supported pnpm member types are `ts-lib`, `ts-cli`, `react-app`, `vue-app`, `react-lib`, and `node-service`. All use TypeScript, Biome, and Vitest; app and library templates use Vite and Tailwind CSS v4.
+Supported pnpm member types are `ts-lib`, `ts-cli`, `react-app`, `vue-app`, `react-lib`, `node-service`, and `electron-app`. TypeScript members use Biome and Vitest; app and library templates use Vite and Tailwind CSS v4. The Electron member is a CommonJS desktop app under `apps/`.
 The command auto-detects the project type:
 - **pnpm workspace** (`pnpm-workspace.yaml`): renders a TypeScript library under
   `packages/<name>/`, supports `--scope` and repeated `--depends-on`, adds the

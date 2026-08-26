@@ -317,6 +317,24 @@ def test_cli_add_member_generates_react_lib_and_node_service(tmp_path: Path):
     assert (service_dir / "src" / "app.ts").is_file()
     assert (service_dir / "tests" / "app.test.ts").is_file()
 
+
+def test_cli_add_member_generates_electron_app(tmp_path: Path):
+    """Render an Electron desktop app under the workspace apps directory."""
+    _write_pnpm_workspace(tmp_path)
+    result = CliRunner().invoke(
+        cli,
+        ["add-member", "desktop", "--type", "electron-app", "-p", str(tmp_path), "--no-install", "--no-verify"],
+    )
+
+    assert result.exit_code == 0, result.output
+    app_dir = tmp_path / "apps" / "desktop"
+    manifest = json.loads((app_dir / "package.json").read_text(encoding="utf-8"))
+    assert manifest["main"] == "main.cjs"
+    assert manifest["scripts"]["build"] == "node --check main.cjs"
+    assert manifest["devDependencies"]["electron"] == "^33.4.11"
+    assert (app_dir / "main.cjs").is_file()
+    assert (app_dir / "tests" / "main.test.cjs").is_file()
+
 def test_pnpm_member_rolls_back_on_verification_failure(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     """Restore workspace metadata and remove the member when verification fails."""
     _write_pnpm_workspace(tmp_path)

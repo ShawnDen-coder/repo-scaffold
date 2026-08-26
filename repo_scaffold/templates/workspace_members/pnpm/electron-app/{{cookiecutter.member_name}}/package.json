@@ -1,0 +1,15 @@
+{
+  "name": "{{ cookiecutter.package_name }}",
+  "version": "0.1.0",
+  "private": {{ cookiecutter.private | lower }},
+  "main": "main.cjs",
+  "scripts": {
+    "dev": "electron .",
+    "build": "node --check main.cjs",
+    "typecheck": "node --check main.cjs",
+    "test": "node --test"
+  },
+  "devDependencies": {
+    "electron": "{{ cookiecutter.electron_version }}"
+  }
+}

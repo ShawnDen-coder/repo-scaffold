@@ -1,0 +1,6 @@
+{
+  "member_name": "desktop",
+  "package_name": "@example/desktop",
+  "private": true,
+  "electron_version": "^33.4.11"
+}

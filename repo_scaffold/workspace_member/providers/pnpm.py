@@ -14,7 +14,15 @@ from ..cog import register_cog_member
 from ..models import WorkspaceMemberSpec
 
 
-_SUPPORTED_TYPES = {"node-service", "react-app", "react-lib", "ts-cli", "ts-lib", "vue-app"}
+_SUPPORTED_TYPES = {
+    "electron-app",
+    "node-service",
+    "react-app",
+    "react-lib",
+    "ts-cli",
+    "ts-lib",
+    "vue-app",
+}
 
 
 def add_pnpm_member(spec: WorkspaceMemberSpec) -> None:
@@ -22,7 +30,8 @@ def add_pnpm_member(spec: WorkspaceMemberSpec) -> None:
     if spec.member_type not in _SUPPORTED_TYPES:
         raise click.ClickException(
             f"Unsupported pnpm member type '{spec.member_type}'. "
-            "Supported types: ts-lib, ts-cli, react-app, vue-app, react-lib, node-service."
+            "Supported types: ts-lib, ts-cli, react-app, vue-app, react-lib, "
+            "node-service, electron-app."
         )
     if spec.member_path.exists():
         raise click.ClickException(
