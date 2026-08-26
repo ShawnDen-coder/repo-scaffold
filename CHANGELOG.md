@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [0.35.0](https://github.com/ShawnDen-coder/repo-scaffold/compare/7ddbdbe669d8fcfcad8f0d58b3d5e0df3a8040c2..0.35.0) - 2026-08-26
+#### Features
+- **(pnpm)** add electron workspace member - ([7ddbdbe](https://github.com/ShawnDen-coder/repo-scaffold/commit/7ddbdbe669d8fcfcad8f0d58b3d5e0df3a8040c2)) - ShawnDeng-code
+- **(workspace)** complete member templates and env ignores - ([37fe419](https://github.com/ShawnDen-coder/repo-scaffold/commit/37fe4198a98fc4d9c91cbef4751b8d7c2ed46d3c)) - ShawnDeng-code
+
+- - -
+
 ## [0.34.0](https://github.com/ShawnDen-coder/repo-scaffold/compare/18b7ecfc294b46061a1225b98a424f43f635051c..0.34.0) - 2026-08-26
 #### Features
 - **(pnpm)** reuse workspace member templates - ([18b7ecf](https://github.com/ShawnDen-coder/repo-scaffold/commit/18b7ecfc294b46061a1225b98a424f43f635051c)) - ShawnDeng-code
