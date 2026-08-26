@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [0.34.0](https://github.com/ShawnDen-coder/repo-scaffold/compare/18b7ecfc294b46061a1225b98a424f43f635051c..0.34.0) - 2026-08-26
+#### Features
+- **(pnpm)** reuse workspace member templates - ([18b7ecf](https://github.com/ShawnDen-coder/repo-scaffold/commit/18b7ecfc294b46061a1225b98a424f43f635051c)) - ShawnDeng-code
+
+- - -
+
 ## [0.33.0](https://github.com/ShawnDen-coder/repo-scaffold/compare/a46de8d63883d40db259f5902e02e7e41a8d3c0f..0.33.0) - 2026-08-26
 #### Bug Fixes
 - align template release hooks - ([48d6a2c](https://github.com/ShawnDen-coder/repo-scaffold/commit/48d6a2c8aee4d35a077d09fa0d4c94770b492e83)) - colyerdeng
