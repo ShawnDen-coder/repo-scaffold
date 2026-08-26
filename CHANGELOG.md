@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [0.33.0](https://github.com/ShawnDen-coder/repo-scaffold/compare/a46de8d63883d40db259f5902e02e7e41a8d3c0f..0.33.0) - 2026-08-26
+#### Bug Fixes
+- align template release hooks - ([48d6a2c](https://github.com/ShawnDen-coder/repo-scaffold/commit/48d6a2c8aee4d35a077d09fa0d4c94770b492e83)) - colyerdeng
+#### Features
+- add explicit Cocogitto release control - ([a46de8d](https://github.com/ShawnDen-coder/repo-scaffold/commit/a46de8d63883d40db259f5902e02e7e41a8d3c0f)) - colyerdeng
+#### Style
+- satisfy workflow yaml formatting - ([93e174b](https://github.com/ShawnDen-coder/repo-scaffold/commit/93e174b312489ca8b36329dd012be1215fefa86c)) - colyerdeng
+
+- - -
+
 ## [0.32.0](https://github.com/ShawnDen-coder/repo-scaffold/compare/31b8545aa4dcc862153d9cb419e3a31e127094c4..0.32.0) - 2026-08-26
 #### Bug Fixes
 - validate generated pnpm members end to end - ([9065665](https://github.com/ShawnDen-coder/repo-scaffold/commit/9065665a71379968a9cc58315443d67b4e2f4804)) - colyerdeng
