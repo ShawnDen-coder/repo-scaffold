@@ -1,0 +1,29 @@
+{
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+  extends: ["config:js-app", "config:best-practices"],
+  enabledManagers: ["npm", "github-actions"],
+  packageRules: [
+    {
+      matchManagers: ["github-actions"],
+      pinDigests: false,
+    },
+    {
+      matchManagers: ["npm"],
+      matchDepTypes: ["devDependencies"],
+      automerge: true,
+    },
+    {
+      matchManagers: ["github-actions"],
+      matchUpdateTypes: ["minor", "patch"],
+      pinDigests: false,
+      automerge: true,
+    },
+    {
+      matchManagers: ["github-actions"],
+      matchDepNames: ["ShawnDen-coder/repo-scaffold"],
+      groupName: "repo-scaffold workflows",
+      pinDigests: false,
+      automerge: false,
+    },
+  ],
+}

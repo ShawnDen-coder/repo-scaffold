@@ -35,6 +35,11 @@
       "title": "ts-sdk",
       "description": "template for TypeScript SDK library (Vite lib mode, dual ESM+CJS)"
     },
+    "template-ts-cli": {
+      "path": "template-ts-cli",
+      "title": "ts-cli",
+      "description": "template for a TypeScript command-line application (Vite, Biome, Vitest)"
+    },
     "template-vue-project": {
       "path": "template-vue-project",
       "title": "vue-project",

@@ -1,22 +1,19 @@
 {
-  "repo_name": "my-electron-workspace",
+  "repo_name": "my-ts-cli",
   "full_name": "Your Name",
   "email": "you@example.com",
   "github_username": "your-github-username",
   "project_slug": "{{ cookiecutter.repo_name.strip().lower().replace(' ', '-').replace('_', '-') }}",
-  "description": "A pnpm Web and Electron workspace.",
-  "node_version": "22",
+  "description": "A TypeScript command-line application.",
   "use_github_actions": ["yes", "no"],
   "install_after_generate": "yes",
   "init_git": "yes",
-  "_repo_scaffold_version": "1.0.0",
   "__prompts__": {
-    "repo_name": "工作区仓库名称 (my-electron-workspace)",
+    "repo_name": "CLI 项目名称 (my-ts-cli)",
     "full_name": "作者姓名",
     "email": "作者邮箱",
     "github_username": "GitHub 用户名或组织名",
     "description": "项目简短描述",
-    "node_version": "Node.js 主版本",
     "use_github_actions": "是否添加 GitHub Actions CI 配置?"
   }
 }

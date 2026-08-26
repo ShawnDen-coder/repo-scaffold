@@ -54,7 +54,7 @@ export GITHUB_TOKEN=ghp_...
 repo-scaffold gh-init ./my-projects/my-python-project
 
 # Add a new package to a workspace project (auto-detects Rust or uv)
-repo-scaffold add-package my-new-lib -p ./my-projects/my-workspace
+repo-scaffold add-member my-new-lib --type ts-lib -p ./my-projects/my-workspace
 ```
 
 See the [GitHub bootstrap docs](https://shawnden-coder.github.io/repo-scaffold/templates/gh-init/) for the full flag list and the secrets/variables `gh-init` knows how to set.
@@ -155,7 +155,7 @@ Currently supported project templates:
   - Workspace root with `pnpm-workspace.yaml` + Prettier
   - Initial sub-package type selection: `vue-app` / `ts-lib` / `react-app` / `ts-cli`
   - Cocogitto monorepo versioning with `pnpm --filter` per-package hooks
-  - `repo-scaffold add-package` supports adding new sub-packages to pnpm workspaces
+  - `repo-scaffold add-member --type ts-lib|ts-cli` adds a typed member to pnpm workspaces
   - Optional GitHub Actions CI
 
 - **`vue-project`** — standalone Vue 3 project with Router, Pinia, and Tailwind CSS
@@ -167,22 +167,32 @@ Currently supported project templates:
 
 Both templates use `just` (via `rust-just`) as the task runner. Bootstrap from a clean machine with `uvx --from rust-just just init` — that recipe also installs `rust-just` as a uv tool, so every subsequent recipe can be run as plain `just <recipe>`.
 
-## Adding Packages to Workspaces
+## Adding Workspace Members
 
-The `add-package` command adds a new member to a workspace project and updates `cog.toml` for Cocogitto tracking:
+The v1 `add-member` command adds a typed member and registers it in `cog.toml` for Cocogitto tracking:
 
 ```bash
 # Inside a generated workspace project directory
-repo-scaffold add-package my-new-lib
+repo-scaffold add-member my-new-lib --type ts-lib
 
 # Or specify the project path explicitly
-repo-scaffold add-package my-new-lib -p /path/to/project
+repo-scaffold add-member my-new-lib --type ts-lib -p /path/to/project
 ```
 
+
+Supported pnpm member types are `ts-lib` (lightweight TypeScript library) and
+`ts-cli` (Vite-built Commander binary with Biome and Vitest).
 The command auto-detects the project type:
+- **pnpm workspace** (`pnpm-workspace.yaml`): renders a TypeScript library under
+  `packages/<name>/`, supports `--scope` and repeated `--depends-on`, adds the
+  workspace glob if needed, and runs filtered checks by default.
 - **Rust workspace** (`Cargo.toml` with `[workspace]`): creates a crate skeleton under `packages/<name>/`, appends a `[packages.<name>]` section to `cog.toml` with `cargo workspaces version` pre-bump hooks, and runs `cargo check`.
 - **uv workspace** (`pyproject.toml` with `[tool.uv.workspace]`): runs `uv init --lib`, appends a `[packages.<name>]` section to `cog.toml` with `uv version --package` pre-bump hooks, and runs `uv sync`.
 
+
+Generated pnpm and Electron workspaces expose `just add-member <name> [type]`,
+`just add-lib <name>`, and `just plan-member <name> [type]`. These recipes run
+the generator through a pinned `uvx --from repo-scaffold==1.0.0` command.
 ## Development Setup
 
 ```bash

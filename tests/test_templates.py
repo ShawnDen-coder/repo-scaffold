@@ -32,6 +32,7 @@ def test_template_registry_entries_exist():
     assert "template-ts-sdk" in templates
     assert "template-vue-project" in templates
 
+    assert "template-ts-cli" in templates
     titles = [info["title"] for info in templates.values()]
     assert len(titles) == len(set(titles))
 
@@ -54,6 +55,7 @@ def test_cli_list_includes_registered_templates():
     assert "ts-sdk" in result.output
     assert "vue-project" in result.output
 
+    assert "ts-cli" in result.output
 
 def test_template_question_defaults_are_user_friendly():
     """Test template prompt defaults and question metadata stay intentional."""
@@ -534,6 +536,12 @@ def test_template_pnpm_workspace_renders_vue_app(tmp_path):
     # Sub-package: vue-app variant selected
     package_dir = project_dir / "packages" / "my-pnpm-workspace-core"
     assert (package_dir / "package.json").is_file()
+    config = (project_dir / ".repo-scaffold.toml").read_text(encoding="utf-8")
+    justfile = (project_dir / "justfile").read_text(encoding="utf-8")
+    assert 'repo_scaffold_version = "1.0.0"' in config
+    assert "just add-member" in justfile
+    assert 'plan-member name member_type="ts-lib"' in justfile
+    assert "repo-scaffold==1.0.0" in justfile
     assert (package_dir / "index.html").is_file()
     assert (package_dir / "src" / "main.ts").is_file()
     assert (package_dir / "src" / "App.vue").is_file()
@@ -632,6 +640,12 @@ def test_template_electron_workspace_renders_web_desktop_and_shared_packages(tmp
 
     workflow = project_dir / ".github" / "workflows" / "ci.yaml"
     assert workflow.is_file()
+    config = (project_dir / ".repo-scaffold.toml").read_text(encoding="utf-8")
+    justfile = (project_dir / "justfile").read_text(encoding="utf-8")
+    assert 'repo_scaffold_version = "1.0.0"' in config
+    assert "just add-member" in justfile
+    assert 'plan-member name member_type="ts-lib"' in justfile
+    assert "repo-scaffold==1.0.0" in justfile
     assert "reusable-electron-ci.yaml" in workflow.read_text(encoding="utf-8")
     assert (project_dir / ".github" / "workflows" / "version-bump.yaml").is_file()
     assert (project_dir / ".github" / "workflows" / "release.yaml").is_file()
@@ -969,3 +983,30 @@ def test_renovate_config_has_automerge_rules(tmp_path):
         assert any("github-actions" in rule.get("matchManagers", []) for rule in rules), (
             f"{template_name} has no github-actions automerge rule"
         )
+
+
+def test_template_ts_cli_renders_unified_toolchain(tmp_path):
+    """Render the standalone CLI with Vite, Biome, Vitest, and Cog ownership."""
+    project_dir = _render_template(
+        "template-ts-cli",
+        tmp_path,
+        {"install_after_generate": "no", "init_git": "no"},
+        accept_hooks=True,
+    )
+
+    manifest = json.loads((project_dir / "package.json").read_text(encoding="utf-8"))
+    assert manifest["bin"] == {"my-ts-cli": "./dist/index.cjs"}
+    assert manifest["scripts"]["check"] == "biome check ."
+    assert manifest["scripts"]["test"] == "vitest run"
+    assert (project_dir / "biome.json").is_file()
+    assert (project_dir / "vite.config.ts").is_file()
+    assert (project_dir / "tests" / "program.test.ts").is_file()
+    assert (project_dir / "cog.toml").is_file()
+    assert not (project_dir / "CHANGELOG.md").exists()
+    assert "cog bump --auto" in (project_dir / "README.md").read_text(encoding="utf-8")
+    _assert_no_unrendered_markers(project_dir)
+    renovate = json5.loads((project_dir / ".github" / "renovate.json5").read_text(encoding="utf-8"))
+    assert "npm" in renovate["enabledManagers"]
+    assert "github-actions" in renovate["enabledManagers"]
+    assert "config:js-app" in renovate["extends"]
+    assert any(rule.get("automerge") is True for rule in renovate["packageRules"])

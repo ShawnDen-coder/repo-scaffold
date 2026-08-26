@@ -11,6 +11,7 @@
   "use_github_actions": ["yes", "no"],
   "install_after_generate": "yes",
   "init_git": "yes",
+  "_repo_scaffold_version": "1.0.0",
   "__prompts__": {
     "repo_name": "工作区仓库名称 (my-pnpm-workspace)",
     "full_name": "作者姓名",

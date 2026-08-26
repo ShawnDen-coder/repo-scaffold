@@ -1,0 +1,10 @@
+{
+  "member_name": "ui-kit",
+  "package_name": "@example/ui-kit",
+  "private": true,
+  "typescript_version": "~5.9.3",
+  "vite_version": "^8.0.0",
+  "vitest_version": "^4.1.5",
+  "biome_version": "^2.4.5",
+  "react_version": "^19.2.0"
+}

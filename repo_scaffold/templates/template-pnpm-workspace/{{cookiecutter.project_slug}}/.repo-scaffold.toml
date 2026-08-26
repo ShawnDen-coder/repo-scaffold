@@ -1,0 +1,8 @@
+schema_version = 1
+repo_scaffold_version = "{{ cookiecutter._repo_scaffold_version }}"
+ecosystem = "pnpm"
+
+[workspace]
+apps_dir = "apps"
+packages_dir = "packages"
+default_member_type = "ts-lib"

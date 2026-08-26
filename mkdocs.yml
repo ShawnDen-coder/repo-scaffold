@@ -18,6 +18,7 @@ nav:
       - CI/CD pipeline: templates/ci-cd.md
       - GitHub bootstrap: templates/gh-init.md
   - Shared Workflow Contracts: workflows.md
+  - Workspace Member v1: workspace-member-v1.md
   - API Reference: reference/
 plugins:
   - search

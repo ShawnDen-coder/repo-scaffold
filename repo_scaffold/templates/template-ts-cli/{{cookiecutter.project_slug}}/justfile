@@ -1,0 +1,27 @@
+set dotenv-load := true
+set shell := ["bash", "-euc"]
+set windows-shell := ["powershell.exe", "-NoLogo", "-NoProfile", "-Command"]
+
+default:
+    @just --list
+
+init:
+    pnpm install
+
+check:
+    pnpm check
+
+format:
+    pnpm format
+
+typecheck:
+    pnpm typecheck
+
+test:
+    pnpm test
+
+build:
+    pnpm build
+
+dev name="World":
+    pnpm exec {{ cookiecutter.project_slug }} hello --name {% raw %}{{name}}{% endraw %}
