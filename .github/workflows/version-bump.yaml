@@ -44,7 +44,7 @@ jobs:
         shell: bash
         env:
           RELEASE_VERSION: ${{ inputs.release-version }}
-        run: |
+        run: |-
           if [[ ! "$RELEASE_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+([-.][0-9A-Za-z.-]+)?$ ]]; then
             echo "Invalid release version: $RELEASE_VERSION"
             exit 1
