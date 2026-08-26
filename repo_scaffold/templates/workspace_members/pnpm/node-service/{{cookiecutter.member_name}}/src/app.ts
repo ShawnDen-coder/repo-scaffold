@@ -1,6 +1,6 @@
-import express from "express";
+import express, { type Express } from "express";
 
-export function createApp() {
+export function createApp(): Express {
   const app = express();
 
   app.get("/health", (_request, response) => {
