@@ -15,7 +15,7 @@ pnpm build
 Run the development command directly from TypeScript:
 
 ```bash
-pnpm exec {{ cookiecutter.project_slug }} hello --name Codex
+pnpm dev -- hello --name Codex
 ```
 
 ## Release

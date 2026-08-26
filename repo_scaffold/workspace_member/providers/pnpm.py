@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import importlib.resources
 import json
+import shutil
 import subprocess
 
 import click
@@ -25,6 +26,10 @@ def add_pnpm_member(spec: WorkspaceMemberSpec) -> None:
             f"❌ {spec.member_path.relative_to(spec.project_path)} already exists"
         )
 
+    workspace_file = spec.project_path / "pnpm-workspace.yaml"
+    cog_file = spec.project_path / "cog.toml"
+    workspace_backup = workspace_file.read_bytes()
+    cog_backup = cog_file.read_bytes() if cog_file.exists() else None
     _ensure_workspace_glob(spec)
     if spec.dry_run:
         click.echo(
@@ -35,19 +40,29 @@ def add_pnpm_member(spec: WorkspaceMemberSpec) -> None:
         return
 
     spec.member_path.parent.mkdir(parents=True, exist_ok=True)
-    cookiecutter(
-        template=str(_template_path(spec.member_type)),
-        output_dir=str(spec.member_path.parent),
-        no_input=True,
-        extra_context=_template_context(spec),
-    )
-    _add_workspace_dependencies(spec)
-    register_cog_member(spec)
-
-    if not spec.no_install:
-        subprocess.check_call(["pnpm", "install"], cwd=str(spec.project_path))
-    if not spec.no_verify:
-        _verify(spec)
+    try:
+        cookiecutter(
+            template=str(_template_path(spec.member_type)),
+            output_dir=str(spec.member_path.parent),
+            no_input=True,
+            extra_context=_template_context(spec),
+        )
+        _add_workspace_dependencies(spec)
+        register_cog_member(spec)
+        if not spec.no_install:
+            subprocess.check_call(["pnpm", "install"], cwd=str(spec.project_path))
+        if not spec.no_verify:
+            _verify(spec)
+    except Exception:
+        if spec.member_path.exists():
+            shutil.rmtree(spec.member_path)
+        workspace_file.write_bytes(workspace_backup)
+        if cog_backup is None:
+            if cog_file.exists():
+                cog_file.unlink()
+        else:
+            cog_file.write_bytes(cog_backup)
+        raise
     click.echo(f"✅ pnpm member '{spec.package_name}' added.")
 
 

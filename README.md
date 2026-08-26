@@ -155,7 +155,7 @@ Currently supported project templates:
   - Workspace root with `pnpm-workspace.yaml` + Prettier
   - Initial sub-package type selection: `vue-app` / `ts-lib` / `react-app` / `ts-cli`
   - Cocogitto monorepo versioning with `pnpm --filter` per-package hooks
-  - `repo-scaffold add-member --type ts-lib|ts-cli` adds a typed member to pnpm workspaces
+  - `repo-scaffold add-member --type ts-lib|ts-cli|react-app|vue-app|react-lib|node-service` adds a typed member to pnpm workspaces
   - Optional GitHub Actions CI
 
 - **`vue-project`** — standalone Vue 3 project with Router, Pinia, and Tailwind CSS
@@ -180,8 +180,7 @@ repo-scaffold add-member my-new-lib --type ts-lib -p /path/to/project
 ```
 
 
-Supported pnpm member types are `ts-lib` (lightweight TypeScript library) and
-`ts-cli` (Vite-built Commander binary with Biome and Vitest).
+Supported pnpm member types are `ts-lib`, `ts-cli`, `react-app`, `vue-app`, `react-lib`, and `node-service`. All use TypeScript, Biome, and Vitest; app and library templates use Vite and Tailwind CSS v4.
 The command auto-detects the project type:
 - **pnpm workspace** (`pnpm-workspace.yaml`): renders a TypeScript library under
   `packages/<name>/`, supports `--scope` and repeated `--depends-on`, adds the

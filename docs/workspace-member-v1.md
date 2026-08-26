@@ -18,12 +18,10 @@ Conventional Commit marker (feat!:) so Cocogitto computes the major release.
 
 ## First delivery
 
-- `pnpm / ts-lib` and `pnpm / ts-cli` are delivered by v1.
+- pnpm members `ts-lib`, `ts-cli`, `react-app`, `vue-app`, `react-lib`, and `node-service` are delivered by v1.
 - Existing uv and Cargo library behavior remains available behind the same
   `add-member` domain model.
-- Other pnpm member types (`react-app`, `node-service`, and Vue or
-  Electron variants) are deliberately deferred until their full standalone
-  templates have been exercised and stabilized.
+- Storybook remains a separate monorepo template and is intentionally deferred until the member templates stabilize.
 
 ## Generated workspace workflow
 

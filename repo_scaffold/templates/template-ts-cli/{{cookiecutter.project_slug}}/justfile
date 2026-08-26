@@ -24,4 +24,4 @@ build:
     pnpm build
 
 dev name="World":
-    pnpm exec {{ cookiecutter.project_slug }} hello --name {% raw %}{{name}}{% endraw %}
+    pnpm dev -- hello --name {% raw %}{{name}}{% endraw %}
