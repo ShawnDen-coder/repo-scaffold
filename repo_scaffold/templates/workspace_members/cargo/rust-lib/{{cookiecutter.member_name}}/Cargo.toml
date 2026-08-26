@@ -1,0 +1,9 @@
+[package]
+name = "{{ cookiecutter.member_name }}"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+description = ""
+
+[dependencies]

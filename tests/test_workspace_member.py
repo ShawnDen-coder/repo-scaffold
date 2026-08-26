@@ -29,6 +29,28 @@ def _write_pnpm_workspace(path: Path) -> None:
     )
 
 
+def _write_uv_workspace(path: Path) -> None:
+    (path / "pyproject.toml").write_text(
+        '[tool.uv.workspace]\nmembers = ["packages/*"]\n', encoding="utf-8"
+    )
+    (path / "cog.toml").write_text(
+        'ignore_merge_commits = true\n\n[changelog]\npath = "CHANGELOG.md"\n',
+        encoding="utf-8",
+    )
+
+
+def _write_cargo_workspace(path: Path) -> None:
+    (path / "Cargo.toml").write_text(
+        '[workspace]\nmembers = ["packages/*"]\n\n[workspace.package]\n'
+        'version = "0.1.0"\nedition = "2024"\nlicense = "MIT"\nauthors = ["Example"]\n',
+        encoding="utf-8",
+    )
+    (path / "cog.toml").write_text(
+        'ignore_merge_commits = true\n\n[changelog]\npath = "CHANGELOG.md"\n',
+        encoding="utf-8",
+    )
+
+
 def test_add_pnpm_ts_lib_renders_member_and_registers_cog(tmp_path: Path):
     """Render a scoped pnpm library and add it to Cocogitto."""
     _write_pnpm_workspace(tmp_path)
@@ -334,6 +356,9 @@ def test_cli_add_member_generates_electron_app(tmp_path: Path):
     assert manifest["devDependencies"]["electron"] == "^33.4.11"
     assert (app_dir / "main.cjs").is_file()
     assert (app_dir / "tests" / "main.test.cjs").is_file()
+    main = (app_dir / "main.cjs").read_text(encoding="utf-8")
+    assert "http://localhost:5173" in main
+    assert (app_dir / "renderer" / "index.html").is_file()
 
 def test_pnpm_member_rolls_back_on_verification_failure(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     """Restore workspace metadata and remove the member when verification fails."""
@@ -380,3 +405,75 @@ def test_generated_member_contracts_include_runtime_test_requirements(tmp_path: 
     assert "jsdom" in react_manifest["devDependencies"]
     assert "happy-dom" in vue_manifest["devDependencies"]
     assert 'src/index.tsx' in (tmp_path / "packages/ui/vite.config.ts").read_text(encoding="utf-8")
+
+
+def test_uv_member_uses_shared_python_template(tmp_path: Path):
+    """Render a Python member from the shared uv template."""
+    _write_uv_workspace(tmp_path)
+    spec = build_member_spec(
+        project_path=tmp_path,
+        name="data-core",
+        ecosystem=WorkspaceEcosystem.UV,
+        no_install=True,
+        no_verify=True,
+    )
+
+    add_member(spec)
+
+    package_dir = tmp_path / "packages" / "data-core"
+    manifest = (package_dir / "pyproject.toml").read_text(encoding="utf-8")
+    assert 'name = "data-core"' in manifest
+    assert (package_dir / "src" / "data_core" / "__init__.py").is_file()
+    assert (package_dir / "tests" / "test_import.py").is_file()
+    assert "[packages.data-core]" in (tmp_path / "cog.toml").read_text(encoding="utf-8")
+
+
+def test_uv_member_inherits_root_project_metadata(tmp_path: Path):
+    """Reuse Python constraints and author metadata from the workspace root."""
+    _write_uv_workspace(tmp_path)
+    (tmp_path / "pyproject.toml").write_text(
+        "[project]\n"
+        'description = "Workspace description"\n'
+        'requires-python = ">=3.11,<3.14"\n'
+        'authors = [{name = "Workspace Author", email = "author@example.com"}]\n\n'
+        '[tool.uv.workspace]\n'
+        'members = ["packages/*"]\n',
+        encoding="utf-8",
+    )
+    spec = build_member_spec(
+        project_path=tmp_path,
+        name="metadata-core",
+        ecosystem=WorkspaceEcosystem.UV,
+        no_install=True,
+        no_verify=True,
+    )
+
+    add_member(spec)
+
+    manifest = (tmp_path / "packages" / "metadata-core" / "pyproject.toml").read_text(
+        encoding="utf-8"
+    )
+    assert 'description = "Workspace description"' in manifest
+    assert 'requires-python = ">=3.11,<3.14"' in manifest
+    assert 'name = "Workspace Author"' in manifest
+    assert 'email = "author@example.com"' in manifest
+
+
+def test_cargo_member_uses_shared_rust_template(tmp_path: Path):
+    """Render a Rust member from the shared Cargo template."""
+    _write_cargo_workspace(tmp_path)
+    spec = build_member_spec(
+        project_path=tmp_path,
+        name="domain-core",
+        ecosystem=WorkspaceEcosystem.CARGO,
+        no_verify=True,
+    )
+
+    add_member(spec)
+
+    crate_dir = tmp_path / "packages" / "domain-core"
+    manifest = (crate_dir / "Cargo.toml").read_text(encoding="utf-8")
+    assert 'name = "domain-core"' in manifest
+    assert (crate_dir / "src" / "lib.rs").is_file()
+    assert (crate_dir / "CHANGELOG.md").is_file()
+    assert "[packages.domain-core]" in (tmp_path / "cog.toml").read_text(encoding="utf-8")

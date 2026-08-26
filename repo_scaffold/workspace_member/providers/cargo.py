@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+import importlib.resources
 import subprocess
 
 import click
+from cookiecutter.main import cookiecutter
 
 from ..cog import register_cog_member
 from ..models import WorkspaceMemberSpec
@@ -28,26 +30,13 @@ def add_cargo_member(spec: WorkspaceMemberSpec) -> None:
         )
         return
 
-    spec.member_path.mkdir(parents=True)
-    (spec.member_path / "src").mkdir()
-    (spec.member_path / "Cargo.toml").write_text(
-        (
-            "[package]\n"
-            f'name = "{spec.name}"\n'
-            "version.workspace = true\n"
-            "edition.workspace = true\n"
-            "license.workspace = true\n"
-            "authors.workspace = true\n"
-            'description = ""\n\n'
-            "[dependencies]\n"
-        ),
-        encoding="utf-8",
-    )
-    (spec.member_path / "src" / "lib.rs").write_text(
-        f"// {spec.name} crate\n", encoding="utf-8"
-    )
-    (spec.member_path / "CHANGELOG.md").write_text(
-        f"# Changelog\n\n## {spec.name}\n", encoding="utf-8"
+    cookiecutter(
+        template=str(importlib.resources.files("repo_scaffold").joinpath(
+            "templates", "workspace_members", "cargo", "rust-lib"
+        )),
+        output_dir=str(spec.member_path.parent),
+        no_input=True,
+        extra_context={"member_name": spec.name},
     )
     register_cog_member(spec)
     if not spec.no_verify:

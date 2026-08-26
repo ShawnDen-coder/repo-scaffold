@@ -23,6 +23,8 @@ Conventional Commit marker (feat!:) so Cocogitto computes the major release.
   `workspace_members/pnpm` templates as later `add-member` calls.
 - Existing uv and Cargo library behavior remains available behind the same
   `add-member` domain model.
+- uv `python-lib` and Cargo `rust-lib` members are rendered from canonical
+  templates under `workspace_members`, just like pnpm members.
 - Storybook remains a separate monorepo template and is intentionally deferred until the member templates stabilize.
 
 ## Generated workspace workflow

@@ -26,6 +26,7 @@ dependencies = [
     "click>=8.1.8",
     "ruff>=0.9.6",
     "PyGithub>=2.4",
+    "rich>=13.9.4",
 ]
 
 [project.optional-dependencies]
