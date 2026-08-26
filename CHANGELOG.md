@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [0.32.0](https://github.com/ShawnDen-coder/repo-scaffold/compare/31b8545aa4dcc862153d9cb419e3a31e127094c4..0.32.0) - 2026-08-26
+#### Bug Fixes
+- validate generated pnpm members end to end - ([9065665](https://github.com/ShawnDen-coder/repo-scaffold/commit/9065665a71379968a9cc58315443d67b4e2f4804)) - colyerdeng
+- make generated workspace members buildable - ([dfa7064](https://github.com/ShawnDen-coder/repo-scaffold/commit/dfa70640f23871d996b4d9b0788221e5df48287a)) - colyerdeng
+#### Features
+- add typed workspace member templates - ([31b8545](https://github.com/ShawnDen-coder/repo-scaffold/commit/31b8545aa4dcc862153d9cb419e3a31e127094c4)) - colyerdeng
+#### Tests
+- harden workspace member generation - ([13e8257](https://github.com/ShawnDen-coder/repo-scaffold/commit/13e8257f1cf6ac485b60685da6bb1074d5ac5106)) - colyerdeng
+
+- - -
+
 ## [0.31.1](https://github.com/ShawnDen-coder/repo-scaffold/compare/6191eb585ded086b23e0b5c30ae60e6c7b8d5dd7..0.31.1) - 2026-08-25
 #### Bug Fixes
 - **(electron)** resolve pnpm Windows shim - ([6191eb5](https://github.com/ShawnDen-coder/repo-scaffold/commit/6191eb585ded086b23e0b5c30ae60e6c7b8d5dd7)) - colyerdeng
