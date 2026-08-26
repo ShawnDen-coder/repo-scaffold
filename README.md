@@ -155,7 +155,8 @@ Currently supported project templates:
   - Workspace root with `pnpm-workspace.yaml` + Prettier
   - Initial sub-package type selection: `vue-app` / `ts-lib` / `react-app` / `ts-cli` / `react-lib` / `node-service`
   - Cocogitto monorepo versioning with `pnpm --filter` per-package hooks
-  - `repo-scaffold add-member --type ts-lib|ts-cli|react-app|vue-app|react-lib|node-service` adds a typed member to pnpm workspaces
+  - `repo-scaffold add-member --type ts-lib|ts-cli|react-app|vue-app|react-lib|node-service|electron-app` adds a typed member to pnpm workspaces
+  - `repo-scaffold add-member --type python-lib` or `--type rust-lib` adds a shared uv or Cargo library member
   - Optional GitHub Actions CI
 
 - **`vue-project`** — standalone Vue 3 project with Router, Pinia, and Tailwind CSS

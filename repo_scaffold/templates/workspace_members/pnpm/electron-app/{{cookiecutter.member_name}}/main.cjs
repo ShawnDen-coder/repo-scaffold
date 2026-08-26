@@ -1,4 +1,9 @@
 const { app, BrowserWindow } = require('electron')
+const path = require('node:path')
+const fs = require('node:fs')
+
+const fallbackRenderer = path.join(__dirname, 'renderer', 'index.html')
+const packagedRenderer = path.join(__dirname, '../web/dist/index.html')
 
 function createWindow() {
   const window = new BrowserWindow({
@@ -8,9 +13,14 @@ function createWindow() {
   })
 
   if (app.isPackaged) {
-    window.loadFile(`${__dirname}/../web/dist/index.html`)
+    window.loadFile(
+      process.env.ELECTRON_RENDERER_PATH ||
+        (fs.existsSync(packagedRenderer) ? packagedRenderer : fallbackRenderer),
+    )
   } else {
-    window.loadURL(process.env.ELECTRON_RENDERER_URL || 'http://localhost:5180')
+    window
+      .loadURL(process.env.ELECTRON_RENDERER_URL || 'http://localhost:5173')
+      .catch(() => window.loadFile(fallbackRenderer))
   }
 }
 

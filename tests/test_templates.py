@@ -43,6 +43,31 @@ def test_template_registry_entries_exist():
         assert (template_dir / "cookiecutter.json").is_file()
 
 
+def test_every_template_ignores_env_files():
+    """Every generated project and workspace member ignores local .env files."""
+    templates_dir = Path(get_package_path("templates"))
+    template_roots = []
+    for template_dir in templates_dir.glob("template-*"):
+        project_dirs = [
+            path
+            for path in template_dir.iterdir()
+            if path.is_dir() and path.name.startswith("{{cookiecutter.")
+        ]
+        template_roots.extend(project_dirs)
+
+    member_roots = []
+    for ecosystem_dir in (templates_dir / "workspace_members").iterdir():
+        for member_template in ecosystem_dir.iterdir():
+            member_root = member_template / "{{cookiecutter.member_name}}"
+            if member_root.is_dir():
+                member_roots.append(member_root)
+
+    for template_root in [*template_roots, *member_roots]:
+        gitignore = template_root / ".gitignore"
+        assert gitignore.is_file(), f"Missing .gitignore in {template_root}"
+        assert ".env" in gitignore.read_text(encoding="utf-8").splitlines()
+
+
 def test_cli_list_includes_registered_templates():
     """Test list command includes available template titles."""
     result = CliRunner().invoke(cli, ["list"])
@@ -56,6 +81,8 @@ def test_cli_list_includes_registered_templates():
     assert "vue-project" in result.output
 
     assert "ts-cli" in result.output
+    assert "Name" in result.output
+    assert "Description" in result.output
 
 def test_template_question_defaults_are_user_friendly():
     """Test template prompt defaults and question metadata stay intentional."""
@@ -632,6 +659,7 @@ def test_template_electron_workspace_renders_web_desktop_and_shared_packages(tmp
     assert (project_dir / "apps" / "desktop" / "main.cjs").is_file()
     assert (project_dir / "packages" / "shared" / "src" / "index.ts").is_file()
     assert (project_dir / "packages" / "ui" / "src" / "index.tsx").is_file()
+    assert (project_dir / "apps" / "desktop" / "renderer" / "index.html").is_file()
 
     web_manifest = json.loads((project_dir / "apps" / "web" / "package.json").read_text(encoding="utf-8"))
     ui_manifest = json.loads((project_dir / "packages" / "ui" / "package.json").read_text(encoding="utf-8"))

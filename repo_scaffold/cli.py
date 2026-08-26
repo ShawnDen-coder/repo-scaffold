@@ -32,6 +32,8 @@ from typing import Any
 
 import click
 from cookiecutter.main import cookiecutter
+from rich.console import Console
+from rich.table import Table
 
 from repo_scaffold.github_init import GhInitClient
 from repo_scaffold.github_init import build_config
@@ -102,17 +104,18 @@ def list():
     Example:
         ```bash
         $ repo-scaffold list
-        Available templates:
-
-        python - template-python
-          Description: template for python project
         ```
     """
     templates = load_templates()
-    click.echo("\nAvailable templates:")
+
+    table = Table(title="Available templates", expand=True)
+    table.add_column("Name", style="cyan", no_wrap=True)
+    table.add_column("Template", style="green", no_wrap=True)
+    table.add_column("Description", style="white")
     for name, info in templates.items():
-        click.echo(f"\n{info['title']} - {name}")
-        click.echo(f"  Description: {info['description']}")
+        table.add_row(name, info["title"], info["description"])
+
+    Console().print(table)
 
 
 @cli.command()

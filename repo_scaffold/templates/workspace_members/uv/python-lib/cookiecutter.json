@@ -1,0 +1,10 @@
+{
+  "member_name": "my-lib",
+  "package_name": "my-lib",
+  "package_module": "my_lib",
+  "description": "",
+  "full_name": "Your Name",
+  "email": "you@example.com",
+  "min_python_version": "3.12",
+  "requires_python": ">=3.12"
+}
