@@ -258,7 +258,7 @@ def gh_init(
     owner: str | None,
     name: str | None,
     description: str | None,
-    private: bool,
+    private: bool | None,
     default_branch: str | None,
     allow_existing: bool,
     no_push: bool,
@@ -378,6 +378,69 @@ def gh_init(
         click.echo("     'Source: Deploy from a branch' to gh-pages / (root).")
 
 
+@cli.command("add-member")
+@click.argument("name")
+@click.option(
+    "--project-path",
+    "-p",
+    default=".",
+    type=click.Path(file_okay=False, dir_okay=True, exists=True, path_type=Path),
+    help="Path to the workspace root (default: current directory).",
+)
+@click.option("--type", "member_type", help="Member template type, such as ts-lib.")
+@click.option(
+    "--ecosystem",
+    type=click.Choice(["pnpm", "uv", "cargo"], case_sensitive=False),
+    help="Override workspace ecosystem detection.",
+)
+@click.option(
+    "--location",
+    type=click.Choice(["apps", "packages"], case_sensitive=False),
+    help="Destination group. Defaults from the selected member type.",
+)
+@click.option("--scope", help="npm scope for pnpm members, for example @fastpma.")
+@click.option("--depends-on", multiple=True, help="Repeatable pnpm workspace dependency.")
+@click.option("--private/--public", default=None, help="Set the pnpm private flag.")
+@click.option("--public-api/--no-public-api", default=False, help="Set Cocogitto public_api.")
+@click.option("--no-install", is_flag=True, help="Skip dependency synchronization.")
+@click.option("--no-verify", is_flag=True, help="Skip member verification commands.")
+@click.option("--dry-run", is_flag=True, help="Print changes without writing files.")
+def add_member_cmd(
+    name: str,
+    project_path: Path,
+    member_type: str | None,
+    ecosystem: str | None,
+    location: str | None,
+    scope: str | None,
+    depends_on: tuple[str, ...],
+    private: bool,
+    public_api: bool,
+    no_install: bool,
+    no_verify: bool,
+    dry_run: bool,
+):
+    """Add a typed member to a pnpm, uv, or Cargo workspace."""
+    from repo_scaffold.workspace_member import WorkspaceEcosystem
+    from repo_scaffold.workspace_member import add_member
+    from repo_scaffold.workspace_member import build_member_spec
+
+    spec = build_member_spec(
+        project_path=project_path,
+        name=name,
+        ecosystem=WorkspaceEcosystem(ecosystem) if ecosystem else None,
+        member_type=member_type,
+        location=location,
+        scope=scope,
+        private=private,
+        public_api=public_api,
+        depends_on=depends_on,
+        no_install=no_install,
+        no_verify=no_verify,
+        dry_run=dry_run,
+    )
+    add_member(spec)
+
+
 @cli.command("add-package")
 @click.argument("name")
 @click.option(
@@ -388,13 +451,12 @@ def gh_init(
     help="Path to the workspace project root (default: current directory)",
 )
 def add_package_cmd(name: str, project_path: Path):
-    """Add a new package to a workspace project.
-
-    Detects the project type (Rust cargo workspace or uv workspace) and creates
-    the package skeleton, updates cog.toml, and verifies the workspace compiles.
-
-    Run this inside a generated workspace project directory, or specify --project-path.
-    """
+    """Deprecated compatibility command for adding a default library member."""
+    click.echo(
+        "Warning: 'add-package' is deprecated; use "
+        "'add-member NAME --type <member-type>' instead.",
+        err=True,
+    )
     from repo_scaffold.add_package import add_package
 
     add_package(project_path, name)

@@ -26,6 +26,25 @@ build:
 typecheck:
     pnpm -r run typecheck
 
-# Add a new package to the workspace (creates package dir + updates cog.toml + syncs)
+# Pinned version used by all member-generation recipes.
+repo_scaffold_version := "{{ cookiecutter._repo_scaffold_version }}"
+
+# Add a typed workspace member through the pinned repo-scaffold release.
+add-member name member_type="ts-lib":
+    uvx --from "repo-scaffold=={{ cookiecutter._repo_scaffold_version }}" repo-scaffold add-member {% raw %}{{name}}{% endraw %} --type {% raw %}{{member_type}}{% endraw %} --project-path .
+
+# Add a TypeScript library under packages/.
+add-lib name:
+    just add-member {% raw %}{{name}}{% endraw %} ts-lib
+
+
+# Add a Vite-built TypeScript CLI under packages/.
+add-cli name:
+    just add-member {% raw %}{{name}}{% endraw %} ts-cli
+# Deprecated package terminology retained for team muscle memory.
 add-package name:
-    repo-scaffold add-package {% raw %}{{name}}{% endraw %}
+    just add-member {% raw %}{{name}}{% endraw %} ts-lib
+
+# Preview a member generation without changing the workspace.
+plan-member name member_type="ts-lib":
+    uvx --from "repo-scaffold=={{ cookiecutter._repo_scaffold_version }}" repo-scaffold add-member {% raw %}{{name}}{% endraw %} --type {% raw %}{{member_type}}{% endraw %} --project-path . --dry-run

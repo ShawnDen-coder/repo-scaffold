@@ -1,0 +1,27 @@
+{
+  "name": "{{ cookiecutter.package_name }}",
+  "version": "0.1.0",
+  "private": {{ cookiecutter.private | lower }},
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc -b && vite build",
+    "typecheck": "vue-tsc --noEmit",
+    "test": "vitest run",
+    "check": "biome check .",
+    "format": "biome format --write ."
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.2.1",
+    "tailwindcss": "^4.2.1",
+    "vue": "{{ cookiecutter.vue_version }}"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "{{ cookiecutter.biome_version }}",
+    "@vitejs/plugin-vue": "^6.0.5",
+    "typescript": "{{ cookiecutter.typescript_version }}",
+    "vite": "{{ cookiecutter.vite_version }}",
+    "vitest": "{{ cookiecutter.vitest_version }}",
+    "vue-tsc": "^3.2.5"
+  }
+}

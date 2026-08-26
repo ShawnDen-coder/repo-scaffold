@@ -1,0 +1,27 @@
+{
+  "name": "{{ cookiecutter.package_name }}",
+  "version": "0.1.0",
+  "private": {{ cookiecutter.private | lower }},
+  "type": "module",
+  "bin": {
+    "{{ cookiecutter.member_name }}": "./dist/index.cjs"
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "vite build",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "check": "biome check .",
+    "format": "biome format --write ."
+  },
+  "dependencies": {
+    "commander": "^13.1.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "{{ cookiecutter.biome_version }}",
+    "@types/node": "^24.12.0",
+    "typescript": "{{ cookiecutter.typescript_version }}",
+    "vite": "{{ cookiecutter.vite_version }}",
+    "vitest": "{{ cookiecutter.vitest_version }}"
+  }
+}
