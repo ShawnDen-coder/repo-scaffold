@@ -17,11 +17,11 @@ packages/shared   与框架无关的类型和工具
 - `packageManager`：固定 pnpm 主版本，减少本地和 CI 的差异。
 - 默认分支固定为 `master`，CI 和版本工作流使用同一个分支。
 - `justfile`：统一封装安装、格式检查、类型检查、测试、构建和本地启动命令。
-- `cog.toml`：使用 Conventional Commits 计算版本、更新 Changelog，并推送版本标签。
+- `cog.toml`：使用 Conventional Commits 计算版本、更新 Changelog，并推送版本标签；成员注册由统一的 `workspace_members` provider 完成。
 - GitHub Actions：调用仓库提供的 `reusable-electron-ci.yaml`、`reusable-electron-release.yaml` 和 `reusable-version-bump.yaml`，统一执行质量检查、跨平台打包和版本发布。
 - `.github/renovate.json5`：同时更新 npm 依赖和 GitHub Actions，避免依赖长期过期。
 - Conventional Commits / Cocogitto：为后续自动生成 Changelog 和版本发布保留入口。
-- Cookiecutter Hook：生成后校验项目名、按开关删除 CI 文件、初始化 Git，并可执行 `pnpm install`。
+- Cookiecutter Hook：生成后通过 `workspace_members/pnpm` 创建四个初始成员，校验项目名、按开关删除 CI 文件、初始化 Git，并可执行 `pnpm install`。
 
 ## 工程使用建议
 

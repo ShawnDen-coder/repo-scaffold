@@ -9,6 +9,9 @@
 - `packages/shared` — framework-independent shared types and utilities
 - `packages/ui` — UI components shared by Web and Electron
 
+All four initial members are generated from the shared `workspace_members/pnpm`
+templates. Use `repo-scaffold add-member` to add more typed members later.
+
 ## Commands
 
 ```bash

@@ -26,7 +26,7 @@ _APPLICATION_TYPES = {
     "node-service",
     "react-app",
     "vue-app",
-    "electron-main",
+    "electron-app",
 }
 
 

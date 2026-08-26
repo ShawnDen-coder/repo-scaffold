@@ -633,6 +633,19 @@ def test_template_electron_workspace_renders_web_desktop_and_shared_packages(tmp
     assert (project_dir / "packages" / "shared" / "src" / "index.ts").is_file()
     assert (project_dir / "packages" / "ui" / "src" / "index.tsx").is_file()
 
+    web_manifest = json.loads((project_dir / "apps" / "web" / "package.json").read_text(encoding="utf-8"))
+    ui_manifest = json.loads((project_dir / "packages" / "ui" / "package.json").read_text(encoding="utf-8"))
+    desktop_manifest = json.loads((project_dir / "apps" / "desktop" / "package.json").read_text(encoding="utf-8"))
+    assert web_manifest["name"] == "@my-electron-workspace/web"
+    assert web_manifest["dependencies"]["@my-electron-workspace/ui"] == "workspace:*"
+    assert ui_manifest["dependencies"]["@my-electron-workspace/shared"] == "workspace:*"
+    assert desktop_manifest["devDependencies"]["electron"] == "^33.4.11"
+    cog = (project_dir / "cog.toml").read_text(encoding="utf-8")
+    assert "[packages.shared]" in cog
+    assert "[packages.ui]" in cog
+    assert "[packages.web]" in cog
+    assert "[packages.desktop]" in cog
+
     workflow = project_dir / ".github" / "workflows" / "ci.yaml"
     assert workflow.is_file()
     config = (project_dir / ".repo-scaffold.toml").read_text(encoding="utf-8")
