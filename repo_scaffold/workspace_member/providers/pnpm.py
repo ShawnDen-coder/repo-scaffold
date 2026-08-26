@@ -14,9 +14,12 @@ from ..cog import register_cog_member
 from ..models import WorkspaceMemberSpec
 
 
+_SUPPORTED_TYPES = {"node-service", "react-app", "react-lib", "ts-cli", "ts-lib", "vue-app"}
+
+
 def add_pnpm_member(spec: WorkspaceMemberSpec) -> None:
     """Create a pnpm member from a supported workspace-member template."""
-    if spec.member_type not in {"node-service", "react-app", "react-lib", "ts-cli", "ts-lib", "vue-app"}:
+    if spec.member_type not in _SUPPORTED_TYPES:
         raise click.ClickException(
             f"Unsupported pnpm member type '{spec.member_type}'. "
             "Supported types: ts-lib, ts-cli, react-app, vue-app, react-lib, node-service."
@@ -28,8 +31,10 @@ def add_pnpm_member(spec: WorkspaceMemberSpec) -> None:
 
     workspace_file = spec.project_path / "pnpm-workspace.yaml"
     cog_file = spec.project_path / "cog.toml"
+    tsconfig_base_file = spec.project_path / "tsconfig.base.json"
     workspace_backup = workspace_file.read_bytes()
     cog_backup = cog_file.read_bytes() if cog_file.exists() else None
+    tsconfig_backup = tsconfig_base_file.read_bytes() if tsconfig_base_file.exists() else None
     _ensure_workspace_glob(spec)
     if spec.dry_run:
         click.echo(
@@ -41,6 +46,8 @@ def add_pnpm_member(spec: WorkspaceMemberSpec) -> None:
 
     spec.member_path.parent.mkdir(parents=True, exist_ok=True)
     try:
+        if not tsconfig_base_file.exists():
+            tsconfig_base_file.write_text(_default_tsconfig_base(), encoding="utf-8")
         cookiecutter(
             template=str(_template_path(spec.member_type)),
             output_dir=str(spec.member_path.parent),
@@ -57,6 +64,11 @@ def add_pnpm_member(spec: WorkspaceMemberSpec) -> None:
         if spec.member_path.exists():
             shutil.rmtree(spec.member_path)
         workspace_file.write_bytes(workspace_backup)
+        if tsconfig_backup is None:
+            if tsconfig_base_file.exists():
+                tsconfig_base_file.unlink()
+        else:
+            tsconfig_base_file.write_bytes(tsconfig_backup)
         if cog_backup is None:
             if cog_file.exists():
                 cog_file.unlink()
@@ -64,6 +76,28 @@ def add_pnpm_member(spec: WorkspaceMemberSpec) -> None:
             cog_file.write_bytes(cog_backup)
         raise
     click.echo(f"✅ pnpm member '{spec.package_name}' added.")
+
+
+def _default_tsconfig_base() -> str:
+    """Return the shared TypeScript defaults for pnpm workspaces."""
+    return (
+        json.dumps(
+            {
+                "compilerOptions": {
+                    "target": "ES2022",
+                    "module": "ESNext",
+                    "moduleResolution": "bundler",
+                    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+                    "strict": True,
+                    "skipLibCheck": True,
+                    "noEmit": True,
+                    "verbatimModuleSyntax": True,
+                }
+            },
+            indent=2,
+        )
+        + "\n"
+    )
 
 
 def _template_path(member_type: str):
