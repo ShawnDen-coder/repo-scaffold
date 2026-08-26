@@ -3,7 +3,8 @@ branch_whitelist = ["master", "main"]
 skip_ci = "[skip ci]"
 
 pre_bump_hooks = [
-    "pnpm pkg set version={% raw %}{{version}}{% endraw %}",
+    "echo 'bumping from {% raw %}{{latest|0.0.0}}{% endraw %} to {% raw %}{{version|0.0.1}}{% endraw %}'",
+    "pnpm pkg set version={% raw %}{{version|0.0.1}}{% endraw %}",
 ]
 
 post_bump_hooks = [

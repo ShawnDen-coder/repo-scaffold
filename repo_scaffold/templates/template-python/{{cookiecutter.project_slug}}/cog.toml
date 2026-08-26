@@ -3,7 +3,8 @@ branch_whitelist = ["master", "main"]
 skip_ci = "[skip ci]"
 
 pre_bump_hooks = [
-    "uv version {% raw %}{{version}}{% endraw %}",
+    "echo 'bumping from {% raw %}{{latest|0.0.0}}{% endraw %} to {% raw %}{{version|0.0.1}}{% endraw %}'",
+    "uv version {% raw %}{{version|0.0.1}}{% endraw %}",
     "uv lock --no-upgrade",
 ]
 

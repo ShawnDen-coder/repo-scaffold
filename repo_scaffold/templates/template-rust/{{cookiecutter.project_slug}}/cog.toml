@@ -6,7 +6,11 @@ generate_mono_repository_global_tag = true
 generate_mono_repository_package_tags = true
 monorepo_version_separator = "-"
 
-pre_bump_hooks = ["cargo generate-lockfile", "git add Cargo.lock"]
+pre_bump_hooks = [
+    "echo 'bumping from {% raw %}{{latest|0.0.0}}{% endraw %} to {% raw %}{{version|0.0.1}}{% endraw %}'",
+    "cargo generate-lockfile",
+    "git add Cargo.lock",
+]
 
 post_bump_hooks = [
     "git push",
@@ -26,5 +30,6 @@ path = "packages/api-server"
 public_api = true
 changelog_path = "packages/api-server/CHANGELOG.md"
 pre_bump_hooks = [
-    "cargo workspaces version --all --force '*' --no-git-commit {% raw %}{{version}}{% endraw %}",
+    "echo 'bumping api-server from {% raw %}{{latest|0.0.0}}{% endraw %} to {% raw %}{{version|0.0.1}}{% endraw %}'",
+    "cargo workspaces version --all --force '*' --no-git-commit {% raw %}{{version|0.0.1}}{% endraw %}",
 ]

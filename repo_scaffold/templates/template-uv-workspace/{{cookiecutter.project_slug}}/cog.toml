@@ -6,7 +6,10 @@ generate_mono_repository_global_tag = true
 generate_mono_repository_package_tags = true
 monorepo_version_separator = "-"
 
-pre_bump_hooks = ["uv lock --no-upgrade"]
+pre_bump_hooks = [
+    "echo 'bumping from {% raw %}{{latest|0.0.0}}{% endraw %} to {% raw %}{{version|0.0.1}}{% endraw %}'",
+    "uv lock --no-upgrade",
+]
 
 post_bump_hooks = [
     "git push",
@@ -26,5 +29,6 @@ path = "packages/{{cookiecutter.package_slug}}"
 public_api = true
 changelog_path = "packages/{{cookiecutter.package_slug}}/CHANGELOG.md"
 pre_bump_hooks = [
-    "uv version --package {{cookiecutter.package_slug}} {% raw %}{{version}}{% endraw %}",
+    "echo 'bumping {{cookiecutter.package_slug}} from {% raw %}{{latest|0.0.0}}{% endraw %} to {% raw %}{{version|0.0.1}}{% endraw %}'",
+    "uv version --package {{cookiecutter.package_slug}} {% raw %}{{version|0.0.1}}{% endraw %}",
 ]

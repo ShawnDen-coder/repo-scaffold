@@ -5,7 +5,8 @@ path = "CHANGELOG.md"
 
 [pre_bump_hooks]
 # Update the package version before creating the tag
-"pnpm --dir . version {% raw %}{{version}}{% endraw %} --no-git-tag-version" = []
+"echo 'bumping from {% raw %}{{latest|0.0.0}}{% endraw %} to {% raw %}{{version|0.0.1}}{% endraw %}'" = []
+"pnpm --dir . version {% raw %}{{version|0.0.1}}{% endraw %} --no-git-tag-version" = []
 
 [post_bump_hooks]
 "git push" = []
